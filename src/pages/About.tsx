@@ -2,8 +2,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ArrowRight, Heart, Zap, Globe, Target, Users, Sparkles, CheckCircle, Star, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import useGSAP from "@/hooks/useGSAP";
 
 const About = () => {
+  // Initialize GSAP animations
+  useGSAP();
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -11,29 +15,29 @@ const About = () => {
       {/* Hero Section */}
       <section className="section-padding pt-32 particles section-bg-primary section-separator">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-8">
+          <div className="mb-8 fade-in">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-vybe-cyan/20 to-vybe-purple/20 border border-vybe-cyan/30 mb-6">
               <Sparkles className="w-5 h-5 text-vybe-cyan mr-2" />
               <span className="text-sm font-medium text-gradient">Revolutionary Emotional Technology</span>
             </div>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight slide-in-left">
             <span className="text-gradient">About VYBE</span>
             <br />
             <span className="text-gradient-reverse">LOOPROOMS™</span>
           </h1>
-          <p className="text-xl md:text-2xl text-foreground/80 mb-12 leading-relaxed max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-foreground/80 mb-12 leading-relaxed max-w-3xl mx-auto fade-in">
             The world's first emotional tech ecosystem designed to foster 
             <span className="text-gradient font-semibold"> positivity, connection, and growth</span> 
             through innovative digital experiences.
           </p>
-          <div className="grid grid-cols-3 gap-8 max-w-xl mx-auto">
+          <div className="grid grid-cols-3 gap-8 max-w-xl mx-auto stagger-in">
             <div className="text-center">
-              <div className="text-3xl font-bold text-gradient mb-2">10K+</div>
+              <div className="text-3xl font-bold text-gradient mb-2 counter" data-target="10000">0</div>
               <div className="text-sm text-foreground/60">Early Adopters</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-gradient mb-2">5+</div>
+              <div className="text-3xl font-bold text-gradient mb-2 counter" data-target="5">0</div>
               <div className="text-sm text-foreground/60">Looproom Categories</div>
             </div>
             <div className="text-center">
@@ -48,7 +52,7 @@ const About = () => {
       <section className="section-padding section-bg-secondary section-separator">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
+            <div className="slide-in-left">
               <div className="mb-6">
                 <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-vybe-purple/20 to-vybe-pink/20 border border-vybe-purple/30 mb-4">
                   <Target className="w-5 h-5 text-vybe-purple mr-2" />
@@ -76,9 +80,9 @@ const About = () => {
                 </Button>
               </div>
             </div>
-            <div className="vybe-card">
+            <div className="vybe-card slide-in-right">
               <h3 className="text-2xl font-bold mb-6 text-gradient-reverse">Core Values</h3>
-              <div className="space-y-6">
+              <div className="space-y-6 stagger-in">
                 <div className="flex items-start space-x-4">
                   <Heart className="w-8 h-8 text-vybe-pink mt-1 flex-shrink-0" />
                   <div>
@@ -109,12 +113,12 @@ const About = () => {
       {/* Vision Section */}
       <section className="section-padding section-bg-tertiary section-separator">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 fade-in">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-vybe-cyan/20 to-vybe-blue/20 border border-vybe-cyan/30 mb-6">
               <Star className="w-5 h-5 text-vybe-cyan mr-2" />
               <span className="text-sm font-medium text-gradient">Future of Emotional Tech</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gradient-reverse">
+            <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gradient-reverse slide-in-left">
               Our Vision
             </h2>
             <p className="text-xl text-foreground/80 mb-12 leading-relaxed max-w-4xl mx-auto">

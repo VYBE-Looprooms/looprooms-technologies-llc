@@ -139,27 +139,27 @@ html {
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background: var(--gradient-hero);
-    /* Prevent horizontal overflow but ensure vertical scrolling works */
+    /* Clean scroll settings for optimal performance */
     overflow-x: hidden;
-    overflow-y: auto !important;
+    overflow-y: scroll;
     width: 100%;
     margin: 0;
     padding: 0;
-    /* Ensure smooth scrolling isn't blocking normal scroll */
+    /* Native scroll behavior for best performance */
     scroll-behavior: auto;
   }
   
   html {
-    /* Ensure smooth scrolling isn't blocking normal scroll */
+    /* Native scroll behavior for best performance */
     scroll-behavior: auto;
-    /* Prevent horizontal overflow but ensure vertical scrolling works */
+    /* Clean scroll settings for optimal performance */
     overflow-x: hidden;
-    overflow-y: auto !important;
+    overflow-y: scroll;
     width: 100%;
     height: 100%;
   }
   
-  /* Custom scrollbar - hidden to prevent cyan indicator issues */
+  /* Hide custom scrollbar completely to prevent scroll trapping */
   ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
@@ -322,6 +322,56 @@ html {
   
   .animate-pulse-slow {
     animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* GSAP Animation Initial States - Prevents content flash */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  .slide-in-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  
+  .slide-in-right {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  
+  .scale-in {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  
+  .stagger-in > * {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  
+  .text-reveal {
+    overflow: hidden;
+  }
+  
+  .text-reveal .char {
+    opacity: 0;
+    transform: translateY(20px);
+    display: inline-block;
+  }
+  
+  /* Loading states for smooth initial render */
+  .gsap-loading {
+    visibility: hidden;
+  }
+  
+  .gsap-ready {
+    visibility: visible;
+  }
+  
+  /* Enhanced transitions for smoother animations */
+  .smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 

@@ -2,10 +2,14 @@ import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "./ThemeSwitcher";
+import useGSAP from "@/hooks/useGSAP";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Initialize GSAP animations
+  useGSAP();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,11 +20,11 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-xl bg-background/80 border-b border-vybe-cyan/30 shadow-lg shadow-vybe-cyan/10' : 'backdrop-blur-lg border-b border-vybe-cyan/20'}`}>
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 fade-in ${scrolled ? 'backdrop-blur-xl bg-background/80 border-b border-vybe-cyan/30 shadow-lg shadow-vybe-cyan/10' : 'backdrop-blur-lg border-b border-vybe-cyan/20'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Enhanced Logo */}
-          <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => window.location.href = '/'}>
+          <div className="flex items-center space-x-3 group cursor-pointer slide-in-left" onClick={() => window.location.href = '/'}>
             <img 
               src="/uploads/VybeLoopRoomFULL LOGO.png" 
               alt="VYBE LOOPROOMS™" 
@@ -29,7 +33,7 @@ const Navbar = () => {
           </div>
 
           {/* Enhanced Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8 fade-in">
             <a 
               href="/about" 
               className="text-foreground/80 hover:text-vybe-cyan transition-all duration-300 font-medium relative group"
@@ -58,7 +62,7 @@ const Navbar = () => {
             <ThemeSwitcher />
             
             <Button 
-              className="btn-glow relative overflow-hidden group" 
+              className="btn-glow relative overflow-hidden group scale-in" 
               onClick={() => window.location.href = '/waitlist'}
             >
               <span className="relative z-10">Join Waitlist</span>
@@ -67,7 +71,7 @@ const Navbar = () => {
           </div>
 
           {/* Enhanced Mobile menu button */}
-          <div className="md:hidden flex items-center space-x-3">
+          <div className="md:hidden flex items-center space-x-3 slide-in-right">
             {/* Theme Switcher for Mobile */}
             <ThemeSwitcher />
             
@@ -89,7 +93,7 @@ const Navbar = () => {
         <div className={`md:hidden transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="bg-background/98 backdrop-blur-xl border-t border-vybe-cyan/30 px-6 py-8 space-y-8 shadow-lg shadow-vybe-cyan/10">
             {/* Navigation Links */}
-            <div className="space-y-6">
+            <div className="space-y-6 stagger-in">
               <a 
                 href="/about" 
                 className="block text-foreground/80 hover:text-vybe-cyan transition-all duration-300 text-xl font-medium py-3 border-l-4 border-transparent hover:border-vybe-cyan pl-6 rounded-r-lg hover:bg-vybe-cyan/5 group"
@@ -123,7 +127,7 @@ const Navbar = () => {
             </div>
             
             {/* Call to Action */}
-            <div className="pt-6 border-t border-vybe-cyan/20">
+            <div className="pt-6 border-t border-vybe-cyan/20 scale-in">
               <Button 
                 className="btn-glow w-full text-xl py-6 relative overflow-hidden group" 
                 onClick={() => {setIsOpen(false); window.location.href = '/waitlist';}}
@@ -134,7 +138,7 @@ const Navbar = () => {
             </div>
             
             {/* Enhanced Mobile Social Proof */}
-            <div className="text-center pt-6 space-y-4">
+            <div className="text-center pt-6 space-y-4 fade-in">
               <div className="flex items-center justify-center space-x-2 text-sm text-foreground/60">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span>Join 10,000+ people on the waitlist</span>

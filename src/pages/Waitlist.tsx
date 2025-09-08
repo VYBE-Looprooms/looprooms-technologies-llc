@@ -4,10 +4,14 @@ import { CheckCircle, Star, Users, Zap, Gift, Crown, Sparkles, Calendar, ArrowRi
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import useGSAP from "@/hooks/useGSAP";
 
 const Waitlist = () => {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Initialize GSAP animations
+  useGSAP();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +27,7 @@ const Waitlist = () => {
       {/* Hero Section */}
       <section className="section-padding pt-32 particles section-bg-primary section-separator">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-8">
+          <div className="mb-8 fade-in">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-vybe-cyan/20 to-vybe-purple/20 border border-vybe-cyan/30 mb-6">
               <Crown className="w-5 h-5 text-vybe-cyan mr-2" />
               <span className="text-sm font-medium text-gradient">Exclusive Early Access</span>

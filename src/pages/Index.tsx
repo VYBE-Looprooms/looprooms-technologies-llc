@@ -13,7 +13,7 @@ const Index = () => {
   useGSAP();
 
   return (
-    <div className="min-h-screen overflow-x-hidden w-full">
+    <div className="min-h-screen w-full">
       <Navbar />
       <Hero />
       <div className="fade-in">

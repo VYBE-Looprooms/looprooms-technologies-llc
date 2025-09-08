@@ -4,7 +4,8 @@ import { Mail, MessageSquare, Users, Zap, Send, Phone, MapPin, Clock, CheckCircl
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useGSAP from "@/hooks/useGSAP";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,9 @@ const Contact = () => {
     message: ""
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Initialize GSAP animations
+  useGSAP();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,20 +41,20 @@ const Contact = () => {
       {/* Hero Section */}
       <section className="section-padding pt-32 particles section-bg-primary section-separator">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="mb-8">
+          <div className="mb-8 fade-in">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-vybe-cyan/20 to-vybe-purple/20 border border-vybe-cyan/30 mb-6">
               <MessageSquare className="w-5 h-5 text-vybe-cyan mr-2" />
               <span className="text-sm font-medium text-gradient">Let's Connect</span>
             </div>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight slide-in-left">
             <span className="text-gradient">Get in Touch</span>
           </h1>
-          <p className="text-xl md:text-2xl text-foreground/80 mb-12 leading-relaxed max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-foreground/80 mb-12 leading-relaxed max-w-3xl mx-auto fade-in">
             Ready to join the emotional tech revolution? We'd love to hear from you 
             and explore how we can work together to transform digital wellbeing.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto stagger-in">
             <div className="flex items-center justify-center space-x-2 text-sm text-foreground/60">
               <Clock className="w-4 h-4 text-vybe-cyan" />
               <span>24h response time</span>
@@ -73,7 +77,7 @@ const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-16">
             
             {/* Contact Form */}
-            <div className="vybe-card">
+            <div className="vybe-card slide-in-left">
               {!isSubmitted ? (
                 <>
                   <div className="mb-8">
@@ -168,7 +172,7 @@ const Contact = () => {
                   </form>
                 </>
               ) : (
-                <div className="text-center py-8">
+                <div className="text-center py-8 scale-in">
                   <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-green-500 to-vybe-cyan flex items-center justify-center">
                     <CheckCircle className="w-10 h-10 text-background" />
                   </div>
@@ -188,7 +192,7 @@ const Contact = () => {
             </div>
 
             {/* Contact Info */}
-            <div className="space-y-8">
+            <div className="space-y-8 slide-in-right">
               <div>
                 <div className="mb-6">
                   <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-vybe-purple/20 to-vybe-pink/20 border border-vybe-purple/30 mb-4">
@@ -206,7 +210,7 @@ const Contact = () => {
                 </p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-6 stagger-in">
                 <div className="vybe-card group hover:scale-105 transition-transform duration-300">
                   <div className="flex items-start space-x-4">
                     <Mail className="w-6 h-6 text-vybe-cyan mt-1 flex-shrink-0" />
@@ -246,7 +250,7 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="vybe-card text-center border-glow">
+              <div className="vybe-card text-center border-glow fade-in">
                 <h3 className="text-xl font-bold mb-4 text-gradient">
                   Join Our Waitlist
                 </h3>
@@ -264,12 +268,12 @@ const Contact = () => {
       </section>
 
       {/* Response Time Section */}
-      <section className="section-padding section-bg-tertiary section-separator">
+      <section className="section-padding section-bg-tertiary">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-gradient">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-gradient fade-in">
             What to Expect
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 stagger-in">
             <div className="vybe-card text-center">
               <Clock className="w-12 h-12 text-vybe-cyan mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-4 text-gradient">Fast Response</h3>

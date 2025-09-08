@@ -12,200 +12,168 @@ export const useGSAP = () => {
     if (initialized.current) return;
     initialized.current = true;
 
-    // Smooth scrolling configuration
-    gsap.set(document.documentElement, {
-      scrollBehavior: "smooth"
-    });
+    // Clean, optimized initialization
+    const initializeAnimations = () => {
+      // Set initial states immediately to prevent flash
+      gsap.set('.fade-in', { opacity: 0, y: 20 });
+      gsap.set('.slide-in-left', { opacity: 0, x: -40 });
+      gsap.set('.slide-in-right', { opacity: 0, x: 40 });
+      gsap.set('.scale-in', { opacity: 0, scale: 0.95 });
+      gsap.set('.stagger-in > *', { opacity: 0, y: 30 });
 
-    // Initialize smooth scroll
-    gsap.registerPlugin(ScrollTrigger);
-    
-    // Create scroll animations
-    const setupScrollAnimations = () => {
-      // Fade in animations for sections
-      gsap.utils.toArray('.fade-in').forEach((element: Element) => {
-        gsap.fromTo(element, 
+      // Remove loading state and show content
+      document.body.classList.remove('gsap-loading');
+      document.body.classList.add('gsap-ready');
+
+      // Simplified ScrollTrigger configuration to prevent scroll conflicts
+      const setupScrollAnimations = () => {
+        // Configure ScrollTrigger for optimal performance
+        ScrollTrigger.config({
+          limitCallbacks: true,
+          syncInterval: 150
+        });
+
+        // Batch all similar animations for better performance
+        const animationGroups = [
           {
-            opacity: 0,
-            y: 50
+            selector: '.fade-in',
+            animation: { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
           },
           {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      });
-
-      // Slide in from left
-      gsap.utils.toArray('.slide-in-left').forEach((element: Element) => {
-        gsap.fromTo(element,
-          {
-            opacity: 0,
-            x: -100
+            selector: '.slide-in-left',
+            animation: { opacity: 1, x: 0, duration: 0.7, ease: "power2.out" }
           },
           {
-            opacity: 1,
-            x: 0,
-            duration: 1.2,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: element,
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      });
-
-      // Slide in from right
-      gsap.utils.toArray('.slide-in-right').forEach((element: Element) => {
-        gsap.fromTo(element,
-          {
-            opacity: 0,
-            x: 100
+            selector: '.slide-in-right',
+            animation: { opacity: 1, x: 0, duration: 0.7, ease: "power2.out" }
           },
           {
-            opacity: 1,
-            x: 0,
-            duration: 1.2,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: element,
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
+            selector: '.scale-in',
+            animation: { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }
           }
-        );
-      });
+        ];
 
-      // Scale in animations
-      gsap.utils.toArray('.scale-in').forEach((element: Element) => {
-        gsap.fromTo(element,
-          {
-            opacity: 0,
-            scale: 0.8
-          },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 1,
-            ease: "back.out(1.7)",
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      });
+        // Apply animations with simplified ScrollTrigger
+        animationGroups.forEach(({ selector, animation }) => {
+          const elements = gsap.utils.toArray(selector);
+          elements.forEach((element: Element) => {
+            gsap.to(element, {
+              ...animation,
+              scrollTrigger: {
+                trigger: element,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+                once: false
+              }
+            });
+          });
+        });
 
-      // Stagger animations for grids
-      gsap.utils.toArray('.stagger-in').forEach((container: Element) => {
-        const children = (container as HTMLElement).children;
-        gsap.fromTo(children,
-          {
-            opacity: 0,
-            y: 50,
-            scale: 0.9
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: "power2.out",
-            stagger: 0.1,
-            scrollTrigger: {
-              trigger: container,
-              start: "top 80%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      });
-
-      // Parallax effect for background elements
-      gsap.utils.toArray('.parallax').forEach((element: Element) => {
-        gsap.to(element, {
-          yPercent: -50,
-          ease: "none",
-          scrollTrigger: {
-            trigger: element,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true
+        // Optimized stagger animations
+        const staggerContainers = gsap.utils.toArray('.stagger-in');
+        staggerContainers.forEach((container: Element) => {
+          const children = Array.from((container as HTMLElement).children);
+          if (children.length > 0) {
+            gsap.to(children, {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+              ease: "power2.out",
+              stagger: 0.1,
+              scrollTrigger: {
+                trigger: container,
+                start: "top 85%",
+                toggleActions: "play none none reverse"
+              }
+            });
           }
         });
-      });
 
-      // Text reveal animations
-      gsap.utils.toArray('.text-reveal').forEach((element: Element) => {
-        const htmlElement = element as HTMLElement;
-        const text = htmlElement.textContent || '';
-        htmlElement.innerHTML = text.split('').map((char: string) => 
-          char === ' ' ? ' ' : `<span class="char">${char}</span>`
-        ).join('');
+        // Simplified text reveal (only if needed)
+        const textRevealElements = gsap.utils.toArray('.text-reveal');
+        textRevealElements.forEach((element: Element) => {
+          const htmlElement = element as HTMLElement;
+          if (!htmlElement.dataset.processed) {
+            const text = htmlElement.textContent || '';
+            htmlElement.innerHTML = text.split('').map((char: string) => 
+              char === ' ' ? ' ' : `<span class="char inline-block">${char}</span>`
+            ).join('');
+            htmlElement.dataset.processed = 'true';
 
-        gsap.fromTo(htmlElement.querySelectorAll('.char'),
-          {
-            opacity: 0,
-            y: 20
-          },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.05,
-            ease: "power2.out",
-            stagger: 0.02,
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              toggleActions: "play none none reverse"
-            }
+            gsap.to(htmlElement.querySelectorAll('.char'), {
+              opacity: 1,
+              y: 0,
+              duration: 0.03,
+              stagger: 0.02,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: element,
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+              }
+            });
           }
-        );
-      });
+        });
 
-      // Number counter animations
-      gsap.utils.toArray('.counter').forEach((element: Element) => {
-        const htmlElement = element as HTMLElement;
-        const target = parseInt(htmlElement.getAttribute('data-target') || '0');
-        const obj = { number: 0 };
-        
-        gsap.to(obj, {
-          number: target,
-          duration: 2,
-          ease: "power2.out",
-          onUpdate: () => {
-            htmlElement.textContent = Math.round(obj.number).toLocaleString();
-          },
-          scrollTrigger: {
+        // Counter animations (simplified)
+        const counterElements = gsap.utils.toArray('.counter');
+        counterElements.forEach((element: Element) => {
+          const htmlElement = element as HTMLElement;
+          const target = parseInt(htmlElement.getAttribute('data-target') || '0');
+          
+          ScrollTrigger.create({
             trigger: element,
             start: "top 80%",
-            toggleActions: "play none none none"
-          }
+            onEnter: () => {
+              const obj = { number: 0 };
+              gsap.to(obj, {
+                number: target,
+                duration: 1.2,
+                ease: "power2.out",
+                onUpdate: () => {
+                  htmlElement.textContent = Math.round(obj.number).toLocaleString();
+                }
+              });
+            }
+          });
         });
+
+        // REMOVED: Parallax effects that cause scroll interference
+        // The parallax scrub was causing the sticky scroll behavior
+      };
+
+      // Execute animations setup
+      requestAnimationFrame(() => {
+        setupScrollAnimations();
+        
+        // Single refresh after setup
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 100);
       });
     };
 
-    // Setup animations after a small delay to ensure DOM is ready
-    const timer = setTimeout(setupScrollAnimations, 100);
+    // Initialize when ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeAnimations);
+    } else {
+      initializeAnimations();
+    }
 
+    // Cleanup function
     return () => {
-      clearTimeout(timer);
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ScrollTrigger.clearMatchMedia();
+      document.removeEventListener('DOMContentLoaded', initializeAnimations);
     };
   }, []);
 
-  return { gsap, ScrollTrigger };
+  // Utility function to refresh animations when content changes
+  const refreshAnimations = () => {
+    ScrollTrigger.refresh();
+  };
+
+  return { gsap, ScrollTrigger, refreshAnimations };
 };
 
 export default useGSAP;
