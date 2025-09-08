@@ -9,13 +9,13 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="section-padding bg-gradient-to-t from-secondary/20 to-background border-t border-vybe-cyan/20">
+    <footer className="section-padding bg-gradient-to-t from-secondary/20 to-background border-t border-vybe-cyan/20 fade-in">
       <div className="max-w-7xl mx-auto">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12 stagger-in">
           {/* Left - Logo and Tagline */}
-          <div className="text-center lg:text-left">
-            <div className="flex items-center justify-center lg:justify-start space-x-3 mb-6">
+          <div className="text-center lg:text-left slide-in-left">
+            <div className="flex items-center justify-center lg:justify-start space-x-3 mb-6 scale-in">
                 <img 
                   src="/uploads/VybeLoopRoomFULL LOGO.png" 
                   alt="VYBE LOOPROOMS™" 
@@ -31,8 +31,8 @@ const Footer = () => {
           </div>
 
           {/* Right - Newsletter Signup */}
-          <div className="text-center lg:text-right">
-            <h3 className="text-2xl font-bold mb-4 text-gradient">
+          <div className="text-center lg:text-right slide-in-right">
+            <h3 className="text-2xl font-bold mb-4 text-gradient fade-in">
               Stay in the Loop
             </h3>
             <p className="text-foreground/70 mb-6">
@@ -52,7 +52,7 @@ const Footer = () => {
         </div>
 
         {/* Navigation Links */}
-        <div className="flex flex-wrap justify-center gap-8 mb-12">
+        <div className="flex flex-wrap justify-center gap-8 mb-12 stagger-in">
           {links.map((link, index) => (
             <a
               key={index}

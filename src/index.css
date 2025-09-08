@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Enhanced scrolling - removed smooth behavior that could cause issues */
+html {
+  scroll-padding-top: 80px;
+}
+
+/* Removed smooth scroll behavior from body */
+
 /* VYBE LOOPROOMS™ Design System - Futuristic Emotional Tech Aesthetic */
 
 @layer base {
@@ -17,14 +24,20 @@
     --popover: 240 12% 12%;
     --popover-foreground: 240 5% 96%;
 
-    /* VYBE Brand Colors - Cyan to Purple gradient palette */
+    /* VYBE Brand Colors - Dynamic theme system */
     --primary: 195 100% 60%;  /* Vibrant cyan */
     --primary-foreground: 240 15% 8%;
     
-    --vybe-cyan: 195 100% 60%;
+    /* Dynamic color variables for theme switching */
+    --vybe-primary: 195 100% 60%;   /* Default: cyan */
+    --vybe-secondary: 280 100% 70%; /* Default: purple */
+    --vybe-accent: 320 100% 75%;    /* Default: pink */
+    
+    /* Legacy color names for compatibility */
+    --vybe-cyan: var(--vybe-primary);
     --vybe-blue: 220 100% 65%;
-    --vybe-purple: 280 100% 70%;
-    --vybe-pink: 320 100% 75%;
+    --vybe-purple: var(--vybe-secondary);
+    --vybe-pink: var(--vybe-accent);
 
     /* Secondary surfaces */
     --secondary: 240 10% 18%;
@@ -119,11 +132,49 @@
 @layer base {
   * {
     @apply border-border;
+    /* Prevent horizontal overflow */
+    box-sizing: border-box;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background: var(--gradient-hero);
+    /* Prevent horizontal overflow but ensure vertical scrolling works */
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    /* Ensure smooth scrolling isn't blocking normal scroll */
+    scroll-behavior: auto;
+  }
+  
+  html {
+    /* Ensure smooth scrolling isn't blocking normal scroll */
+    scroll-behavior: auto;
+    /* Prevent horizontal overflow but ensure vertical scrolling works */
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Custom scrollbar - hidden to prevent cyan indicator issues */
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: transparent;
   }
 }
 
@@ -209,9 +260,37 @@
     animation: float 6s ease-in-out infinite;
   }
 
-  /* Section spacing */
+  /* Section spacing and backgrounds */
   .section-padding {
-    @apply py-20 px-4 sm:px-6 lg:px-8;
+    @apply py-32 px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Section background separators */
+  .section-bg-primary {
+    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(240 15% 10%) 100%);
+  }
+  
+  .section-bg-secondary {
+    background: linear-gradient(180deg, hsl(240 15% 10%) 0%, hsl(240 12% 8%) 50%, hsl(240 15% 10%) 100%);
+  }
+  
+  .section-bg-tertiary {
+    background: linear-gradient(180deg, hsl(240 15% 10%) 0%, hsl(var(--background)) 100%);
+  }
+  
+  .section-separator {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .section-separator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--vybe-cyan) / 0.3), transparent);
   }
 }
 
@@ -231,6 +310,18 @@
   
   .animate-slide-up {
     animation: slideUp 0.8s ease-out;
+  }
+  
+  .animate-spin-slow {
+    animation: spin 8s linear infinite;
+  }
+  
+  .animate-bounce-slow {
+    animation: bounce 3s infinite;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
 
@@ -252,4 +343,21 @@
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(50px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.02) rotate(0.5deg); }
+  50% { transform: scale(1.04) rotate(0deg); }
+  75% { transform: scale(1.02) rotate(-0.5deg); }
 }
