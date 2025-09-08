@@ -1,0 +1,255 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* VYBE LOOPROOMS™ Design System - Futuristic Emotional Tech Aesthetic */
+
+@layer base {
+  :root {
+    /* VYBE Core Colors - Deep space background with vibrant accents */
+    --background: 240 15% 8%;
+    --foreground: 240 5% 96%;
+
+    /* Card surfaces with glassmorphism */
+    --card: 240 12% 12%;
+    --card-foreground: 240 5% 96%;
+
+    --popover: 240 12% 12%;
+    --popover-foreground: 240 5% 96%;
+
+    /* VYBE Brand Colors - Cyan to Purple gradient palette */
+    --primary: 195 100% 60%;  /* Vibrant cyan */
+    --primary-foreground: 240 15% 8%;
+    
+    --vybe-cyan: 195 100% 60%;
+    --vybe-blue: 220 100% 65%;
+    --vybe-purple: 280 100% 70%;
+    --vybe-pink: 320 100% 75%;
+
+    /* Secondary surfaces */
+    --secondary: 240 10% 18%;
+    --secondary-foreground: 240 5% 90%;
+
+    --muted: 240 8% 20%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 280 100% 70%;
+    --accent-foreground: 240 15% 8%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 240 5% 96%;
+
+    --border: 240 8% 25%;
+    --input: 240 8% 20%;
+    --ring: 195 100% 60%;
+
+    --radius: 1rem;
+
+    /* VYBE Gradients */
+    --gradient-vybe: linear-gradient(135deg, hsl(var(--vybe-cyan)), hsl(var(--vybe-blue)), hsl(var(--vybe-purple)));
+    --gradient-vybe-reverse: linear-gradient(225deg, hsl(var(--vybe-purple)), hsl(var(--vybe-blue)), hsl(var(--vybe-cyan)));
+    --gradient-hero: linear-gradient(180deg, hsl(var(--background)), hsl(240 20% 12%));
+    --gradient-card: linear-gradient(145deg, hsl(240 12% 12% / 0.8), hsl(240 8% 18% / 0.6));
+    
+    /* Glow effects */
+    --glow-cyan: 0 0 40px hsl(var(--vybe-cyan) / 0.3);
+    --glow-purple: 0 0 40px hsl(var(--vybe-purple) / 0.3);
+    --glow-soft: 0 10px 30px hsl(var(--vybe-cyan) / 0.2);
+    
+    /* Animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background: var(--gradient-hero);
+  }
+}
+
+@layer components {
+  /* VYBE Button Variants */
+  .btn-glow {
+    @apply relative overflow-hidden rounded-full px-8 py-4 font-bold text-lg transition-all duration-300;
+    background: var(--gradient-vybe);
+    box-shadow: var(--glow-soft);
+  }
+  
+  .btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-cyan);
+  }
+  
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .btn-glow:hover::before {
+    left: 100%;
+  }
+
+  /* VYBE Card Styles */
+  .vybe-card {
+    @apply relative rounded-2xl p-6 backdrop-blur-sm border;
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--vybe-cyan) / 0.2);
+    box-shadow: 0 8px 32px hsl(var(--background) / 0.3);
+  }
+  
+  .vybe-card:hover {
+    border-color: hsl(var(--vybe-cyan) / 0.4);
+    box-shadow: var(--glow-soft);
+    transform: translateY(-4px);
+  }
+
+  /* VYBE Text Gradients */
+  .text-gradient {
+    background: var(--gradient-vybe);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .text-gradient-reverse {
+    background: var(--gradient-vybe-reverse);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Glowing borders */
+  .border-glow {
+    border: 1px solid transparent;
+    background: linear-gradient(var(--gradient-card)) padding-box,
+                var(--gradient-vybe) border-box;
+  }
+
+  /* Particle animation background */
+  .particles {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .particles::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(2px 2px at 20% 30%, hsl(var(--vybe-cyan) / 0.3), transparent),
+      radial-gradient(2px 2px at 40% 70%, hsl(var(--vybe-purple) / 0.3), transparent),
+      radial-gradient(1px 1px at 90% 40%, hsl(var(--vybe-pink) / 0.3), transparent);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Section spacing */
+  .section-padding {
+    @apply py-20 px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  /* Animation utilities */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
+}
+
+@keyframes glow {
+  from { box-shadow: var(--glow-soft); }
+  to { box-shadow: var(--glow-cyan); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
