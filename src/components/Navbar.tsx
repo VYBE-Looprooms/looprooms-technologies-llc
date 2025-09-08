@@ -67,19 +67,19 @@ const Navbar = () => {
           </div>
 
           {/* Enhanced Mobile menu button */}
-          <div className="md:hidden flex items-center space-x-2">
+          <div className="md:hidden flex items-center space-x-3">
             {/* Theme Switcher for Mobile */}
             <ThemeSwitcher />
             
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-foreground hover:text-vybe-cyan transition-all duration-300 p-2 rounded-lg hover:bg-vybe-cyan/10 focus:outline-none focus:ring-2 focus:ring-vybe-cyan/50"
+              className="flex items-center justify-center text-foreground hover:text-vybe-cyan transition-all duration-300 p-2 rounded-lg hover:bg-vybe-cyan/10 focus:outline-none focus:ring-2 focus:ring-vybe-cyan/50"
               aria-label="Toggle mobile menu"
             >
-              <div className="relative w-6 h-6">
-                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'}`}></span>
-                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 ${isOpen ? 'opacity-0' : 'translate-y-0'}`}></span>
-                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 ${isOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'}`}></span>
+              <div className="relative w-6 h-6 flex items-center justify-center">
+                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 ${isOpen ? 'rotate-45' : '-translate-y-2'}`}></span>
+                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`}></span>
+                <span className={`absolute block w-6 h-0.5 bg-current transform transition-all duration-300 ${isOpen ? '-rotate-45' : 'translate-y-2'}`}></span>
               </div>
             </button>
           </div>
