@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import useGSAP from "@/hooks/useGSAP";
+import { submitToWaitlist, validateEmail, validateRequired } from "@/lib/webhook";
 
 const Waitlist = () => {
   const [formData, setFormData] = useState({
@@ -15,14 +16,55 @@ const Waitlist = () => {
     country: ""
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Initialize GSAP animations
   useGSAP();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.firstName && formData.lastName && formData.email) {
-      setIsSubmitted(true);
+    
+    // Validate required fields
+    if (!validateRequired(formData.firstName) || !validateRequired(formData.lastName) || !validateRequired(formData.email)) {
+      setSubmitError("Please fill in all required fields.");
+      return;
+    }
+
+    // Validate email format
+    if (!validateEmail(formData.email)) {
+      setSubmitError("Please enter a valid email address.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // Prepare data for n8n webhook with only the fields you need
+      const webhookData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        country: formData.country || "" // Optional field
+      };
+
+      const result = await submitToWaitlist(webhookData);
+      
+      if (result.success) {
+        setIsSubmitted(true);
+      } else {
+        throw new Error(result.message || 'Submission failed');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitError(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to submit. Please try again later.'
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -91,6 +133,12 @@ const Waitlist = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {submitError && (
+                  <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-center">
+                    {submitError}
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-vybe-cyan/60" />
@@ -100,6 +148,7 @@ const Waitlist = () => {
                       value={formData.firstName}
                       onChange={(e) => handleInputChange('firstName', e.target.value)}
                       className="bg-card/50 border-vybe-cyan/30 focus:border-vybe-cyan text-lg py-4 pl-12 transition-colors"
+                      disabled={isSubmitting}
                       required
                     />
                   </div>
@@ -111,6 +160,7 @@ const Waitlist = () => {
                       value={formData.lastName}
                       onChange={(e) => handleInputChange('lastName', e.target.value)}
                       className="bg-card/50 border-vybe-purple/30 focus:border-vybe-purple text-lg py-4 pl-12 transition-colors"
+                      disabled={isSubmitting}
                       required
                     />
                   </div>
@@ -124,13 +174,14 @@ const Waitlist = () => {
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     className="bg-card/50 border-vybe-pink/30 focus:border-vybe-pink text-lg py-4 pl-12 transition-colors"
+                    disabled={isSubmitting}
                     required
                   />
                 </div>
 
                 <div className="relative">
                   <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-vybe-cyan/60 z-10" />
-                  <Select onValueChange={(value) => handleInputChange('country', value)}>
+                  <Select onValueChange={(value) => handleInputChange('country', value)} disabled={isSubmitting}>
                     <SelectTrigger className="bg-card/50 border-vybe-cyan/30 focus:border-vybe-cyan text-lg py-4 pl-12 transition-colors">
                       <SelectValue placeholder="Country (Optional)" />
                     </SelectTrigger>
@@ -171,8 +222,21 @@ const Waitlist = () => {
                   </Select>
                 </div>
                 
-                <Button type="submit" className="btn-glow w-full text-lg py-4">
-                  Secure My Spot <ArrowRight className="ml-2 w-5 h-5" />
+                <Button 
+                  type="submit" 
+                  className="btn-glow w-full text-lg py-4" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-background/30 border-t-background rounded-full animate-spin mr-2" />
+                      Securing Your Spot...
+                    </>
+                  ) : (
+                    <>
+                      Secure My Spot <ArrowRight className="ml-2 w-5 h-5" />
+                    </>
+                  )}
                 </Button>
               </form>
 
