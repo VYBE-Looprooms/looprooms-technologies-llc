@@ -136,45 +136,54 @@ html {
     box-sizing: border-box;
   }
 
+  /* Ensure root element doesn't create nested scroll context */
+  #root {
+    width: 100%;
+    min-height: 100vh;
+    /* Prevent root from creating its own scroll context */
+    height: auto;
+    overflow: visible;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     background: var(--gradient-hero);
-    /* Clean scroll settings for optimal performance */
-    overflow-x: hidden;
-    overflow-y: scroll;
+    /* Ensure clean, native scrolling - NO overflow declaration here */
     width: 100%;
     margin: 0;
     padding: 0;
     /* Native scroll behavior for best performance */
     scroll-behavior: auto;
+    /* Let body be as tall as its content naturally */
   }
   
   html {
     /* Native scroll behavior for best performance */
     scroll-behavior: auto;
-    /* Clean scroll settings for optimal performance */
+    /* HTML handles all scrolling */
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     width: 100%;
     height: 100%;
   }
   
-  /* Hide custom scrollbar completely to prevent scroll trapping */
+  /* Custom scrollbar styling */
   ::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
+    width: 12px;
+    background: hsl(var(--background));
   }
   
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: hsl(var(--background));
   }
   
   ::-webkit-scrollbar-thumb {
-    background: transparent;
+    background: hsl(var(--border));
+    border-radius: 6px;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: transparent;
+    background: hsl(var(--vybe-cyan) / 0.6);
   }
 }
 
@@ -245,7 +254,13 @@ html {
   /* Particle animation background */
   .particles {
     position: relative;
-    overflow: hidden;
+    /* Ensure particles don't capture scroll events */
+    pointer-events: none;
+  }
+  
+  .particles > * {
+    /* Re-enable pointer events for content */
+    pointer-events: auto;
   }
   
   .particles::before {
@@ -258,6 +273,8 @@ html {
       radial-gradient(2px 2px at 40% 70%, hsl(var(--vybe-purple) / 0.3), transparent),
       radial-gradient(1px 1px at 90% 40%, hsl(var(--vybe-pink) / 0.3), transparent);
     animation: float 6s ease-in-out infinite;
+    /* Prevent background particles from capturing scroll */
+    pointer-events: none;
   }
 
   /* Section spacing and backgrounds */
@@ -298,6 +315,8 @@ html {
   /* Animation utilities */
   .animate-float {
     animation: float 6s ease-in-out infinite;
+    /* Prevent scroll interference */
+    pointer-events: none;
   }
   
   .animate-glow {

@@ -140,6 +140,7 @@ export const useGSAP = () => {
 
         // REMOVED: Parallax effects that cause scroll interference
         // The parallax scrub was causing the sticky scroll behavior
+        // No parallax animations to prevent any scroll capture issues
       };
 
       // Execute animations setup

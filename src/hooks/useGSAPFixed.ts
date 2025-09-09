@@ -15,14 +15,16 @@ export const useGSAP = () => {
     // Configure ScrollTrigger for better performance and less scroll interference
     ScrollTrigger.config({
       autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
-      ignoreMobileResize: true
+      ignoreMobileResize: true,
+      limitCallbacks: true // Reduce callback frequency
     });
     
     // Ensure ScrollTrigger doesn't interfere with natural scrolling
     ScrollTrigger.defaults({
       markers: false,
-      anticipatePin: 1,
-      invalidateOnRefresh: true
+      anticipatePin: 0, // Reduce pin anticipation to prevent scroll jumping
+      invalidateOnRefresh: true,
+      fastScrollEnd: true // Improve performance during fast scrolling
     });
     
     // Create scroll animations with better performance
@@ -138,16 +140,17 @@ export const useGSAP = () => {
         );
       });
 
-      // Optimized parallax effect - less aggressive
+      // Simplified parallax effect - less aggressive and better performance
       gsap.utils.toArray<HTMLElement>('.parallax').forEach((element) => {
         gsap.to(element, {
-          yPercent: -20,
+          yPercent: -10, // Reduced from -20 to be less aggressive
           ease: "none",
           scrollTrigger: {
             trigger: element,
             start: "top bottom",
             end: "bottom top",
-            scrub: 1
+            scrub: 0.5, // Reduced scrub value for smoother movement
+            refreshPriority: -1 // Lower priority to avoid interference
           }
         });
       });
