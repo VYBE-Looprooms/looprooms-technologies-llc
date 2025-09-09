@@ -19,6 +19,25 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Navigation function for cross-page navigation to sections
+  const navigateToSection = (sectionId: string) => {
+    const currentPath = window.location.pathname;
+    
+    if (currentPath === '/') {
+      // Already on home page, just scroll to section
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    } else {
+      // On different page, navigate to home with hash
+      window.location.href = `/#${sectionId}`;
+    }
+  };
+
   // Prevent body scroll when mobile menu is open and fix layout shifts
   useEffect(() => {
     if (isOpen) {
@@ -78,13 +97,13 @@ const Navbar = () => {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-vybe-purple to-vybe-pink group-hover:w-full transition-all duration-300"></span>
             </a>
             
-            <a 
-              href="#creators" 
-              className="text-foreground/80 hover:text-vybe-pink transition-all duration-300 font-medium relative group"
+            <button 
+              onClick={() => navigateToSection('creators')}
+              className="text-foreground/80 hover:text-vybe-pink transition-all duration-300 font-medium relative group bg-transparent border-none cursor-pointer"
             >
               Creators
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-vybe-pink to-vybe-cyan group-hover:w-full transition-all duration-300"></span>
-            </a>
+            </button>
             
             {/* Theme Switcher */}
             <ThemeSwitcher />
@@ -142,16 +161,18 @@ const Navbar = () => {
                   <ChevronDown className="w-4 h-4 transform group-hover:rotate-180 transition-transform duration-300" />
                 </span>
               </a>
-              <a 
-                href="#creators" 
-                className="block text-foreground/80 hover:text-vybe-pink transition-all duration-300 text-base font-medium py-2 border-l-4 border-transparent hover:border-vybe-pink pl-4 rounded-r-lg hover:bg-vybe-pink/5 group"
-                onClick={() => setIsOpen(false)}
+              <button 
+                onClick={() => {
+                  navigateToSection('creators');
+                  setIsOpen(false);
+                }}
+                className="block text-foreground/80 hover:text-vybe-pink transition-all duration-300 text-base font-medium py-2 border-l-4 border-transparent hover:border-vybe-pink pl-4 rounded-r-lg hover:bg-vybe-pink/5 group bg-transparent border-none cursor-pointer text-left w-full"
               >
                 <span className="flex items-center justify-between">
                   Creators
                   <ChevronDown className="w-4 h-4 transform group-hover:rotate-180 transition-transform duration-300" />
                 </span>
-              </a>
+              </button>
             </div>
             
             {/* Call to Action */}
