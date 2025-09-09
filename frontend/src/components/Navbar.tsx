@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "./ThemeSwitcher";
@@ -7,6 +8,7 @@ import useGSAP from "@/hooks/useGSAP";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   // Initialize GSAP animations - disabled on mobile for navbar stability
   useGSAP();
@@ -17,6 +19,23 @@ const Navbar = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Handle hash-based navigation when component mounts
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const sectionId = hash.substring(1); // Remove the # character
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 500); // Wait for page to fully load
+    }
   }, []);
 
   // Navigation function for cross-page navigation to sections
@@ -34,7 +53,7 @@ const Navbar = () => {
       }
     } else {
       // On different page, navigate to home with hash
-      window.location.href = `/#${sectionId}`;
+      navigate(`/#${sectionId}`);
     }
   };
 
