@@ -30,7 +30,7 @@ export const useGSAP = () => {
     // Create scroll animations with better performance
     const setupScrollAnimations = () => {
       // Reduce animation complexity for better scroll performance
-      // Fade in animations for sections
+      // Fade in animations for sections - trigger earlier for better UX
       gsap.utils.toArray<HTMLElement>('.fade-in').forEach((element) => {
         gsap.fromTo(element, 
           {
@@ -44,7 +44,7 @@ export const useGSAP = () => {
             ease: "power2.out",
             scrollTrigger: {
               trigger: element,
-              start: "top 85%",
+              start: "top 95%", // Changed from 85% to 95% - triggers when element is almost in view
               end: "bottom 15%",
               toggleActions: "play none none reverse",
               // Remove potential scroll blocking settings
@@ -54,7 +54,7 @@ export const useGSAP = () => {
         );
       });
 
-      // Slide in from left - reduced distance and duration
+      // Slide in from left - reduced distance and duration, trigger earlier
       gsap.utils.toArray<HTMLElement>('.slide-in-left').forEach((element) => {
         gsap.fromTo(element,
           {
@@ -68,14 +68,14 @@ export const useGSAP = () => {
             ease: "power2.out",
             scrollTrigger: {
               trigger: element,
-              start: "top 85%",
+              start: "top 95%", // Changed from 85% to 95%
               toggleActions: "play none none reverse"
             }
           }
         );
       });
 
-      // Slide in from right - reduced distance and duration
+      // Slide in from right - reduced distance and duration, trigger earlier
       gsap.utils.toArray<HTMLElement>('.slide-in-right').forEach((element) => {
         gsap.fromTo(element,
           {
@@ -89,14 +89,14 @@ export const useGSAP = () => {
             ease: "power2.out",
             scrollTrigger: {
               trigger: element,
-              start: "top 85%",
+              start: "top 95%", // Changed from 85% to 95%
               toggleActions: "play none none reverse"
             }
           }
         );
       });
 
-      // Scale in animations - reduced complexity
+      // Scale in animations - reduced complexity, trigger earlier
       gsap.utils.toArray<HTMLElement>('.scale-in').forEach((element) => {
         gsap.fromTo(element,
           {
@@ -110,14 +110,14 @@ export const useGSAP = () => {
             ease: "power2.out",
             scrollTrigger: {
               trigger: element,
-              start: "top 85%",
+              start: "top 95%", // Changed from 85% to 95%
               toggleActions: "play none none reverse"
             }
           }
         );
       });
 
-      // Stagger animations - reduced stagger delay
+      // Stagger animations - reduced stagger delay, trigger earlier
       gsap.utils.toArray<HTMLElement>('.stagger-in').forEach((container) => {
         const children = Array.from(container.children) as HTMLElement[];
         gsap.fromTo(children,
@@ -133,7 +133,7 @@ export const useGSAP = () => {
             stagger: 0.08,
             scrollTrigger: {
               trigger: container,
-              start: "top 85%",
+              start: "top 95%", // Changed from 85% to 95%
               toggleActions: "play none none reverse"
             }
           }
@@ -155,7 +155,7 @@ export const useGSAP = () => {
         });
       });
 
-      // Number counter animations - same as before
+      // Number counter animations - trigger earlier
       gsap.utils.toArray<HTMLElement>('.counter').forEach((element) => {
         const target = parseInt(element.getAttribute('data-target') || '0') || 0;
         const obj = { number: 0 };
@@ -169,7 +169,7 @@ export const useGSAP = () => {
           },
           scrollTrigger: {
             trigger: element,
-            start: "top 80%",
+            start: "top 90%", // Changed from 80% to 90%
             toggleActions: "play none none none"
           }
         });

@@ -217,10 +217,14 @@ html {
 
   /* VYBE Card Styles */
   .vybe-card {
-    @apply relative rounded-2xl p-6 backdrop-blur-sm border;
+    @apply relative rounded-2xl p-4 sm:p-6 backdrop-blur-sm border;
     background: var(--gradient-card);
     border: 1px solid hsl(var(--vybe-cyan) / 0.2);
     box-shadow: 0 8px 32px hsl(var(--background) / 0.3);
+    /* Ensure cards don't overflow on mobile */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
   
   .vybe-card:hover {
@@ -391,6 +395,29 @@ html {
   /* Enhanced transitions for smoother animations */
   .smooth-transition {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Mobile responsive text utilities */
+  .text-responsive {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Prevent overflow on mobile */
+  .mobile-safe {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  
+  /* Icon container utilities */
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 }
 

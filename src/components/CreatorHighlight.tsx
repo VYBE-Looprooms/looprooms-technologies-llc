@@ -48,20 +48,26 @@ const CreatorHighlight = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-vybe-cyan/10 via-vybe-purple/10 to-vybe-pink/10"></div>
           
           <div className="relative z-10">
-            {/* Enhanced badge with creator count */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12">
-              <div className="inline-flex items-center space-x-3 bg-vybe-purple/20 backdrop-blur-sm border border-vybe-purple/40 rounded-full px-8 py-4 mb-4 sm:mb-0">
-                <Star className="w-6 h-6 text-vybe-purple animate-pulse" />
-                <span className="text-lg font-bold text-vybe-purple">Creator Program</span>
+            {/* Enhanced badge with creator count - Fixed icon positioning */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6">
+              <div className="inline-flex items-center space-x-3 bg-vybe-purple/20 backdrop-blur-sm border border-vybe-purple/40 rounded-full px-8 py-4">
+                <Star className="w-6 h-6 text-vybe-purple animate-pulse flex-shrink-0" />
+                <span className="text-lg font-bold text-vybe-purple whitespace-nowrap">Creator Program</span>
               </div>
               
-              <div className="flex space-x-4">
+              {/* Fixed creator stats with proper icon containers */}
+              <div className="flex flex-wrap gap-4 sm:gap-6">
                 {creatorTypes.map((type, idx) => (
-                  <div key={idx} className="text-center">
-                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br from-${type.color.split('-')[1]}/20 to-vybe-purple/20 flex items-center justify-center mb-2`}>
-                      <type.icon className={`w-6 h-6 ${type.color}`} />
+                  <div key={idx} className="flex flex-col items-center text-center min-w-0">
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br flex items-center justify-center mb-2 flex-shrink-0 ${
+                      type.color === 'text-vybe-pink' ? 'from-pink-500/20 to-purple-500/20' :
+                      type.color === 'text-vybe-cyan' ? 'from-cyan-500/20 to-blue-500/20' :
+                      'from-purple-500/20 to-pink-500/20'
+                    }`}>
+                      <type.icon className={`w-6 h-6 ${type.color} flex-shrink-0`} />
                     </div>
-                    <div className="text-xs text-foreground/60">{type.count} {type.name}</div>
+                    <div className="text-sm font-bold text-foreground">{type.count}</div>
+                    <div className="text-xs text-foreground/60 break-words">{type.name}</div>
                   </div>
                 ))}
               </div>
@@ -103,26 +109,40 @@ const CreatorHighlight = () => {
                 </div>
               </div>
 
-              {/* Right Content - Enhanced Benefits */}
-              <div className="space-y-8">
+              {/* Right Content - Enhanced Benefits with proper card layout */}
+              <div className="space-y-6">
                 {benefits.map((benefit, index) => (
                   <div key={index} className="group cursor-pointer">
-                    <div className="vybe-card hover:scale-105 transition-all duration-500">
-                      <div className="flex items-start space-x-6">
-                        <div className={`flex-shrink-0 w-16 h-16 bg-gradient-to-br from-${benefit.color}/20 to-vybe-purple/20 rounded-2xl flex items-center justify-center group-hover:animate-glow transition-all duration-300`}>
-                          <benefit.icon className={`w-8 h-8 text-${benefit.color}`} />
+                    <div className="vybe-card hover:scale-105 transition-all duration-500 overflow-hidden">
+                      <div className="flex items-start space-x-4">
+                        {/* Fixed icon container */}
+                        <div className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center group-hover:animate-glow transition-all duration-300 ${
+                          benefit.color === 'vybe-cyan' ? 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20' :
+                          benefit.color === 'vybe-purple' ? 'bg-gradient-to-br from-purple-500/20 to-pink-500/20' :
+                          'bg-gradient-to-br from-pink-500/20 to-purple-500/20'
+                        }`}>
+                          <benefit.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${
+                            benefit.color === 'vybe-cyan' ? 'text-cyan-400' :
+                            benefit.color === 'vybe-purple' ? 'text-purple-400' :
+                            'text-pink-400'
+                          } flex-shrink-0`} />
                         </div>
                         
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-xl font-bold text-gradient">
+                        {/* Fixed content container with proper text wrapping */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+                            <h3 className="text-lg sm:text-xl font-bold text-gradient break-words">
                               {benefit.title}
                             </h3>
-                            <div className={`text-sm font-bold text-${benefit.color} bg-${benefit.color}/10 px-3 py-1 rounded-full`}>
+                            <div className={`text-xs sm:text-sm font-bold px-3 py-1 rounded-full whitespace-nowrap flex-shrink-0 ${
+                              benefit.color === 'vybe-cyan' ? 'text-cyan-400 bg-cyan-500/10' :
+                              benefit.color === 'vybe-purple' ? 'text-purple-400 bg-purple-500/10' :
+                              'text-pink-400 bg-pink-500/10'
+                            }`}>
                               {benefit.stat}
                             </div>
                           </div>
-                          <p className="text-foreground/70 leading-relaxed">
+                          <p className="text-sm sm:text-base text-foreground/70 leading-relaxed break-words">
                             {benefit.description}
                           </p>
                         </div>
