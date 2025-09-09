@@ -8,7 +8,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Initialize GSAP animations
+  // Initialize GSAP animations - disabled on mobile for navbar stability
   useGSAP();
 
   useEffect(() => {
@@ -19,21 +19,49 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Prevent body scroll when mobile menu is open and fix layout shifts
+  useEffect(() => {
+    if (isOpen) {
+      // Prevent scrolling and fix viewport
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    } else {
+      // Restore scrolling
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+    };
+  }, [isOpen]);
+
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 fade-in ${scrolled ? 'backdrop-blur-xl bg-background/80 border-b border-vybe-cyan/30 shadow-lg shadow-vybe-cyan/10' : 'backdrop-blur-lg border-b border-vybe-cyan/20'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+    <nav className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-xl bg-background/80 border-b border-vybe-cyan/30 shadow-lg shadow-vybe-cyan/10' : 'backdrop-blur-lg border-b border-vybe-cyan/20'}`} style={{ position: 'fixed', top: 0, width: '100vw' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ width: '100%' }}>
+        <div className="flex items-center justify-between h-20" style={{ minHeight: '80px' }}>
           {/* Enhanced Logo */}
-          <div className="flex items-center space-x-3 group cursor-pointer slide-in-left" onClick={() => window.location.href = '/'}>
+          <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => window.location.href = '/'}>
             <img 
               src="/uploads/VybeLoopRoomFULL LOGO.png" 
               alt="VYBE LOOPROOMS™" 
-              className="object-contain h-20 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="object-contain h-12 sm:h-16 w-auto transition-transform duration-300 group-hover:scale-105"
             />
           </div>
 
           {/* Enhanced Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8 fade-in">
+          <div className="hidden md:flex items-center space-x-8">
             <a 
               href="/about" 
               className="text-foreground/80 hover:text-vybe-cyan transition-all duration-300 font-medium relative group"
@@ -62,7 +90,7 @@ const Navbar = () => {
             <ThemeSwitcher />
             
             <Button 
-              className="btn-glow relative overflow-hidden group scale-in" 
+              className="btn-glow relative overflow-hidden group" 
               onClick={() => window.location.href = '/waitlist'}
             >
               <span className="relative z-10">Join Waitlist</span>
@@ -71,7 +99,7 @@ const Navbar = () => {
           </div>
 
           {/* Enhanced Mobile menu button */}
-          <div className="md:hidden flex items-center space-x-3 slide-in-right">
+          <div className="md:hidden flex items-center space-x-3">
             {/* Theme Switcher for Mobile */}
             <ThemeSwitcher />
             
@@ -90,13 +118,13 @@ const Navbar = () => {
         </div>
 
         {/* Enhanced Mobile Navigation */}
-        <div className={`md:hidden transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-          <div className="bg-background/98 backdrop-blur-xl border-t border-vybe-cyan/30 px-6 py-8 space-y-8 shadow-lg shadow-vybe-cyan/10">
+        <div className={`md:hidden fixed left-0 right-0 transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`} style={{ top: '80px', width: '100vw', zIndex: 40 }}>
+          <div className="bg-background/95 backdrop-blur-xl border-t border-vybe-cyan/30 px-6 py-4 space-y-4 shadow-lg shadow-vybe-cyan/10">
             {/* Navigation Links */}
-            <div className="space-y-6 stagger-in">
+            <div className="space-y-3 stagger-in">
               <a 
                 href="/about" 
-                className="block text-foreground/80 hover:text-vybe-cyan transition-all duration-300 text-xl font-medium py-3 border-l-4 border-transparent hover:border-vybe-cyan pl-6 rounded-r-lg hover:bg-vybe-cyan/5 group"
+                className="block text-foreground/80 hover:text-vybe-cyan transition-all duration-300 text-base font-medium py-2 border-l-4 border-transparent hover:border-vybe-cyan pl-4 rounded-r-lg hover:bg-vybe-cyan/5 group"
                 onClick={() => setIsOpen(false)}
               >
                 <span className="flex items-center justify-between">
@@ -106,7 +134,7 @@ const Navbar = () => {
               </a>
               <a 
                 href="/contact" 
-                className="block text-foreground/80 hover:text-vybe-purple transition-all duration-300 text-xl font-medium py-3 border-l-4 border-transparent hover:border-vybe-purple pl-6 rounded-r-lg hover:bg-vybe-purple/5 group"
+                className="block text-foreground/80 hover:text-vybe-purple transition-all duration-300 text-base font-medium py-2 border-l-4 border-transparent hover:border-vybe-purple pl-4 rounded-r-lg hover:bg-vybe-purple/5 group"
                 onClick={() => setIsOpen(false)}
               >
                 <span className="flex items-center justify-between">
@@ -116,7 +144,7 @@ const Navbar = () => {
               </a>
               <a 
                 href="#creators" 
-                className="block text-foreground/80 hover:text-vybe-pink transition-all duration-300 text-xl font-medium py-3 border-l-4 border-transparent hover:border-vybe-pink pl-6 rounded-r-lg hover:bg-vybe-pink/5 group"
+                className="block text-foreground/80 hover:text-vybe-pink transition-all duration-300 text-base font-medium py-2 border-l-4 border-transparent hover:border-vybe-pink pl-4 rounded-r-lg hover:bg-vybe-pink/5 group"
                 onClick={() => setIsOpen(false)}
               >
                 <span className="flex items-center justify-between">
@@ -127,9 +155,9 @@ const Navbar = () => {
             </div>
             
             {/* Call to Action */}
-            <div className="pt-6 border-t border-vybe-cyan/20 scale-in">
+            <div className="pt-3 border-t border-vybe-cyan/20 scale-in">
               <Button 
-                className="btn-glow w-full text-xl py-6 relative overflow-hidden group" 
+                className="btn-glow w-full text-base py-3 relative overflow-hidden group" 
                 onClick={() => {setIsOpen(false); window.location.href = '/waitlist';}}
               >
                 <span className="relative z-10">Join Waitlist</span>
@@ -138,24 +166,14 @@ const Navbar = () => {
             </div>
             
             {/* Enhanced Mobile Social Proof */}
-            <div className="text-center pt-6 space-y-4 fade-in">
+            <div className="text-center pt-3 space-y-2 fade-in">
               <div className="flex items-center justify-center space-x-2 text-sm text-foreground/60">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>Join 10,000+ people on the waitlist</span>
+                <span>Join 10,000+ people</span>
               </div>
               
-              <div className="flex justify-center space-x-2">
-                {[...Array(5)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className="w-2 h-2 bg-gradient-to-r from-vybe-cyan to-vybe-purple rounded-full animate-bounce" 
-                    style={{ animationDelay: `${i * 0.1}s` }}
-                  ></div>
-                ))}
-              </div>
-              
-              <div className="text-xs text-foreground/40 space-y-1">
-                <p>✓ No spam • ✓ Early access • ✓ Exclusive updates</p>
+              <div className="text-xs text-foreground/40">
+                <p>✓ No spam • ✓ Early access</p>
               </div>
             </div>
           </div>

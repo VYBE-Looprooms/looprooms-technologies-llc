@@ -79,21 +79,21 @@ const Hero = () => {
         </div>
 
         {/* Enhanced Stats with animations */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12 stagger-in">
+        <div className="grid grid-cols-3 gap-4 sm:gap-12 stagger-in">
           <div className="text-center group cursor-pointer">
-            <div className="text-3xl sm:text-6xl font-black text-gradient mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">5+</div>
-            <div className="text-foreground/70 font-medium text-sm sm:text-base">Looproom Categories</div>
-            <div className="text-xs text-vybe-cyan mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Recovery • Fitness • Meditation</div>
+            <div className="text-2xl sm:text-6xl font-black text-gradient mb-1 sm:mb-3 group-hover:scale-110 transition-transform duration-300">5+</div>
+            <div className="text-foreground/70 font-medium text-xs sm:text-base leading-tight">Looproom Categories</div>
+            <div className="text-xs text-vybe-cyan mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">Recovery • Fitness • Meditation</div>
           </div>
           <div className="text-center group cursor-pointer">
-            <div className="text-3xl sm:text-6xl font-black text-gradient mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">∞</div>
-            <div className="text-foreground/70 font-medium text-sm sm:text-base">Emotional Connections</div>
-            <div className="text-xs text-vybe-purple mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Limitless Possibilities</div>
+            <div className="text-2xl sm:text-6xl font-black text-gradient mb-1 sm:mb-3 group-hover:scale-110 transition-transform duration-300">∞</div>
+            <div className="text-foreground/70 font-medium text-xs sm:text-base leading-tight">Emotional Connections</div>
+            <div className="text-xs text-vybe-purple mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">Limitless Possibilities</div>
           </div>
           <div className="text-center group cursor-pointer">
-            <div className="text-3xl sm:text-6xl font-black text-gradient mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">1st</div>
-            <div className="text-foreground/70 font-medium text-sm sm:text-base">Of Its Kind</div>
-            <div className="text-xs text-vybe-pink mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Pioneering Innovation</div>
+            <div className="text-2xl sm:text-6xl font-black text-gradient mb-1 sm:mb-3 group-hover:scale-110 transition-transform duration-300">1st</div>
+            <div className="text-foreground/70 font-medium text-xs sm:text-base leading-tight">Of Its Kind</div>
+            <div className="text-xs text-vybe-pink mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">Pioneering Innovation</div>
           </div>
         </div>
       </div>
