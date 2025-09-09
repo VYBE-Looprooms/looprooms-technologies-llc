@@ -1,13 +1,19 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { CheckCircle, Star, Users, Zap, Gift, Crown, Sparkles, Calendar, ArrowRight, Mail, TrendingUp } from "lucide-react";
+import { CheckCircle, Star, Users, Zap, Gift, Crown, Sparkles, Calendar, ArrowRight, Mail, TrendingUp, User, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import useGSAP from "@/hooks/useGSAP";
 
 const Waitlist = () => {
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    country: ""
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Initialize GSAP animations
@@ -15,9 +21,16 @@ const Waitlist = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
+    if (formData.firstName && formData.lastName && formData.email) {
       setIsSubmitted(true);
     }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -78,17 +91,86 @@ const Waitlist = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-vybe-cyan/60" />
+                    <Input 
+                      type="text"
+                      placeholder="First Name"
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange('firstName', e.target.value)}
+                      className="bg-card/50 border-vybe-cyan/30 focus:border-vybe-cyan text-lg py-4 pl-12 transition-colors"
+                      required
+                    />
+                  </div>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-vybe-purple/60" />
+                    <Input 
+                      type="text"
+                      placeholder="Last Name"
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                      className="bg-card/50 border-vybe-purple/30 focus:border-vybe-purple text-lg py-4 pl-12 transition-colors"
+                      required
+                    />
+                  </div>
+                </div>
+                
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-vybe-cyan/60" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-vybe-pink/60" />
                   <Input 
                     type="email"
-                    placeholder="Enter your email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-card/50 border-vybe-cyan/30 focus:border-vybe-cyan text-center text-lg py-4 pl-12 transition-colors"
+                    placeholder="Email Address"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="bg-card/50 border-vybe-pink/30 focus:border-vybe-pink text-lg py-4 pl-12 transition-colors"
                     required
                   />
                 </div>
+
+                <div className="relative">
+                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-vybe-cyan/60 z-10" />
+                  <Select onValueChange={(value) => handleInputChange('country', value)}>
+                    <SelectTrigger className="bg-card/50 border-vybe-cyan/30 focus:border-vybe-cyan text-lg py-4 pl-12 transition-colors">
+                      <SelectValue placeholder="Country (Optional)" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border-vybe-cyan/30 max-h-48">
+                      <SelectItem value="us">United States</SelectItem>
+                      <SelectItem value="ca">Canada</SelectItem>
+                      <SelectItem value="uk">United Kingdom</SelectItem>
+                      <SelectItem value="au">Australia</SelectItem>
+                      <SelectItem value="de">Germany</SelectItem>
+                      <SelectItem value="fr">France</SelectItem>
+                      <SelectItem value="jp">Japan</SelectItem>
+                      <SelectItem value="kr">South Korea</SelectItem>
+                      <SelectItem value="in">India</SelectItem>
+                      <SelectItem value="br">Brazil</SelectItem>
+                      <SelectItem value="mx">Mexico</SelectItem>
+                      <SelectItem value="es">Spain</SelectItem>
+                      <SelectItem value="it">Italy</SelectItem>
+                      <SelectItem value="nl">Netherlands</SelectItem>
+                      <SelectItem value="se">Sweden</SelectItem>
+                      <SelectItem value="no">Norway</SelectItem>
+                      <SelectItem value="dk">Denmark</SelectItem>
+                      <SelectItem value="fi">Finland</SelectItem>
+                      <SelectItem value="ch">Switzerland</SelectItem>
+                      <SelectItem value="at">Austria</SelectItem>
+                      <SelectItem value="be">Belgium</SelectItem>
+                      <SelectItem value="pl">Poland</SelectItem>
+                      <SelectItem value="pt">Portugal</SelectItem>
+                      <SelectItem value="ie">Ireland</SelectItem>
+                      <SelectItem value="nz">New Zealand</SelectItem>
+                      <SelectItem value="sg">Singapore</SelectItem>
+                      <SelectItem value="hk">Hong Kong</SelectItem>
+                      <SelectItem value="ae">United Arab Emirates</SelectItem>
+                      <SelectItem value="sa">Saudi Arabia</SelectItem>
+                      <SelectItem value="il">Israel</SelectItem>
+                      <SelectItem value="za">South Africa</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                 <Button type="submit" className="btn-glow w-full text-lg py-4">
                   Secure My Spot <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
@@ -117,7 +199,7 @@ const Waitlist = () => {
                 <CheckCircle className="w-10 h-10 text-background" />
               </div>
               <h2 className="text-3xl font-bold mb-4 text-gradient">
-                Welcome to the Future!
+                Welcome to the Future{formData.firstName ? `, ${formData.firstName}` : ''}!
               </h2>
               <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                 Thank you for joining our waitlist! You're now part of an exclusive community 
