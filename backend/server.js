@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const emailRoutes = require('./routes/email');
+const webhookRoutes = require('./routes/webhook');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -92,6 +93,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/email', emailRoutes);
+app.use('/api/webhook', webhookRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -115,6 +117,10 @@ app.get('/', (req, res) => {
         sendWelcome: 'POST /api/email/send-welcome',
         testConnection: 'GET /api/email/test-connection',
         health: 'GET /api/email/health'
+      },
+      webhook: {
+        n8nProxy: 'POST /api/webhook/n8n-proxy',
+        health: 'GET /api/webhook/health'
       }
     },
     documentation: 'See README.md for detailed API documentation'
@@ -133,7 +139,9 @@ app.use('*', (req, res) => {
       'GET /health',
       'POST /api/email/send-welcome',
       'GET /api/email/test-connection',
-      'GET /api/email/health'
+      'GET /api/email/health',
+      'POST /api/webhook/n8n-proxy',
+      'GET /api/webhook/health'
     ]
   });
 });
@@ -178,6 +186,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log('   POST /api/email/send-welcome - Send welcome email');
   console.log('   GET  /api/email/test-connection - Test email connection');
   console.log('   GET  /api/email/health - Email service health');
+  console.log('   POST /api/webhook/n8n-proxy - Webhook proxy to n8n');
+  console.log('   GET  /api/webhook/health - Webhook service health');
   console.log('✨ Ready to process requests!');
 });
 

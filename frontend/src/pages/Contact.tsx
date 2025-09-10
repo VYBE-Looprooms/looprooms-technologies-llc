@@ -166,9 +166,11 @@ const Contact = () => {
                       />
                     </div>
 
-                    <Button type="submit" className="btn-glow w-full">
-                      Send Message <MessageSquare className="ml-2 w-5 h-5" />
-                    </Button>
+                    <div className="!mb-0">
+                      <Button type="submit" className="btn-glow w-full">
+                        Send Message <MessageSquare className="ml-2 w-5 h-5" />
+                      </Button>
+                    </div>
                   </form>
                 </>
               ) : (
@@ -220,10 +222,10 @@ const Contact = () => {
                         Questions about VYBE LOOPROOMS™? We're here to help with any questions about our platform.
                       </p>
                       <a 
-                        href="mailto:hello@vybelooprooms.com" 
+                        href="mailto:technical@feelyourvybe.com" 
                         className="text-vybe-cyan hover:text-vybe-blue transition-colors font-medium inline-flex items-center"
                       >
-                        hello@vybelooprooms.com
+                        technical@feelyourvybe.com
                         <ArrowRight className="w-4 h-4 ml-1" />
                       </a>
                     </div>
@@ -239,10 +241,10 @@ const Contact = () => {
                         Ready to monetize your expertise? Join our creator program and build your emotional tech empire.
                       </p>
                       <a 
-                        href="mailto:creators@vybelooprooms.com" 
+                        href="mailto:technical@feelyourvybe.com" 
                         className="text-vybe-purple hover:text-vybe-pink transition-colors font-medium inline-flex items-center"
                       >
-                        creators@vybelooprooms.com
+                        technical@feelyourvybe.com
                         <ArrowRight className="w-4 h-4 ml-1" />
                       </a>
                     </div>

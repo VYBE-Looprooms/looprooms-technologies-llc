@@ -18,10 +18,12 @@ export interface WebhookResponse {
 }
 
 export const submitToWaitlist = async (data: WaitlistSubmission): Promise<WebhookResponse> => {
-  const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || 'http://localhost:5678/webhook-test/vybe-waitlist';
+  // Use backend proxy for webhook submissions to avoid CORS issues
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const webhookUrl = `${apiUrl}/api/webhook/n8n-proxy`;
   
   try {
-    console.log('🔄 Submitting to webhook:', webhookUrl);
+    console.log('🔄 Submitting to backend webhook proxy:', webhookUrl);
     console.log('📊 Submission data:', data);
     
     const response = await fetch(webhookUrl, {
