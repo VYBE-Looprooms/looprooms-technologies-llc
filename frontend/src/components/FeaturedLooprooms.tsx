@@ -9,32 +9,32 @@ const FeaturedLooprooms = () => {
     {
       icon: Heart,
       title: "Recovery Looproom",
-      description: "Healing journeys for emotional recovery, trauma processing, and personal growth through guided therapeutic experiences.",
-      gradient: "from-vybe-pink/20 to-vybe-purple/20",
-      iconGradient: "from-vybe-pink to-vybe-purple",
-      accentColor: "vybe-pink",
-      features: ["1-on-1 Therapy", "Group Support", "Progress Tracking"],
-      comingSoon: "Q2 2025"
+    description: "Healing spaces for NA/AA, emotional recovery, and personal growth. Join group sessions, 1-on-1 guidance, and anonymous support — all within the VYBE ecosystem.",
+    gradient: "from-vybe-pink/20 to-vybe-purple/20",
+    iconGradient: "from-vybe-pink to-vybe-purple",
+    accentColor: "vybe-pink",
+    features: ["1-on-1 Therapy", "Group Support", "Progress Tracking"],
+    comingSoon: "Q2 2025"
     },
     {
       icon: Brain,
       title: "Meditation Looproom",
-      description: "Mindfulness practices, breathing techniques, and spiritual exploration designed to center your mind and elevate consciousness.",
-      gradient: "from-vybe-cyan/20 to-vybe-blue/20",
-      iconGradient: "from-vybe-cyan to-vybe-blue",
-      accentColor: "vybe-cyan",
-      features: ["Guided Sessions", "Breathing Exercises", "Mindful Journeys"],
-      comingSoon: "Q1 2025"
+    description: "Mindful journeys through guided meditation, breathing, and calming practices that elevate focus, balance, and emotional clarity in the VYBE ecosystem.",
+    gradient: "from-vybe-cyan/20 to-vybe-blue/20",
+    iconGradient: "from-vybe-cyan to-vybe-blue",
+    accentColor: "vybe-cyan",
+    features: ["Guided Sessions", "Breathing Exercises", "Mindful Journeys"],
+    comingSoon: "Q1 2025"
     },
     {
       icon: Zap,
       title: "Fitness Looproom",
-      description: "Dynamic workouts, movement therapy, and physical wellness programs that connect body, mind, and emotional well-being.",
-      gradient: "from-vybe-blue/20 to-vybe-purple/20",
-      iconGradient: "from-vybe-blue to-vybe-purple",
-      accentColor: "vybe-blue",
-      features: ["Live Workouts", "Movement Therapy", "Wellness Programs"],
-      comingSoon: "Q3 2025"
+    description: "Energizing workouts, movement therapy, and wellness coaching designed to connect body, mind, and emotions through the VYBE ecosystem.",
+    gradient: "from-vybe-blue/20 to-vybe-purple/20",
+    iconGradient: "from-vybe-blue to-vybe-purple",
+    accentColor: "vybe-blue",
+    features: ["Live Workouts", "Movement Therapy", "Wellness Programs"],
+    comingSoon: "Q3 2025"
     }
   ];
 
@@ -65,12 +65,12 @@ const FeaturedLooprooms = () => {
           {looprooms.map((looproom, index) => (
             <div 
               key={index} 
-              className="group relative fade-in-up"
+              className="group relative fade-in-up h-full flex flex-col"
               onMouseEnter={() => setHoveredCard(index)}
               onMouseLeave={() => setHoveredCard(null)}
             >
               {/* Enhanced Card with better interactions */}
-              <div className={`vybe-card h-full bg-gradient-to-br ${looproom.gradient} backdrop-blur-sm transition-all duration-700 group-hover:scale-105 group-hover:-translate-y-2 relative overflow-hidden`}>
+              <div className={`vybe-card h-full bg-gradient-to-br ${looproom.gradient} backdrop-blur-sm transition-all duration-700 group-hover:scale-105 group-hover:-translate-y-2 relative overflow-hidden flex flex-col`}>
                 
                 {/* Animated background pattern */}
                 <div className="absolute inset-0 opacity-10">
@@ -93,26 +93,28 @@ const FeaturedLooprooms = () => {
                 </div>
 
                 {/* Enhanced Content */}
-                <h3 className={`text-2xl font-bold mb-4 text-center transition-all duration-300 ${hoveredCard === index ? 'text-gradient scale-105' : 'text-foreground'}`}>
-                  {looproom.title}
-                </h3>
-                
-                <p className="text-foreground/70 leading-relaxed mb-6 text-center">
-                  {looproom.description}
-                </p>
+                <div className="flex-1 flex flex-col">
+                  <h3 className={`text-2xl font-bold mb-4 text-center transition-all duration-300 ${hoveredCard === index ? 'text-gradient scale-105' : 'text-foreground'}`}>
+                    {looproom.title}
+                  </h3>
+                  
+                  <p className="text-foreground/70 leading-relaxed mb-6 text-center flex-1">
+                    {looproom.description}
+                  </p>
 
-                {/* Features List */}
-                <div className="mb-8">
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {looproom.features.map((feature, idx) => (
-                      <div 
-                        key={idx} 
-                        className="bg-foreground/10 backdrop-blur-sm border border-foreground/20 rounded-full px-3 py-1 text-xs font-medium flex items-center space-x-1"
-                      >
-                        <Star className="w-3 h-3 text-vybe-cyan" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
+                  {/* Features List - Fixed height container */}
+                  <div className="mb-8 min-h-[120px] flex items-start">
+                    <div className="flex flex-wrap gap-2 justify-center w-full">
+                      {looproom.features.map((feature, idx) => (
+                        <div 
+                          key={idx} 
+                          className="bg-foreground/10 backdrop-blur-sm border border-foreground/20 rounded-full px-3 py-1 text-xs font-medium flex items-center space-x-1"
+                        >
+                          <Star className="w-3 h-3 text-vybe-cyan" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
