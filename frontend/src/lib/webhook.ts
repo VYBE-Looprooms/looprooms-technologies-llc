@@ -21,6 +21,9 @@ export const submitToWaitlist = async (data: WaitlistSubmission): Promise<Webhoo
   const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || 'http://localhost:5678/webhook-test/vybe-waitlist';
   
   try {
+    console.log('🔄 Submitting to webhook:', webhookUrl);
+    console.log('📊 Submission data:', data);
+    
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {

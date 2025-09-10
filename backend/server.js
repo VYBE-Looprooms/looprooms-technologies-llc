@@ -29,14 +29,23 @@ const corsOptions = {
     
     const allowedOrigins = [
       process.env.FRONTEND_URL || 'http://localhost:8080',
+      'https://feelyourvybe.com',
+      'https://www.feelyourvybe.com',
       'http://localhost:3000',
       'http://localhost:5173',
       'http://localhost:8080',
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:3001`,
+      `http://${process.env.BACKEND_IP || '192.168.3.10'}:3003`,
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:5678`,
       'http://127.0.0.1:3001',
       'http://localhost:3001'
     ];
+
+    // Add additional origins from environment variable
+    if (process.env.ALLOWED_ORIGINS) {
+      const extraOrigins = process.env.ALLOWED_ORIGINS.split(',');
+      allowedOrigins.push(...extraOrigins);
+    }
     
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
