@@ -83,6 +83,22 @@ SUPPORT_EMAIL=support@vybelooprooms.com
 - `GET /api/email/test-connection` - Test Gmail SMTP connection
 - `GET /api/email/health` - Email service health check
 
+### Webhook Service
+- `POST /api/webhook/n8n-proxy` - Proxy webhook submissions to n8n
+- `GET /api/webhook/health` - Webhook service health check
+
+## Validation Rules
+
+### Waitlist Submission
+- **First Name**: Required, 2-50 characters, letters/spaces/hyphens/apostrophes only
+- **Last Name**: Required, 2-50 characters, letters/spaces/hyphens/apostrophes only  
+- **Email**: Required, valid email format
+- **Country**: Optional, max 100 characters
+
+### Email Request
+- **First Name**: Required, 2-50 characters
+- **Email**: Required, valid email format
+
 ## API Usage Examples
 
 ### Send Welcome Email

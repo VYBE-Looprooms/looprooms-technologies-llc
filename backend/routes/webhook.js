@@ -5,19 +5,47 @@ const { body, validationResult } = require('express-validator');
 // Webhook proxy route to handle n8n submissions
 router.post('/n8n-proxy', [
   // Validation middleware
-  body('firstName').notEmpty().trim().isLength({ min: 2, max: 50 }),
-  body('lastName').notEmpty().trim().isLength({ min: 2, max: 50 }),
-  body('email').isEmail().normalizeEmail(),
-  body('country').optional().trim().isLength({ max: 100 })
+  body('firstName')
+    .notEmpty()
+    .withMessage('First name is required')
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('First name must be between 2 and 50 characters')
+    .matches(/^[a-zA-Z\s\-']+$/)
+    .withMessage('First name can only contain letters, spaces, hyphens, and apostrophes'),
+  
+  body('lastName')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Last name must be between 2 and 50 characters when provided')
+    .matches(/^[a-zA-Z\s\-']+$/)
+    .withMessage('Last name can only contain letters, spaces, hyphens, and apostrophes'),
+  
+  body('email')
+    .isEmail()
+    .withMessage('Please provide a valid email address')
+    .normalizeEmail(),
+  
+  body('country')
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage('Country name cannot exceed 100 characters')
 ], async (req, res) => {
   try {
     // Check validation results
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validation errors:', errors.array());
       return res.status(400).json({
         success: false,
-        message: 'Validation failed',
-        errors: errors.array()
+        message: 'Please check your input and try again',
+        errors: errors.array().map(error => ({
+          field: error.path || error.param,
+          message: error.msg,
+          value: error.value
+        }))
       });
     }
 

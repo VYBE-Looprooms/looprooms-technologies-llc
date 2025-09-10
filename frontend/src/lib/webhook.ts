@@ -71,12 +71,35 @@ export const submitToWaitlist = async (data: WaitlistSubmission): Promise<Webhoo
 
     return result;
   } catch (error) {
-    console.error('Webhook submission error:', error);
+    console.error('❌ Webhook submission error:', error);
     
-    // Return a standardized error response
+    // Handle specific HTTP errors with better messages
+    if (error instanceof Error) {
+      const errorMessage = error.message;
+      
+      // Handle 400 validation errors
+      if (errorMessage.includes('400')) {
+        return {
+          success: false,
+          message: 'Please check your input:\n• First and last names must be at least 2 characters\n• Please use a valid email address',
+          error: 'Validation failed'
+        };
+      }
+      
+      // Handle other HTTP errors
+      if (errorMessage.includes('status:')) {
+        return {
+          success: false,
+          message: 'Unable to process your request. Please try again in a moment.',
+          error: errorMessage
+        };
+      }
+    }
+    
+    // Generic error fallback
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'Failed to submit. Please try again later.',
+      message: 'Unable to submit your request. Please check your connection and try again.',
       error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
@@ -89,4 +112,52 @@ export const validateEmail = (email: string): boolean => {
 
 export const validateRequired = (value: string): boolean => {
   return value.trim().length > 0;
+};
+
+export const validateName = (name: string): { isValid: boolean; error?: string } => {
+  const trimmed = name.trim();
+  
+  if (trimmed.length === 0) {
+    return { isValid: false, error: 'This field is required' };
+  }
+  
+  if (trimmed.length < 2) {
+    return { isValid: false, error: 'Must be at least 2 characters long' };
+  }
+  
+  if (trimmed.length > 50) {
+    return { isValid: false, error: 'Must not exceed 50 characters' };
+  }
+  
+  if (!/^[a-zA-Z\s\-']+$/.test(trimmed)) {
+    return { isValid: false, error: 'Can only contain letters, spaces, hyphens, and apostrophes' };
+  }
+  
+  return { isValid: true };
+};
+
+export const validateWaitlistForm = (data: WaitlistSubmission): { isValid: boolean; errors: Record<string, string> } => {
+  const errors: Record<string, string> = {};
+  
+  // Validate first name
+  const firstNameValidation = validateName(data.firstName);
+  if (!firstNameValidation.isValid) {
+    errors.firstName = firstNameValidation.error!;
+  }
+  
+  // Validate last name
+  const lastNameValidation = validateName(data.lastName);
+  if (!lastNameValidation.isValid) {
+    errors.lastName = lastNameValidation.error!;
+  }
+  
+  // Validate email
+  if (!validateEmail(data.email)) {
+    errors.email = 'Please provide a valid email address';
+  }
+  
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
 };
