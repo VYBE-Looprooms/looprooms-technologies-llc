@@ -342,7 +342,7 @@ nav[class*="fixed"] {
     @apply bg-background text-foreground font-sans antialiased;
     background: var(--gradient-hero);
     /* Ensure clean, native scrolling - NO overflow declaration here */
-    width: 100%;
+    width: 100% !important;
     margin: 0;
     padding: 0;
     /* Native scroll behavior for best performance */

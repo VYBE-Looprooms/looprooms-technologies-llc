@@ -28,7 +28,7 @@ const About = () => {
           </h1>
           <p className="text-xl md:text-2xl text-foreground/80 mb-12 leading-relaxed max-w-3xl mx-auto fade-in">
             The world's first emotional tech ecosystem designed to foster 
-            <span className="text-gradient font-semibold"> positivity, connection, and growth</span> 
+            <span className="text-gradient font-semibold"> positivity, connection, and growth </span>
             through innovative digital experiences.
           </p>
           <div className="grid grid-cols-3 gap-8 max-w-xl mx-auto stagger-in">
@@ -184,7 +184,7 @@ const About = () => {
             {[
               {
                 stat: "500+",
-                label: "Wellness Experts",
+                label: "Onboarding 500+ Wellness Experts",
                 description: "Therapists and coaches"
               },
               {
@@ -194,19 +194,19 @@ const About = () => {
               },
               {
                 stat: "10+",
-                label: "Years Experience",
+                label: "Years Combined Experience",
                 description: "In emotional technology"
               },
               {
-                stat: "98%",
-                label: "User Satisfaction",
-                description: "From beta testing"
+                stat: "98%+",
+                label: "Designed for 98%+ Satisfaction",
+                description: "From pilot testing"
               }
             ].map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="vybe-card hover:scale-105 transition-transform duration-300">
+              <div key={index} className="text-center h-full">
+                <div className="vybe-card hover:scale-105 transition-transform duration-300 h-full flex flex-col justify-between min-h-[180px]">
                   <div className="text-3xl font-bold text-gradient mb-2">{item.stat}</div>
-                  <div className="text-lg font-semibold mb-2">{item.label}</div>
+                  <div className="text-lg font-semibold mb-2 flex-grow flex items-center justify-center text-center">{item.label}</div>
                   <div className="text-sm text-foreground/60">{item.description}</div>
                 </div>
               </div>
