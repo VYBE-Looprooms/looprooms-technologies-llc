@@ -34,9 +34,135 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [documentDetected, setDocumentDetected] = useState(false);
+  const [faceDetected, setFaceDetected] = useState(false);
+  const [detectionInterval, setDetectionInterval] = useState<NodeJS.Timeout | null>(null);
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
+
+  // Detection functions
+  const detectDocument = useCallback((canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+    // Simple document detection based on edge detection and rectangular shapes
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    let edges = 0;
+    let totalPixels = 0;
+    
+    // Simple edge detection - look for high contrast areas
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      const brightness = (r + g + b) / 3;
+      
+      // Check adjacent pixel for edge detection
+      const nextIndex = i + 4;
+      if (nextIndex < data.length) {
+        const nextR = data[nextIndex];
+        const nextG = data[nextIndex + 1];
+        const nextB = data[nextIndex + 2];
+        const nextBrightness = (nextR + nextG + nextB) / 3;
+        
+        if (Math.abs(brightness - nextBrightness) > 50) {
+          edges++;
+        }
+      }
+      totalPixels++;
+    }
+    
+    const edgeRatio = edges / totalPixels;
+    
+    // If we detect enough edges (indicating a document), mark as detected
+    const detected = edgeRatio > 0.1 && edgeRatio < 0.4; // Adjust thresholds as needed
+    setDocumentDetected(detected);
+    
+    if (detected) {
+      console.log('📄 Document detected! Edge ratio:', edgeRatio.toFixed(3));
+    }
+  }, []);
+
+  const detectFace = useCallback((canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+    // Simple face detection based on skin tone and oval shapes
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    let skinPixels = 0;
+    let totalPixels = 0;
+    
+    // Look for skin-tone colored pixels in the center area
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(canvas.width, canvas.height) / 4;
+    
+    for (let y = centerY - radius; y < centerY + radius; y++) {
+      for (let x = centerX - radius; x < centerX + radius; x++) {
+        if (x >= 0 && x < canvas.width && y >= 0 && y < canvas.height) {
+          const index = (y * canvas.width + x) * 4;
+          const r = data[index];
+          const g = data[index + 1];
+          const b = data[index + 2];
+          
+          // Basic skin tone detection
+          if (r > 95 && g > 40 && b > 20 && 
+              r > b && r > g && 
+              r - g > 15 && 
+              Math.abs(r - g) > 15) {
+            skinPixels++;
+          }
+          totalPixels++;
+        }
+      }
+    }
+    
+    const skinRatio = skinPixels / totalPixels;
+    const detected = skinRatio > 0.15; // Adjust threshold as needed
+    setFaceDetected(detected);
+    
+    if (detected) {
+      console.log('👤 Face detected! Skin ratio:', skinRatio.toFixed(3));
+    }
+  }, []);
+
+  const startDetection = useCallback(() => {
+    if (detectionInterval) clearInterval(detectionInterval);
+    
+    const interval = setInterval(() => {
+      if (videoRef.current && canvasRef.current) {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx || video.videoWidth === 0 || video.videoHeight === 0) return;
+        
+        // Set canvas size to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Draw current video frame to canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        if (currentStep === 3) {
+          // Face detection for selfie
+          detectFace(canvas, ctx);
+        } else {
+          // Document detection for ID/passport
+          detectDocument(canvas, ctx);
+        }
+      }
+    }, 500); // Check every 500ms
+    
+    setDetectionInterval(interval);
+  }, [currentStep, detectionInterval, detectDocument, detectFace]);
+
+  const stopDetection = useCallback(() => {
+    if (detectionInterval) {
+      clearInterval(detectionInterval);
+      setDetectionInterval(null);
+    }
+    setDocumentDetected(false);
+    setFaceDetected(false);
+  }, [detectionInterval]);
 
   // Check if we should show QR code verification on desktop
   useEffect(() => {
@@ -118,6 +244,20 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
         
         video.onplaying = () => {
           console.log('📷 playing - SUCCESS! Video is now playing');
+          setIsVideoPlaying(true);
+          startDetection();
+        };
+        
+        video.onpause = () => {
+          console.log('📷 video paused');
+          setIsVideoPlaying(false);
+          stopDetection();
+        };
+        
+        video.onended = () => {
+          console.log('📷 video ended');
+          setIsVideoPlaying(false);
+          stopDetection();
         };
         
         video.onwaiting = () => {
@@ -172,7 +312,26 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
       console.error('❌ Camera access error:', error);
       alert(`Camera error: ${error.message}`);
     }
-  }, [stream, currentStep]);
+  }, [stream, currentStep, startDetection, stopDetection]);
+
+  // Detection functions
+  // Cleanup detection on unmount
+  React.useEffect(() => {
+    return () => {
+      stopDetection();
+    };
+  }, [stopDetection]);
+
+  // Start/stop detection based on video playing state
+  useEffect(() => {
+    if (isVideoPlaying) {
+      console.log('🔍 Starting detection...');
+      startDetection();
+    } else {
+      console.log('⏹️ Stopping detection...');
+      stopDetection();
+    }
+  }, [isVideoPlaying, startDetection, stopDetection]);
 
   const stopCamera = useCallback(() => {
     if (stream) {
@@ -483,7 +642,11 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
 
                 {/* Video element - always render when not completed, hide with CSS if no stream */}
                 {!isStepCompleted() && (
-                  <div className="relative bg-gray-900 rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                  <div className={`relative bg-gray-900 rounded-lg overflow-hidden border-4 transition-colors duration-300 ${
+                    currentStep === 3 
+                      ? (faceDetected ? 'border-green-500' : 'border-white') 
+                      : (documentDetected ? 'border-green-500' : 'border-white')
+                  }`} style={{ aspectRatio: '16/9' }}>
                     <video
                       ref={videoRef}
                       autoPlay
@@ -491,6 +654,14 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
                       muted
                       controls={false}
                       className="w-full h-full object-cover"
+                      onPlay={() => {
+                        setIsVideoPlaying(true);
+                        console.log('🎬 Video started playing - starting detection');
+                      }}
+                      onPause={() => {
+                        setIsVideoPlaying(false);
+                        console.log('⏸️ Video paused - stopping detection');
+                      }}
                       style={{ 
                         backgroundColor: '#000',
                         transform: currentStep === 3 ? 'scaleX(-1)' : 'none',
@@ -532,6 +703,21 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
                     {/* Show controls when stream is active */}
                     {stream && (
                       <>
+                        {/* Detection status indicator */}
+                        <div className="absolute top-4 left-4 right-4">
+                          <div className={`bg-black/70 text-white px-4 py-2 rounded-lg text-center transition-all duration-300 ${
+                            currentStep === 3 
+                              ? (faceDetected ? 'bg-green-600/90' : 'bg-black/70') 
+                              : (documentDetected ? 'bg-green-600/90' : 'bg-black/70')
+                          }`}>
+                            {currentStep === 3 ? (
+                              faceDetected ? '✅ Face detected! Ready to capture' : '👤 Position your face in the frame'
+                            ) : (
+                              documentDetected ? '✅ Document detected! Ready to capture' : '📄 Position your ID document in the frame'
+                            )}
+                          </div>
+                        </div>
+
                         {/* Camera overlay for ID documents */}
                         {currentStep !== 3 && (
                           <div className="absolute inset-4 border-2 border-white rounded-lg flex items-center justify-center">
@@ -555,11 +741,17 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
                           </Button>
                           <Button 
                             onClick={capturePhoto} 
-                            className="flex items-center gap-2"
-                            disabled={isCapturing}
+                            className={`flex items-center gap-2 transition-all duration-300 ${
+                              (currentStep === 3 ? faceDetected : documentDetected)
+                                ? 'bg-green-600 hover:bg-green-700 border-green-600' 
+                                : 'opacity-50 cursor-not-allowed'
+                            }`}
+                            disabled={isCapturing || !(currentStep === 3 ? faceDetected : documentDetected)}
                           >
                             <Camera className="w-4 h-4" />
-                            {isCapturing ? 'Uploading...' : 'Capture Photo'}
+                            {isCapturing ? 'Uploading...' : 
+                             (currentStep === 3 ? faceDetected : documentDetected) ? 'Capture Photo!' : 
+                             currentStep === 3 ? 'Position face in frame' : 'Position document in frame'}
                           </Button>
                         </div>
                       </>
