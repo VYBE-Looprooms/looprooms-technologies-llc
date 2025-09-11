@@ -65,14 +65,32 @@ VYBE LOOPROOMS™ is the world's first **Emotional Tech Ecosystem** that transfo
 - **Engagement Metrics**: Positive interaction tracking
 - **My Looplist**: Personal saves and favorites
 
-### 7. **Premium Features (Freemium Model)**
-- **Free Tier**: Time-limited access, preview content
-- **Premium Unlocks**:
-  - Full Loopchain access and replays
-  - Advanced progress tracking and analytics
-  - Creator bonus content
-  - Extended streak tracking
-  - Priority customer support
+### 7. **Premium Features & Pricing Tiers**
+- **Free Plan (User Onboarding)**:
+  - Access to limited Looprooms (Recovery, Meditation, etc.) with time limits or partial content
+  - Can view suggested Loopchains but only preview them
+  - Basic social interaction (likes, positive emojis, comments)
+  - Purpose: Build trust + tease Premium value
+
+- **Premium Plan (Core Ecosystem)**:
+  - **Price**: $9.99/month or $99/year at launch
+  - Unlimited access to all Looprooms
+  - Full use of Loopchains (recommended & creator-made)
+  - Confidence Meter + motivational interactions
+  - Playlist + music integration
+  - Access to global Creator Pool content
+  - **Revenue Share**: VYBE keeps 20% → Creators share 80% via the pool
+
+- **Exclusive Looprooms (Creator-Set Pricing)**:
+  - Creators set their own monthly subscription or per-session price
+  - Fans who want closer access (1:1s, classes, exclusive content) subscribe directly
+  - VYBE takes 10–20% commission
+  - Unlimited earning potential for creators
+
+- **Upsells & Extras**:
+  - Merch, digital courses, personalized coaching, shoutouts
+  - Creator keeps 85–90%
+  - Optional premium creator tools later (analytics, boost discoverability, faster payouts)
 
 ### 8. **Account & Privacy Management**
 - **User Roles**: Members, Creators, Moderators, Admins
@@ -82,16 +100,37 @@ VYBE LOOPROOMS™ is the world's first **Emotional Tech Ecosystem** that transfo
 - **Age Verification**: Appropriate content gating
 
 ### 9. **Integrations & Media**
-- **Licensed Content**: Music and ambient sound integration
-- **Creator Tools**: Content upload and management system
-- **Notifications**: Smart, non-intrusive engagement prompts
-- **External Sharing**: Social media integration for growth
 
-### 10. **Monetization & Creator Economy**
-- **Subscription Model**: Monthly/annual premium tiers
-- **Creator Payouts**: Revenue sharing for popular content
-- **Tipping System**: Direct creator support
-- **Future Features**: Sponsorships, challenges, rewards program
+#### **Music Platform Integration Roadmap**
+- **Phase 1 — Beta API Integration**:
+  - **Spotify Web Playback SDK**: Direct in-app music playback and playlist access
+  - **Apple MusicKit**: iOS-native music integration for Apple Music subscribers
+  - **User Authentication**: Seamless login to existing music service accounts
+  - **Data Collection**: Track platform usage patterns, session music inclusion rates, listening duration
+
+- **Phase 2 — Conversion & Engagement**:
+  - **Conversion Tracking**: Gentle nudges encouraging music service upgrades for enhanced experience
+  - **YouTube API**: Embed motivational videos and guided content
+  - **SoundCloud Integration**: Support for independent creator music content
+
+- **Phase 3 — Ecosystem Analytics**:
+  - **Wellness-Music Correlation**: Measure impact of music on session outcomes
+    - Recovery sessions show 2.5x longer engagement with curated music
+    - Fitness Looprooms see significant engagement spikes with energetic playlists
+    - Meditation completion rates improve by 40% with ambient soundscapes
+  - **Creator Music Tools**: Allow creators to curate mood-specific playlists for their Looprooms
+
+- **Phase 4 — Strategic Partnerships**:
+  - **Platform Retention Data**: Build 3-6 months of evidence showing VYBE increases music platform user retention
+  - **Revenue Sharing Models**: Negotiate partnerships based on proven user value delivery
+  - **Exclusive Content**: Partner with artists for VYBE-exclusive wellness-focused tracks
+
+#### **Core Platform Features**
+- **Creator Tools**: Advanced content upload, playlist curation, and session management
+- **Real-time Features**: Live audio sessions, collaborative playlists, synchronized listening
+- **Smart Notifications**: Context-aware, non-intrusive engagement prompts
+- **Social Sharing**: Seamless integration with major social platforms for organic growth
+- **Content Moderation**: AI-powered filtering for audio content with human oversight
 
 ---
 
