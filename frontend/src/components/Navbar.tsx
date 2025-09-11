@@ -127,13 +127,24 @@ const Navbar = () => {
             {/* Theme Switcher */}
             <ThemeSwitcher className="relative" />
             
-            <Button 
-              className="btn-glow relative overflow-hidden group" 
-              onClick={() => window.location.href = '/waitlist'}
-            >
-              <span className="relative z-10">Join Waitlist</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </Button>
+            {/* Authentication Buttons */}
+            <div className="flex items-center space-x-3">
+              <Button 
+                variant="ghost"
+                className="text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium"
+                onClick={() => navigate('/login')}
+              >
+                Login
+              </Button>
+              
+              <Button 
+                className="btn-glow relative overflow-hidden group" 
+                onClick={() => navigate('/register')}
+              >
+                <span className="relative z-10">Sign Up</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </Button>
+            </div>
           </div>
 
           {/* Enhanced Mobile menu button */}
@@ -194,13 +205,21 @@ const Navbar = () => {
               </button>
             </div>
             
-            {/* Call to Action */}
-            <div className="pt-3 border-t border-vybe-cyan/20 scale-in">
+            {/* Authentication Buttons */}
+            <div className="pt-3 border-t border-vybe-cyan/20 scale-in space-y-3">
+              <Button 
+                variant="ghost"
+                className="w-full text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium text-base py-3"
+                onClick={() => {setIsOpen(false); navigate('/login');}}
+              >
+                Login
+              </Button>
+              
               <Button 
                 className="btn-glow w-full text-base py-3 relative overflow-hidden group" 
-                onClick={() => {setIsOpen(false); window.location.href = '/waitlist';}}
+                onClick={() => {setIsOpen(false); navigate('/register');}}
               >
-                <span className="relative z-10">Join Waitlist</span>
+                <span className="relative z-10">Sign Up</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Button>
             </div>
@@ -209,11 +228,11 @@ const Navbar = () => {
             <div className="text-center pt-3 space-y-2 fade-in">
               <div className="flex items-center justify-center space-x-2 text-sm text-foreground/60">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>Join 10,000+ people</span>
+                <span>Ready to create amazing content?</span>
               </div>
               
               <div className="text-xs text-foreground/40">
-                <p>✓ No spam • ✓ Early access</p>
+                <p>✓ Professional tools • ✓ Creative community</p>
               </div>
             </div>
           </div>

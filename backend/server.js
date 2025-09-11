@@ -4,8 +4,10 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
+// Import routes
 const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
+const authRoutes = require('./src/routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -92,6 +94,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 
@@ -113,6 +116,16 @@ app.get('/', (req, res) => {
     message: 'Welcome to VYBE LOOPROOMS™ Backend API',
     endpoints: {
       health: '/health',
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+        me: 'GET /api/auth/me',
+        profile: 'PUT /api/auth/profile',
+        forgotPassword: 'POST /api/auth/forgot-password',
+        verifyEmail: 'POST /api/auth/verify-email',
+        logout: 'POST /api/auth/logout',
+        health: 'GET /api/auth/health'
+      },
       email: {
         sendWelcome: 'POST /api/email/send-welcome',
         testConnection: 'GET /api/email/test-connection',
@@ -137,6 +150,14 @@ app.use('*', (req, res) => {
     availableEndpoints: [
       'GET /',
       'GET /health',
+      'POST /api/auth/register',
+      'POST /api/auth/login',
+      'GET /api/auth/me',
+      'PUT /api/auth/profile',
+      'POST /api/auth/forgot-password',
+      'POST /api/auth/verify-email',
+      'POST /api/auth/logout',
+      'GET /api/auth/health',
       'POST /api/email/send-welcome',
       'GET /api/email/test-connection',
       'GET /api/email/health',
@@ -183,9 +204,20 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log('📋 Available endpoints:');
   console.log('   GET  / - API documentation');
   console.log('   GET  /health - Health check');
+  console.log('   🔐 Authentication:');
+  console.log('   POST /api/auth/register - Register new user');
+  console.log('   POST /api/auth/login - User login');
+  console.log('   GET  /api/auth/me - Get current user');
+  console.log('   PUT  /api/auth/profile - Update profile');
+  console.log('   POST /api/auth/forgot-password - Reset password');
+  console.log('   POST /api/auth/verify-email - Verify email');
+  console.log('   POST /api/auth/logout - User logout');
+  console.log('   GET  /api/auth/health - Auth service health');
+  console.log('   📧 Email:');
   console.log('   POST /api/email/send-welcome - Send welcome email');
   console.log('   GET  /api/email/test-connection - Test email connection');
   console.log('   GET  /api/email/health - Email service health');
+  console.log('   🔗 Webhooks:');
   console.log('   POST /api/webhook/n8n-proxy - Webhook proxy to n8n');
   console.log('   GET  /api/webhook/health - Webhook service health');
   console.log('✨ Ready to process requests!');

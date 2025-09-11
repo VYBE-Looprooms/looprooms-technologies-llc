@@ -29,7 +29,7 @@ const Hero = () => {
           <div className="w-px h-6 bg-vybe-primary/30"></div>
           <div className="flex items-center space-x-2">
             <Users className="w-4 h-4 text-vybe-secondary" />
-            <span className="text-sm font-medium counter" data-target="10000">Join 0+ on the waitlist</span>
+            <span className="text-sm font-medium">Now Live & Ready</span>
           </div>
         </div>
 
@@ -65,15 +65,15 @@ const Hero = () => {
         {/* Enhanced CTA Section */}
         <div className="mb-16 sm:mb-20 slide-in-right">
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
-            <Button className="btn-glow text-lg sm:text-xl px-12 sm:px-16 py-6 sm:py-8 group relative overflow-hidden" onClick={() => window.location.href = '/waitlist'}>
-              <span className="relative z-10">Join the Revolution</span>
+            <Button className="btn-glow text-lg sm:text-xl px-12 sm:px-16 py-6 sm:py-8 group relative overflow-hidden" onClick={() => window.location.href = '/register'}>
+              <span className="relative z-10">Start Creating Today</span>
               <ArrowRight className="ml-3 sm:ml-4 w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform relative z-10" />
               <div className="absolute inset-0 bg-gradient-to-r from-vybe-accent via-vybe-secondary to-vybe-primary opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
             </Button>
             
             <div className="text-center sm:text-left fade-in">
-              <p className="text-sm text-foreground/60 mb-1">Join <span className="counter" data-target="10000">0</span>+ people</p>
-              <p className="text-xs text-vybe-primary">✓ No spam, just updates</p>
+              <p className="text-sm text-foreground/60 mb-1">Already have an account? <a href="/login" className="text-vybe-primary hover:text-vybe-secondary transition-colors">Login</a></p>
+              <p className="text-xs text-vybe-primary">✓ Free to start • ✓ Professional tools</p>
             </div>
           </div>
         </div>

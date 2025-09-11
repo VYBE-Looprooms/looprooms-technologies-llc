@@ -206,8 +206,8 @@ const Contact = () => {
                   Connect With Us
                 </h2>
                 <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                  Whether you're interested in joining our waitlist, becoming a creator, 
-                  or partnering with us, we're here to help you become part of the 
+                  Whether you're interested in becoming a creator, partnering with us, 
+                  or have questions about our platform, we're here to help you become part of the 
                   emotional tech ecosystem.
                 </p>
               </div>
@@ -254,14 +254,14 @@ const Contact = () => {
 
               <div className="vybe-card text-center border-glow fade-in">
                 <h3 className="text-xl font-bold mb-4 text-gradient">
-                  Join Our Waitlist
+                  Get Started Today
                 </h3>
                 <p className="text-foreground/70 mb-6">
-                  Be the first to experience VYBE LOOPROOMS™ when we launch. 
-                  Get exclusive early access and founding member benefits.
+                  Ready to start creating with VYBE LOOPROOMS™? 
+                  Join our community and begin your emotional tech journey.
                 </p>
-                <Button className="btn-glow" onClick={() => window.location.href = '/waitlist'}>
-                  Join Waitlist
+                <Button className="btn-glow" onClick={() => window.location.href = '/register'}>
+                  Sign Up Free
                 </Button>
               </div>
             </div>

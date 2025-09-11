@@ -4,7 +4,8 @@ const Footer = () => {
   const links = [
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
-    { name: "Waitlist", href: "/waitlist" },
+    { name: "Login", href: "/login" },
+    { name: "Sign Up", href: "/register" },
     { name: "Privacy Policy", href: "/privacy" }
   ];
 
@@ -30,22 +31,26 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Right - Newsletter Signup */}
+          {/* Right - Get Started */}
           <div className="text-center lg:text-right slide-in-right">
             <h3 className="text-2xl font-bold mb-4 text-gradient fade-in">
-              Stay in the Loop
+              Ready to Create?
             </h3>
             <p className="text-foreground/70 mb-6">
-              Be the first to know when VYBE LOOPROOMS™ launches.
+              Join VYBE LOOPROOMS™ and start building your emotional tech journey.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto lg:ml-auto">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-1 px-6 py-3 bg-card/50 backdrop-blur-sm border border-vybe-cyan/30 rounded-full text-foreground placeholder-foreground/50 focus:outline-none focus:border-vybe-cyan focus:ring-2 focus:ring-vybe-cyan/20"
-              />
-              <button className="btn-glow px-8 py-3 whitespace-nowrap" onClick={() => window.location.href = '/waitlist'}>
-                Join Waitlist
+              <button 
+                className="btn-glow px-8 py-3 whitespace-nowrap flex-1" 
+                onClick={() => window.location.href = '/register'}
+              >
+                Get Started Free
+              </button>
+              <button 
+                className="px-8 py-3 border border-vybe-cyan/30 rounded-full text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 whitespace-nowrap" 
+                onClick={() => window.location.href = '/login'}
+              >
+                Login
               </button>
             </div>
           </div>
