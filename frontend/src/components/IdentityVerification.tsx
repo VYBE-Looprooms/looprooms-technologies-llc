@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,8 +11,12 @@ import {
   ArrowLeft,
   RotateCcw,
   FileText,
-  User
+  User,
+  Monitor,
+  Smartphone
 } from 'lucide-react';
+import { isDesktop, isMobile } from '@/lib/deviceDetection';
+import QRCodeVerification from './QRCodeVerification';
 
 interface IdentityVerificationProps {
   onComplete: () => void;
@@ -24,6 +28,7 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
   const [idBackCaptured, setIdBackCaptured] = useState(false);
   const [faceVerified, setFaceVerified] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [showQRVerification, setShowQRVerification] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -32,6 +37,13 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
+
+  // Check if we should show QR code verification on desktop
+  useEffect(() => {
+    if (isDesktop()) {
+      setShowQRVerification(true);
+    }
+  }, []);
 
   const startCamera = useCallback(async () => {
     try {
@@ -227,6 +239,73 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
     }
   };
 
+  // Show QR code verification for desktop users
+  if (showQRVerification) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+        <div className="max-w-2xl mx-auto pt-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+              <Shield className="w-8 h-8 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Identity Verification</h1>
+            <p className="text-gray-600 max-w-md mx-auto">
+              For the best camera experience, please continue on your mobile device
+            </p>
+          </div>
+
+          {/* Device Type Notice */}
+          <Card className="mb-6">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                  <Monitor className="w-6 h-6 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">Desktop Device Detected</h3>
+                  <p className="text-gray-600">
+                    Mobile devices provide better camera quality for document scanning and face verification.
+                  </p>
+                </div>
+                <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
+                  <Smartphone className="w-6 h-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* QR Code Verification Component */}
+          <QRCodeVerification 
+            onComplete={onComplete}
+            onError={(error) => {
+              console.error('QR verification error:', error);
+              // Optionally fall back to camera on desktop
+              setShowQRVerification(false);
+            }}
+          />
+
+          {/* Fallback Option */}
+          <Card className="mt-6">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-3">
+                Having trouble with mobile verification?
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowQRVerification(false)}
+                className="w-full"
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                Try Desktop Camera Instead
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       {/* Header */}
@@ -239,7 +318,10 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
           Secure Your Creator Account
         </h1>
         <p className="text-lg text-gray-600">
-          Complete identity verification to activate your creator privileges
+          {isMobile() ? 
+            "Complete identity verification to activate your creator privileges" :
+            "Using desktop camera - for better experience, scan QR code to use mobile device"
+          }
         </p>
       </div>
 

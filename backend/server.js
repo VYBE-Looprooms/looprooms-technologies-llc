@@ -9,6 +9,7 @@ const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
 const authRoutes = require('./src/routes/auth');
 const identityRoutes = require('./src/routes/identity');
+const mobileVerificationRoutes = require('./src/routes/mobileVerification');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +39,9 @@ const corsOptions = {
       'http://localhost:3000',
       'http://localhost:5173',
       'http://localhost:8080',
+      'http://localhost:8081',
+      'http://192.168.3.10:8080',
+      'http://192.168.3.10:8081',
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:3001`,
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:3003`,
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:5678`,
@@ -97,6 +101,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/identity', identityRoutes);
+app.use('/api/mobile-verification', mobileVerificationRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 
@@ -127,6 +132,20 @@ app.get('/', (req, res) => {
         verifyEmail: 'POST /api/auth/verify-email',
         logout: 'POST /api/auth/logout',
         health: 'GET /api/auth/health'
+      },
+      identity: {
+        uploadDocument: 'POST /api/identity/upload-document',
+        uploadFace: 'POST /api/identity/upload-face',
+        complete: 'POST /api/identity/complete',
+        status: 'GET /api/identity/status'
+      },
+      mobileVerification: {
+        createSession: 'POST /api/mobile-verification/create-session',
+        validateSession: 'GET /api/mobile-verification/validate/:sessionId',
+        uploadDocument: 'POST /api/mobile-verification/:sessionId/upload-document',
+        uploadFace: 'POST /api/mobile-verification/:sessionId/upload-face',
+        complete: 'POST /api/mobile-verification/:sessionId/complete',
+        status: 'GET /api/mobile-verification/status/:sessionId'
       },
       email: {
         sendWelcome: 'POST /api/email/send-welcome',

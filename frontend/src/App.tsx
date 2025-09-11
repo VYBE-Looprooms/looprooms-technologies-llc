@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import IdentityVerificationPage from "./pages/IdentityVerificationPage";
+import MobileVerificationPage from "./pages/MobileVerification";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => {
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/identity-verification" element={<IdentityVerificationPage />} />
+                <Route path="/mobile-verification" element={<MobileVerificationPage />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

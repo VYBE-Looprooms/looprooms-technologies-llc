@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,7 +53,10 @@ const Dashboard = () => {
   const creatorStatus = isCreatorApplication ? 'pending' : null; // In real app, this would come from backend
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-vybe-primary/5 relative">
+      {/* Theme Switcher */}
+      <ThemeSwitcher className="fixed top-4 right-4 z-50" />
+      
       <Navbar />
       
       {/* Main Dashboard Content */}

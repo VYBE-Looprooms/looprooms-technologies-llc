@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Heart, CheckCircle, ArrowRight, Mail, Shield, Users, Zap } from 'lucide-react';
-import IdentityVerification from '@/components/IdentityVerification';
+import OnboardingIdentityVerification from '@/components/OnboardingIdentityVerification';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -56,12 +57,17 @@ const Onboarding = () => {
   const progress = (completedSteps.length / totalSteps) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-vybe-primary/10 via-background to-vybe-secondary/10 flex items-center justify-center p-4 relative">
+      {/* Theme Switcher */}
+      <ThemeSwitcher className="fixed top-4 right-4 z-50" />
+      
       <div className="w-full max-w-4xl">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="text-2xl font-bold text-blue-600">VYBE LOOPROOMS™</div>
+            <div className="text-2xl font-bold bg-gradient-to-r from-vybe-primary to-vybe-secondary bg-clip-text text-transparent">
+              VYBE LOOPROOMS™
+            </div>
             {isCreatorApplication && (
               <Badge variant="destructive" className="flex items-center gap-1">
                 <Heart className="w-3 h-3" />
@@ -69,17 +75,17 @@ const Onboarding = () => {
               </Badge>
             )}
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Welcome to Your Wellness Journey, {user.profile?.firstName || 'there'}!
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-foreground/70">
             Let's get you started with VYBE LOOPROOMS™ in just a few steps
           </p>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-8">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
+          <div className="flex justify-between text-sm text-foreground/60 mb-2">
             <span>Step {currentStep} of {totalSteps}</span>
             <span>{Math.round(progress)}% Complete</span>
           </div>
@@ -234,7 +240,7 @@ const Onboarding = () => {
 
             {currentStep === 4 && isCreatorApplication && (
               <div>
-                <IdentityVerification
+                <OnboardingIdentityVerification
                   onComplete={() => {
                     setIdentityVerified(true);
                     nextStep();
