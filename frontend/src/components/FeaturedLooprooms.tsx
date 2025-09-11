@@ -11,8 +11,9 @@ const FeaturedLooprooms = () => {
       title: "Recovery Looproom",
     description: "Healing spaces for NA/AA, emotional recovery, and personal growth. Join group sessions, 1-on-1 guidance, and anonymous support — all within the VYBE ecosystem.",
     gradient: "from-vybe-pink/20 to-vybe-purple/20",
-    iconGradient: "from-vybe-pink to-vybe-purple",
+    iconGradient: "bg-looproom-heart",
     accentColor: "vybe-pink",
+    iconColor: "text-looproom-heart",
     features: ["1-on-1 Therapy", "Group Support", "Progress Tracking"],
     comingSoon: "Q2 2025"
     },
@@ -21,8 +22,9 @@ const FeaturedLooprooms = () => {
       title: "Meditation Looproom",
     description: "Mindful journeys through guided meditation, breathing, and calming practices that elevate focus, balance, and emotional clarity in the VYBE ecosystem.",
     gradient: "from-vybe-cyan/20 to-vybe-blue/20",
-    iconGradient: "from-vybe-cyan to-vybe-blue",
+    iconGradient: "bg-looproom-brain",
     accentColor: "vybe-cyan",
+    iconColor: "text-looproom-brain",
     features: ["Guided Sessions", "Breathing Exercises", "Mindful Journeys"],
     comingSoon: "Q1 2025"
     },
@@ -31,8 +33,9 @@ const FeaturedLooprooms = () => {
       title: "Fitness Looproom",
     description: "Energizing workouts, movement therapy, and wellness coaching designed to connect body, mind, and emotions through the VYBE ecosystem.",
     gradient: "from-vybe-blue/20 to-vybe-purple/20",
-    iconGradient: "from-vybe-blue to-vybe-purple",
+    iconGradient: "bg-looproom-fitness",
     accentColor: "vybe-blue",
+    iconColor: "text-looproom-fitness",
     features: ["Live Workouts", "Movement Therapy", "Wellness Programs"],
     comingSoon: "Q3 2025"
     }
@@ -88,7 +91,7 @@ const FeaturedLooprooms = () => {
 
                 {/* Enhanced Icon with interactive effects */}
                 <div className={`w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br ${looproom.iconGradient} flex items-center justify-center shadow-2xl group-hover:animate-glow relative overflow-hidden`}>
-                  <looproom.icon className="w-10 h-10 text-background relative z-10" />
+                  <looproom.icon className={`w-10 h-10 ${looproom.iconColor} relative z-10`} />
                   <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
 

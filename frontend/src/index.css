@@ -15,9 +15,43 @@ body {
 /* Mobile body padding */
 @media (max-width: 768px) {
   body {
-    padding-top: 80px !important;
+    padding-top: 70px;
   }
 }
+
+/* Section spacing and backgrounds */
+.section-padding {
+  @apply py-32 px-4 sm:px-6 lg:px-8;
+}
+
+/* Section background separators - Theme-aware with pure white for light theme */
+.section-bg-primary {
+  background: var(--section-bg-primary);
+}
+
+.section-bg-secondary {
+  background: var(--section-bg-secondary);
+}
+
+.section-bg-tertiary {
+  background: var(--section-bg-tertiary);
+}
+
+.section-separator {
+  position: relative;
+  z-index: 1;
+}
+
+.section-separator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--vybe-primary) / 0.3), transparent);
+}
+
 
 /* Force navbar positioning - MOBILE FIX */
 nav[class*="fixed"] {
@@ -30,7 +64,7 @@ nav[class*="fixed"] {
   transform: none !important;
   min-height: 80px !important;
 }
-
+}
 /* Mobile navbar stability - complete override */
 @media (max-width: 768px) {
   nav[class*="fixed"] {
@@ -94,9 +128,48 @@ nav[class*="fixed"] {
 
 /* VYBE LOOPROOMS™ Design System - Futuristic Emotional Tech Aesthetic */
 
+/* Looproom Icon Colors - Visual Distinction */
+.text-looproom-heart {
+  color: #ef4444 !important; /* Bright red for Recovery/Heart */
+}
+
+.text-looproom-brain {
+  color: #ec4899 !important; /* Pink for Meditation/Brain */
+}
+
+.text-looproom-fitness {
+  color: #eab308 !important; /* Yellow for Fitness/Zap */
+}
+
+/* Looproom Icon Background Gradients */
+.bg-looproom-heart {
+  background: linear-gradient(135deg, #fecaca 0%, #fee2e2 100%) !important; /* Light red gradient for heart */
+}
+
+.bg-looproom-brain {
+  background: linear-gradient(135deg, #fbcfe8 0%, #fce7f3 100%) !important; /* Light pink gradient for brain */
+}
+
+.bg-looproom-fitness {
+  background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%) !important; /* Light yellow gradient for fitness */
+}
+
+/* Dark theme overrides for icon backgrounds */
+[data-theme="dark"] .bg-looproom-heart {
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%) !important; /* Dark red gradient */
+}
+
+[data-theme="dark"] .bg-looproom-brain {
+  background: linear-gradient(135deg, #831843 0%, #9d174d 100%) !important; /* Dark pink gradient */
+}
+
+[data-theme="dark"] .bg-looproom-fitness {
+  background: linear-gradient(135deg, #713f12 0%, #92400e 100%) !important; /* Dark yellow gradient */
+}
+
 @layer base {
   :root {
-    /* VYBE Core Colors - Deep space background with vibrant accents */
+    /* VYBE Core Colors - Default dark theme with vibrant accents */
     --background: 240 15% 8%;
     --foreground: 240 5% 96%;
 
@@ -141,36 +214,72 @@ nav[class*="fixed"] {
 
     --radius: 1rem;
 
-    /* VYBE Gradients */
-    --gradient-vybe: linear-gradient(135deg, hsl(var(--vybe-cyan)), hsl(var(--vybe-blue)), hsl(var(--vybe-purple)));
-    --gradient-vybe-reverse: linear-gradient(225deg, hsl(var(--vybe-purple)), hsl(var(--vybe-blue)), hsl(var(--vybe-cyan)));
-    --gradient-hero: linear-gradient(180deg, hsl(var(--background)), hsl(240 20% 12%));
-    --gradient-card: linear-gradient(145deg, hsl(240 12% 12% / 0.8), hsl(240 8% 18% / 0.6));
+    /* Theme state indicator for conditional styling */
+    --theme-mode: dark; /* dark, light, or colorful */
+
+    /* VYBE Gradients - Dynamic based on theme with light theme support */
+    --gradient-vybe: linear-gradient(135deg, hsl(var(--vybe-primary)), hsl(var(--vybe-secondary)), hsl(var(--vybe-accent)));
+    --gradient-vybe-reverse: linear-gradient(225deg, hsl(var(--vybe-accent)), hsl(var(--vybe-secondary)), hsl(var(--vybe-primary)));
     
-    /* Glow effects */
-    --glow-cyan: 0 0 40px hsl(var(--vybe-cyan) / 0.3);
-    --glow-purple: 0 0 40px hsl(var(--vybe-purple) / 0.3);
-    --glow-soft: 0 10px 30px hsl(var(--vybe-cyan) / 0.2);
+    /* Dynamic hero gradient - adapts to theme */
+    --gradient-hero: linear-gradient(180deg, hsl(var(--background)), hsl(var(--background) / 0.95));
+    
+    /* Dynamic card gradient - adapts to theme */
+    --gradient-card: linear-gradient(145deg, hsl(var(--card) / 0.8), hsl(var(--card) / 0.6));
+    
+    /* Button gradients - theme-aware for readability */
+    --gradient-button: var(--gradient-vybe);
+    --gradient-button-hover: linear-gradient(135deg, hsl(var(--vybe-primary) / 0.9), hsl(var(--vybe-secondary) / 0.9), hsl(var(--vybe-accent) / 0.9));
+    
+    /* Section backgrounds - theme-aware */
+    --section-bg-primary: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%);
+    --section-bg-secondary: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--muted)) 50%, hsl(var(--card)) 100%);
+    --section-bg-tertiary: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+    
+    /* Glow effects - dynamic based on primary theme color */
+    --glow-primary: 0 0 40px hsl(var(--vybe-primary) / 0.3);
+    --glow-secondary: 0 0 40px hsl(var(--vybe-secondary) / 0.3);
+    --glow-soft: 0 10px 30px hsl(var(--vybe-primary) / 0.2);
+    
+    /* Legacy glow effects for compatibility */
+    --glow-cyan: var(--glow-primary);
+    --glow-purple: var(--glow-secondary);
     
     /* Animations */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Light theme specific overrides */
+  :root[data-theme="light"] {
+    --theme-mode: light;
+    
+    /* Pure white backgrounds for light theme */
+    --gradient-hero: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 99%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 99%), hsl(0 0% 97%));
+    
+    /* Light theme section backgrounds - pure white based */
+    --section-bg-primary: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
+    --section-bg-secondary: linear-gradient(180deg, hsl(0 0% 98%) 0%, hsl(0 0% 96%) 50%, hsl(0 0% 98%) 100%);
+    --section-bg-tertiary: linear-gradient(180deg, hsl(0 0% 98%) 0%, hsl(0 0% 100%) 100%);
+    
+    /* Light theme button gradients - subtle and readable */
+    --gradient-button: linear-gradient(135deg, hsl(0 0% 95%), hsl(0 0% 90%), hsl(0 0% 95%));
+    --gradient-button-hover: linear-gradient(135deg, hsl(0 0% 90%), hsl(0 0% 85%), hsl(0 0% 90%));
+    
+    /* Adjusted glow effects for light theme */
+    --glow-primary: 0 0 20px hsl(var(--vybe-primary) / 0.1);
+    --glow-secondary: 0 0 20px hsl(var(--vybe-secondary) / 0.1);
+    --glow-soft: 0 5px 15px hsl(var(--vybe-primary) / 0.08);
   }
 
   .dark {
@@ -240,6 +349,8 @@ nav[class*="fixed"] {
     /* Native scroll behavior for best performance */
     scroll-behavior: auto;
     /* Let body be as tall as its content naturally */
+    /* Light theme gets pure white background */
+    background-color: hsl(var(--background));
   }
   
   html {
@@ -268,7 +379,7 @@ nav[class*="fixed"] {
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--vybe-cyan) / 0.6);
+    background: hsl(var(--vybe-primary) / 0.6);
   }
 }
 
@@ -276,13 +387,16 @@ nav[class*="fixed"] {
   /* VYBE Button Variants */
   .btn-glow {
     @apply relative overflow-hidden rounded-full px-8 py-4 font-bold text-lg transition-all duration-300;
-    background: var(--gradient-vybe);
+    background: var(--gradient-button);
     box-shadow: var(--glow-soft);
+    /* Ensure readable text on all themes */
+    color: hsl(var(--foreground));
   }
   
   .btn-glow:hover {
     transform: translateY(-2px);
-    box-shadow: var(--glow-cyan);
+    background: var(--gradient-button-hover);
+    box-shadow: var(--glow-primary);
   }
   
   .btn-glow::before {
@@ -304,8 +418,8 @@ nav[class*="fixed"] {
   .vybe-card {
     @apply relative rounded-2xl p-4 sm:p-6 backdrop-blur-sm border;
     background: var(--gradient-card);
-    border: 1px solid hsl(var(--vybe-cyan) / 0.2);
-    box-shadow: 0 8px 32px hsl(var(--background) / 0.3);
+    border: 1px solid hsl(var(--vybe-primary) / 0.2);
+    box-shadow: var(--glow-soft);
     /* Ensure cards don't overflow on mobile */
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -313,8 +427,8 @@ nav[class*="fixed"] {
   }
   
   .vybe-card:hover {
-    border-color: hsl(var(--vybe-cyan) / 0.4);
-    box-shadow: var(--glow-soft);
+    border-color: hsl(var(--vybe-primary) / 0.4);
+    box-shadow: var(--glow-primary);
     transform: translateY(-4px);
   }
 
@@ -371,17 +485,17 @@ nav[class*="fixed"] {
     @apply py-32 px-4 sm:px-6 lg:px-8;
   }
   
-  /* Section background separators */
+  /* Section background separators - Theme-aware */
   .section-bg-primary {
-    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(240 15% 10%) 100%);
+    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%);
   }
   
   .section-bg-secondary {
-    background: linear-gradient(180deg, hsl(240 15% 10%) 0%, hsl(240 12% 8%) 50%, hsl(240 15% 10%) 100%);
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--muted)) 50%, hsl(var(--card)) 100%);
   }
   
   .section-bg-tertiary {
-    background: linear-gradient(180deg, hsl(240 15% 10%) 0%, hsl(var(--background)) 100%);
+    background: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
   }
   
   .section-separator {
@@ -396,7 +510,7 @@ nav[class*="fixed"] {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, hsl(var(--vybe-cyan) / 0.3), transparent);
+    background: linear-gradient(90deg, transparent, hsl(var(--vybe-primary) / 0.3), transparent);
   }
 }
 
