@@ -4,14 +4,14 @@
 
 ### Production (Live on Vercel)
 - **Branch**: `main` 
-- **URL**: https://your-vercel-domain.com
+- **URL**: https://feelyourvybe.com
 - **Mode**: Waitlist only
 - **Users see**: Waitlist page
 - **Auto-deploys**: Yes, from `main` branch only
 
 ### Development (Local)
 - **Branch**: `development`
-- **URL**: http://localhost:5173
+- **URL**: http://localhost:8080
 - **Mode**: Full app (login, dashboard, etc.)
 - **You see**: Complete application
 - **Auto-deploys**: No
