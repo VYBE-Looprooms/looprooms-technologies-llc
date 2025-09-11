@@ -125,7 +125,7 @@ const Navbar = () => {
             </button>
             
             {/* Theme Switcher */}
-            <ThemeSwitcher />
+            <ThemeSwitcher className="relative" />
             
             <Button 
               className="btn-glow relative overflow-hidden group" 
@@ -139,7 +139,7 @@ const Navbar = () => {
           {/* Enhanced Mobile menu button */}
           <div className="md:hidden flex items-center space-x-3">
             {/* Theme Switcher for Mobile */}
-            <ThemeSwitcher />
+            <ThemeSwitcher className="relative" />
             
             <button
               onClick={() => setIsOpen(!isOpen)}

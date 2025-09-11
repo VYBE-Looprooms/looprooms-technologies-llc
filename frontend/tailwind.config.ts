@@ -48,6 +48,11 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         vybe: {
+          // Dynamic theme colors
+          primary: "hsl(var(--vybe-primary))",
+          secondary: "hsl(var(--vybe-secondary))",
+          accent: "hsl(var(--vybe-accent))",
+          // Legacy colors for backwards compatibility
           cyan: "hsl(var(--vybe-cyan))",
           blue: "hsl(var(--vybe-blue))",
           purple: "hsl(var(--vybe-purple))",
