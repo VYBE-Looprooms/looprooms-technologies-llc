@@ -64,7 +64,6 @@ nav[class*="fixed"] {
   transform: none !important;
   min-height: 80px !important;
 }
-}
 /* Mobile navbar stability - complete override */
 @media (max-width: 768px) {
   nav[class*="fixed"] {
