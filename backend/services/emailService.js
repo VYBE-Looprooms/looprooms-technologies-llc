@@ -206,11 +206,11 @@ class EmailService {
             <div class="footer">
                 <div class="footer-links">
                     <a href="${process.env.COMPANY_WEBSITE || '#'}">Visit Our Website</a>
-                    <a href="mailto:${process.env.SUPPORT_EMAIL || 'support@vybelooprooms.com'}">Contact Support</a>
+                    <a href="mailto:${process.env.SUPPORT_EMAIL || 'technical@feelyourvybe.com'}">Contact Support</a>
                 </div>
                 <p>&copy; 2025 ${process.env.COMPANY_NAME || 'VYBE LOOPROOMS™'}. All rights reserved.</p>
                 <div class="disclaimer">
-                    You received this email because you signed up for our waitlist at vybelooprooms.com. 
+                    You received this email because you signed up for our waitlist at feelyourvybe.com. 
                     If you believe this was sent in error, please contact our support team.
                 </div>
             </div>
@@ -248,10 +248,10 @@ The VYBE LOOPROOMS™ Team
 
 ---
 © 2025 ${process.env.COMPANY_NAME || 'VYBE LOOPROOMS™'}. All rights reserved.
-Website: ${process.env.COMPANY_WEBSITE || 'https://vybelooprooms.com'}
-Support: ${process.env.SUPPORT_EMAIL || 'support@vybelooprooms.com'}
+Website: ${process.env.COMPANY_WEBSITE || 'https://feelyourvybe.com'}
+Support: ${process.env.SUPPORT_EMAIL || 'technical@feelyourvybe.com'}
 
-You received this email because you signed up for our waitlist at vybelooprooms.com. 
+You received this email because you signed up for our waitlist at feelyourvybe.com. 
 If you believe this was sent in error, please contact our support team.
     `;
   }
@@ -460,11 +460,11 @@ If you believe this was sent in error, please contact our support team.
             <div class="footer">
                 <div class="footer-links">
                     <a href="${process.env.FRONTEND_URL || 'http://localhost:8080'}">Login to Platform</a>
-                    <a href="mailto:${process.env.SUPPORT_EMAIL || 'support@vybelooprooms.com'}">Contact Support</a>
+                    <a href="mailto:${process.env.SUPPORT_EMAIL || 'technical@feelyourvybe.com'}">Contact Support</a>
                 </div>
                 <p>&copy; 2025 ${process.env.COMPANY_NAME || 'VYBE LOOPROOMS™'}. All rights reserved.</p>
                 <div class="disclaimer">
-                    You received this email because you created an account at vybelooprooms.com. 
+                    You received this email because you created an account at feelyourvybe.com. 
                     If you believe this was sent in error, please contact our support team.
                 </div>
             </div>
@@ -519,9 +519,9 @@ The VYBE LOOPROOMS™ Team
 ---
 © 2025 ${process.env.COMPANY_NAME || 'VYBE LOOPROOMS™'}. All rights reserved.
 Website: ${process.env.FRONTEND_URL || 'http://localhost:8080'}
-Support: ${process.env.SUPPORT_EMAIL || 'support@vybelooprooms.com'}
+Support: ${process.env.SUPPORT_EMAIL || 'technical@feelyourvybe.com'}
 
-You received this email because you created an account at vybelooprooms.com. 
+You received this email because you created an account at feelyourvybe.com. 
 If you believe this was sent in error, please contact our support team.
     `;
   }

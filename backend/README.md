@@ -68,8 +68,8 @@ RATE_LIMIT_MAX_REQUESTS=5
 
 # Email Templates
 COMPANY_NAME="VYBE LOOPROOMS™"
-COMPANY_WEBSITE=https://vybelooprooms.com
-SUPPORT_EMAIL=support@vybelooprooms.com
+COMPANY_WEBSITE=https://feelyourvybe.com
+SUPPORT_EMAIL=technical@feelyourvybe.com
 ```
 
 ## API Endpoints
@@ -278,7 +278,7 @@ backend/
 ## Support
 
 For support and questions:
-- **Email**: support@vybelooprooms.com
+- **Email**: technical@feelyourvybe.com
 - **Documentation**: See main project README
 - **Issues**: Create GitHub issue in main repository
 

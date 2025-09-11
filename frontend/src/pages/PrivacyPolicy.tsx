@@ -249,8 +249,8 @@ const PrivacyPolicy = () => {
                 <div className="mt-4 p-4 bg-vybe-purple/10 border border-vybe-purple/20 rounded-lg">
                   <p className="text-sm">
                     To exercise these rights, contact us at{" "}
-                    <a href="mailto:privacy@vybelooprooms.com" className="text-vybe-cyan hover:text-vybe-blue transition-colors font-medium">
-                      privacy@vybelooprooms.com
+                    <a href="mailto:privacy@feelyourvybe.com" className="text-vybe-cyan hover:text-vybe-blue transition-colors font-medium">
+                      privacy@feelyourvybe.com
                     </a>{" "}
                     - We respond within 30 days.
                   </p>
@@ -310,10 +310,10 @@ const PrivacyPolicy = () => {
                   <span className="font-medium">Email</span>
                 </div>
                 <a 
-                  href="mailto:privacy@vybelooprooms.com" 
+                  href="mailto:privacy@feelyourvybe.com" 
                   className="text-vybe-cyan hover:text-vybe-blue transition-colors"
                 >
-                  privacy@vybelooprooms.com
+                  privacy@feelyourvybe.com
                 </a>
               </div>
               <div className="space-y-2">

@@ -14,8 +14,10 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import IdentityVerificationPage from "./pages/IdentityVerificationPage";
 import MobileVerificationPage from "./pages/MobileVerification";
+import QRTestPage from "./pages/QRTestPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
+import SimpleVideoTest from "./components/SimpleVideoTest";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +40,8 @@ const App = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/identity-verification" element={<IdentityVerificationPage />} />
                 <Route path="/mobile-verification" element={<MobileVerificationPage />} />
+                <Route path="/qr-test" element={<QRTestPage />} />
+                <Route path="/video-test" element={<SimpleVideoTest />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

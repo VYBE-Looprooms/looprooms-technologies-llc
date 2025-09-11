@@ -301,7 +301,7 @@ vercel
 ## 🆘 Support
 
 For support and questions:
-- Email: support@vybelooprooms.com
+- Email: technical@feelyourvybe.com
 - Documentation: [Coming Soon]
 - Issues: GitHub Issues
 

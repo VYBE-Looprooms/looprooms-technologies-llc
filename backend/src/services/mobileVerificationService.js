@@ -37,7 +37,7 @@ class MobileVerificationService {
       return {
         sessionId,
         qrToken,
-        mobileUrl: `http://192.168.3.10:8080/mobile-verification?session=${sessionId}&token=${qrToken}`,
+        mobileUrl: `https://192.168.3.10:8080/mobile-verification?session=${sessionId}&token=${qrToken}`,
         expiresAt: sessionData.expiresAt
       };
       

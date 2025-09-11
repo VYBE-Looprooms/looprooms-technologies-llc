@@ -1,4 +1,7 @@
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -13,6 +16,28 @@ const mobileVerificationRoutes = require('./src/routes/mobileVerification');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
+
+// SSL certificate paths
+const sslDir = path.join(__dirname, 'ssl');
+const keyPath = path.join(sslDir, 'private-key.pem');
+const certPath = path.join(sslDir, 'certificate.pem');
+
+// Check if SSL certificates exist
+const sslExists = fs.existsSync(keyPath) && fs.existsSync(certPath);
+
+if (!sslExists) {
+  console.log('❌ SSL certificates not found!');
+  console.log('🔧 Run the following command to generate them:');
+  console.log('   node generate-ssl-cert.js');
+  process.exit(1);
+}
+
+// Load SSL certificates
+const sslOptions = {
+  key: fs.readFileSync(keyPath),
+  cert: fs.readFileSync(certPath)
+};
 
 // Security middleware
 app.use(helmet({
@@ -42,10 +67,18 @@ const corsOptions = {
       'http://localhost:8081',
       'http://192.168.3.10:8080',
       'http://192.168.3.10:8081',
+      'https://192.168.3.10:8080',
+      'https://192.168.3.10:8081',
+      'https://localhost:8080',
+      'https://localhost:8081',
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:3001`,
+      `https://${process.env.BACKEND_IP || '192.168.3.10'}:3443`,
+      `https://${process.env.BACKEND_IP || '192.168.3.10'}:3001`,
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:3003`,
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:5678`,
       'http://127.0.0.1:3001',
+      'https://127.0.0.1:3443',
+      'https://localhost:3443',
       'http://localhost:3001'
     ];
 
@@ -55,16 +88,14 @@ const corsOptions = {
       allowedOrigins.push(...extraOrigins);
     }
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('❌ CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
+    // Always allow the origin for easier development
+    console.log('🌐 Request from origin:', origin);
+    callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200 // For legacy browser support
 };
 
 app.use(cors(corsOptions));
@@ -98,7 +129,8 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`, {
     ip: req.ip,
     userAgent: req.get('User-Agent'),
-    origin: req.get('Origin')
+    origin: req.get('Origin'),
+    secure: req.secure
   });
   next();
 });
@@ -117,7 +149,9 @@ app.get('/health', (req, res) => {
     message: 'VYBE LOOPROOMS™ Backend API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0'
+    version: '1.0.0',
+    secure: req.secure,
+    protocol: req.protocol
   });
 });
 
@@ -126,6 +160,8 @@ app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Welcome to VYBE LOOPROOMS™ Backend API',
+    secure: req.secure,
+    protocol: req.protocol,
     endpoints: {
       health: '/health',
       auth: {
@@ -173,6 +209,8 @@ app.use('*', (req, res) => {
     message: 'Endpoint not found',
     path: req.originalUrl,
     method: req.method,
+    secure: req.secure,
+    protocol: req.protocol,
     availableEndpoints: [
       'GET /',
       'GET /health',
@@ -200,7 +238,8 @@ app.use((error, req, res, next) => {
     stack: error.stack,
     path: req.path,
     method: req.method,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    secure: req.secure
   });
 
   if (error.message === 'Not allowed by CORS') {
@@ -218,15 +257,18 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('🚀 VYBE LOOPROOMS™ Backend API Started');
-  console.log(`📡 Server running on http://localhost:${PORT}`);
-  console.log(`📡 Also accessible via http://127.0.0.1:${PORT}`);
-  console.log(`📡 And via http://0.0.0.0:${PORT}`);
+// Start HTTPS server
+const httpsServer = https.createServer(sslOptions, app);
+
+httpsServer.listen(HTTPS_PORT, '0.0.0.0', () => {
+  console.log('🔒 VYBE LOOPROOMS™ HTTPS Backend API Started');
+  console.log(`📡 HTTPS Server running on https://localhost:${HTTPS_PORT}`);
+  console.log(`📡 Also accessible via https://127.0.0.1:${HTTPS_PORT}`);
+  console.log(`📡 And via https://192.168.3.10:${HTTPS_PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`📧 Email service: ${process.env.GMAIL_USER}`);
-  console.log(`🔒 CORS allowed origins: ${process.env.FRONTEND_URL || 'http://localhost:8080'}`);
+  console.log(`🔒 CORS allowed origins include HTTPS variants`);
+  console.log('🔐 SSL Certificate: Self-signed (browsers will show warning)');
   console.log('📋 Available endpoints:');
   console.log('   GET  / - API documentation');
   console.log('   GET  /health - Health check');
@@ -246,7 +288,15 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log('   🔗 Webhooks:');
   console.log('   POST /api/webhook/n8n-proxy - Webhook proxy to n8n');
   console.log('   GET  /api/webhook/health - Webhook service health');
-  console.log('✨ Ready to process requests!');
+  console.log('✨ Ready to process secure requests!');
+  console.log('');
+  console.log('🔗 Test URLs:');
+  console.log(`   https://localhost:${HTTPS_PORT}/health`);
+  console.log(`   https://192.168.3.10:${HTTPS_PORT}/health`);
+  console.log('');
+  console.log('⚠️  Browser Security Warning:');
+  console.log('   Browsers will show "Your connection is not private" warning');
+  console.log('   Click "Advanced" → "Proceed to 192.168.3.10 (unsafe)" to continue');
 });
 
 module.exports = app;

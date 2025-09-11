@@ -117,8 +117,8 @@ GMAIL_USER=boussettah.dev@gmail.com
 GMAIL_APP_PASSWORD=wrjf ebib tgoa khdi
 FRONTEND_URL=http://localhost:8080
 COMPANY_NAME="VYBE LOOPROOMS™"
-COMPANY_WEBSITE=https://vybelooprooms.com
-SUPPORT_EMAIL=support@vybelooprooms.com
+COMPANY_WEBSITE=https://feelyourvybe.com
+SUPPORT_EMAIL=technical@feelyourvybe.com
 ```
 
 ### n8n Configuration
@@ -311,7 +311,7 @@ curl -X POST http://localhost:5678/webhook/vybe-waitlist \
 ## 🆘 Support
 
 For support and questions:
-- **Email**: support@vybelooprooms.com
+- **Email**: technical@feelyourvybe.com
 - **Documentation**: See individual README files
 - **Issues**: GitHub Issues
 

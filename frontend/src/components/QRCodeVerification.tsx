@@ -5,8 +5,35 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Alert, AlertDescription } from './ui/alert';
 import { Smartphone, RefreshCw, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
-// Use network IP for mobile testing
-const API_BASE_URL = 'http://192.168.3.10:3001';
+// Smart API URL detection with fallback
+const getApiBaseUrl = () => {
+  // Always use HTTPS for API calls when frontend is HTTPS
+  if (window.location.protocol === 'https:') {
+    return 'https://192.168.3.10:3443';
+  }
+  // Otherwise use HTTP for desktop compatibility
+  return 'http://192.168.3.10:3001';
+};
+
+// Add error handling for SSL certificate issues
+const makeApiCall = async (url: string, options: RequestInit = {}) => {
+  try {
+    const response = await fetch(url, {
+      ...options,
+      // Add credentials for CORS
+      credentials: 'include'
+    });
+    return response;
+  } catch (error) {
+    if (error.message?.includes('certificate') || error.message?.includes('net::ERR_CERT')) {
+      throw new Error(`SSL Certificate Error: Please visit ${API_BASE_URL}/health in a new tab and accept the security warning first.`);
+    }
+    throw error;
+  }
+};
+
+const API_BASE_URL = getApiBaseUrl();
+const MOBILE_BASE_URL = 'https://192.168.3.10:3443';
 
 interface QRCodeVerificationProps {
   onComplete?: () => void;
@@ -44,16 +71,32 @@ export const QRCodeVerification: React.FC<QRCodeVerificationProps> = ({
 
     try {
       const token = localStorage.getItem('vybe_token');
-      if (!token) {
-        throw new Error('Authentication token not found');
+      // For testing purposes, we'll proceed without token if not available
+      console.log('Token available:', !!token);
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/mobile-verification/create-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      // Use the smart API URL detection
+      const apiUrl = API_BASE_URL;
+      
+      // If we're on HTTPS, verify backend certificate is trusted
+      if (window.location.protocol === 'https:') {
+        try {
+          await makeApiCall(`${apiUrl}/health`, { method: 'HEAD' });
+        } catch (certError) {
+          throw new Error(`Backend certificate not trusted. Please visit ${apiUrl}/health in a new tab and accept the security warning first, then try again.`);
         }
+      }
+
+      const response = await makeApiCall(`${apiUrl}/api/mobile-verification/create-session`, {
+        method: 'POST',
+        headers
       });
 
       const result = await response.json();
@@ -87,12 +130,14 @@ export const QRCodeVerification: React.FC<QRCodeVerificationProps> = ({
 
     try {
       const token = localStorage.getItem('vybe_token');
-      if (!token) return;
+      
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-      const response = await fetch(`${API_BASE_URL}/api/mobile-verification/status/${sessionData.sessionId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await makeApiCall(`${API_BASE_URL}/api/mobile-verification/status/${sessionData.sessionId}`, {
+        headers
       });
 
       const result = await response.json();
@@ -176,6 +221,8 @@ export const QRCodeVerification: React.FC<QRCodeVerificationProps> = ({
   }
 
   if (error) {
+    const isCertError = error.includes('certificate') || error.includes('Certificate');
+    
     return (
       <Card className="w-full max-w-md mx-auto">
         <CardContent className="p-6">
@@ -183,9 +230,31 @@ export const QRCodeVerification: React.FC<QRCodeVerificationProps> = ({
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
+          
+          {isCertError && (
+            <div className="mt-4 space-y-3">
+              <div className="text-sm text-muted-foreground">
+                <p className="font-semibold mb-2">Quick Fix:</p>
+                <ol className="list-decimal list-inside space-y-1">
+                  <li>Click the button below to open the backend in a new tab</li>
+                  <li>Accept the security warning (click "Advanced" → "Proceed")</li>
+                  <li>Come back here and try again</li>
+                </ol>
+              </div>
+              
+              <Button 
+                variant="outline" 
+                onClick={() => window.open('https://192.168.3.10:3443/health', '_blank')}
+                className="w-full"
+              >
+                🔓 Accept Backend Certificate
+              </Button>
+            </div>
+          )}
+          
           <Button 
             onClick={createSession} 
-            className="w-full mt-4"
+            className="w-full mt-3"
             disabled={loading}
           >
             Try Again

@@ -105,12 +105,19 @@ router.post('/:sessionId/upload-document', async (req, res) => {
     const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
     
+    // Create a file-like object for the uploadDocument method
+    const fileObject = {
+      buffer: buffer,
+      mimetype: 'image/jpeg',
+      originalname: `${side}_document.jpg`
+    };
+    
     // Save document using identity verification service
-    const filename = await identityVerificationService.saveDocument(user.id, side, buffer);
+    const result = await identityVerificationService.uploadDocument(user.id, fileObject, 'NATIONAL_ID', side);
     
     // Update session progress
     await MobileVerificationService.updateSessionProgress(sessionId, `id_${side}`, {
-      filename,
+      filename: result.fileName,
       uploadedAt: new Date()
     });
     
@@ -118,7 +125,7 @@ router.post('/:sessionId/upload-document', async (req, res) => {
       success: true,
       message: `${side.toUpperCase()} document uploaded successfully`,
       data: {
-        filename,
+        filename: result.fileName,
         step: `id_${side}`,
         sessionId
       }
@@ -160,12 +167,19 @@ router.post('/:sessionId/upload-face', async (req, res) => {
     const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
     
+    // Create a file-like object for the uploadFaceVerification method
+    const fileObject = {
+      buffer: buffer,
+      mimetype: 'image/jpeg',
+      originalname: `face_verification.jpg`
+    };
+    
     // Save face photo using identity verification service
-    const filename = await identityVerificationService.saveFacePhoto(user.id, buffer);
+    const result = await identityVerificationService.uploadFaceVerification(user.id, fileObject);
     
     // Update session progress
     await MobileVerificationService.updateSessionProgress(sessionId, 'face_verification', {
-      filename,
+      filename: result.fileName,
       uploadedAt: new Date()
     });
     
@@ -173,7 +187,7 @@ router.post('/:sessionId/upload-face', async (req, res) => {
       success: true,
       message: 'Face verification photo uploaded successfully',
       data: {
-        filename,
+        filename: result.fileName,
         step: 'face_verification',
         sessionId
       }
@@ -215,7 +229,7 @@ router.post('/:sessionId/complete', async (req, res) => {
     await MobileVerificationService.completeSession(sessionId);
     
     // Update user's verification status in database
-    await identityVerificationService.markAsCompleted(user.id);
+    await identityVerificationService.completeVerification(user.id);
     
     res.json({
       success: true,
@@ -297,6 +311,36 @@ router.delete('/:sessionId', authenticateToken, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to delete session',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * @route POST /api/mobile-verification/create-test-session
+ * @desc Create a test mobile verification session (no auth required)
+ * @access Public - FOR TESTING ONLY
+ */
+router.post('/create-test-session', async (req, res) => {
+  try {
+    console.log('📱 Creating TEST mobile verification session (no auth)');
+    
+    // Use a test user ID for demo purposes
+    const testUserId = 'test-user-desktop-qr';
+    
+    const sessionData = await MobileVerificationService.createMobileSession(testUserId);
+    
+    res.json({
+      success: true,
+      message: 'Test mobile verification session created',
+      data: sessionData
+    });
+    
+  } catch (error) {
+    console.error('❌ Error creating test mobile session:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create test mobile verification session',
       error: error.message
     });
   }

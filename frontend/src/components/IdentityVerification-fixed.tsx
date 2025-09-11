@@ -76,101 +76,72 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
       const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       
       console.log('✅ Got media stream:', mediaStream);
-      
-      // Set stream first to trigger re-render
       setStream(mediaStream);
       
-      // Wait for React to render the video element
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      if (videoRef.current) {
-        const video = videoRef.current;
-        console.log('🎬 Setting up video element...');
-        console.log('📺 Video element exists:', !!video);
-        console.log('📺 Video element dimensions:', video.offsetWidth, 'x', video.offsetHeight);
-        
-        // Stop any existing stream
-        if (video.srcObject) {
-          console.log('🧹 Clearing existing video source');
-          const oldStream = video.srcObject as MediaStream;
-          oldStream.getTracks().forEach(track => track.stop());
-          video.srcObject = null;
+      // Wait a bit for React to render the video element
+      setTimeout(() => {
+        if (videoRef.current) {
+          const video = videoRef.current;
+          console.log('🎬 Setting up video element...');
+          
+          // Clear any existing source
+          if (video.srcObject) {
+            const oldStream = video.srcObject as MediaStream;
+            oldStream.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+          }
+          
+          // Set video properties (same as working test)
+          video.muted = true;
+          video.playsInline = true;
+          video.autoplay = true;
+          video.controls = false;
+          
+          // Set up simple event listeners
+          video.addEventListener('loadedmetadata', () => {
+            console.log(`📐 Video metadata loaded: ${video.videoWidth}x${video.videoHeight}`);
+          });
+          
+          video.addEventListener('error', (e) => {
+            console.error('❌ Video error:', e);
+          });
+          
+          // Assign stream
+          console.log('🔗 Assigning media stream to video...');
+          video.srcObject = mediaStream;
+          
+          // Try to play after a short delay
+          setTimeout(async () => {
+            try {
+              console.log('▶️ Attempting to play...');
+              await video.play();
+              console.log('✅ Video playing successfully');
+            } catch (playError) {
+              console.error('❌ Play failed:', playError);
+            }
+          }, 200);
+          
+          video.load();
         }
-
-        // Set video properties
-        video.muted = true;
-        video.playsInline = true;
-        video.autoplay = true;
-        video.controls = false;
-
-        console.log(`📺 Video properties set: muted=${video.muted}, playsInline=${video.playsInline}, autoplay=${video.autoplay}`);
-
-        // Simple event listeners for debugging
-        video.onloadedmetadata = () => {
-          console.log(`📐 loadedmetadata: ${video.videoWidth}x${video.videoHeight}`);
-          console.log(`📊 readyState: ${video.readyState}, networkState: ${video.networkState}`);
-        };
-        
-        video.oncanplay = () => {
-          console.log('📷 canplay event - trying to play');
-          video.play().catch(err => console.log('Play failed on canplay:', err));
-        };
-        
-        video.onplaying = () => {
-          console.log('📷 playing - SUCCESS! Video is now playing');
-        };
-        
-        video.onwaiting = () => {
-          console.log('⚠️ waiting');
-        };
-        
-        video.onerror = (e) => {
-          console.error('❌ video error:', e);
-          if (video.error) {
-            console.error('❌ error details:', video.error.code, video.error.message);
-          }
-        };
-
-        // Assign the stream
-        console.log('🔗 Assigning media stream to video...');
-        video.srcObject = mediaStream;
-
-        console.log(`📺 After assignment: srcObject=${!!video.srcObject}`);
-
-        // Multiple play attempts
-        setTimeout(async () => {
-          try {
-            console.log('▶️ Attempting to play (attempt 1)...');
-            await video.play();
-            console.log('✅ Play successful!');
-          } catch (playError) {
-            console.log(`❌ Play failed: ${playError}`);
-            
-            // Try again with fresh video element
-            setTimeout(async () => {
-              try {
-                console.log('▶️ Attempting to play (attempt 2)...');
-                video.load();
-                await video.play();
-                console.log('✅ Play successful on retry!');
-              } catch (retryError) {
-                console.log(`❌ Retry play failed: ${retryError}`);
-                console.log('🔧 Use the manual Play button to start video');
-              }
-            }, 1000);
-          }
-        }, 500);
-
-        // Force load
-        console.log('🔄 Forcing video.load()...');
-        video.load();
-      } else {
-        console.error('❌ Video element not found after stream set!');
-      }
-
+      }, 100);
+      
     } catch (error) {
       console.error('❌ Camera access error:', error);
-      alert(`Camera error: ${error.message}`);
+      let errorMessage = 'Unable to access camera. ';
+      
+      if (error.name === 'NotAllowedError') {
+        errorMessage += 'Please allow camera permissions and refresh the page.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage += 'No camera found on this device.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage += 'Camera is being used by another application.';
+      } else if (error.name === 'OverconstrainedError') {
+        errorMessage += 'Camera constraints not supported. Try a different device.';
+      } else {
+        errorMessage += `Error: ${error.message}`;
+      }
+      
+      alert(errorMessage);
     }
   }, [stream, currentStep]);
 
@@ -483,51 +454,22 @@ const IdentityVerification: React.FC<IdentityVerificationProps> = ({ onComplete 
 
                 {/* Video element - always render when not completed, hide with CSS if no stream */}
                 {!isStepCompleted() && (
-                  <div className="relative bg-gray-900 rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                  <div className="relative">
                     <video
                       ref={videoRef}
                       autoPlay
                       playsInline
                       muted
                       controls={false}
-                      className="w-full h-full object-cover"
+                      className={`w-full aspect-video object-cover bg-black rounded-lg ${!stream ? 'hidden' : ''}`}
                       style={{ 
-                        backgroundColor: '#000',
                         transform: currentStep === 3 ? 'scaleX(-1)' : 'none',
-                        display: !stream ? 'none' : 'block'
+                        minHeight: '300px'
                       }}
+                      onLoadStart={() => console.log('🎬 Video element: onLoadStart')}
+                      onCanPlay={() => console.log('🎬 Video element: onCanPlay')}
+                      onError={(e) => console.error('🎬 Video element error:', e)}
                     />
-                    {!stream && (
-                      <div className="absolute inset-0 flex items-center justify-center text-white">
-                        <div className="text-center">
-                          <div className="text-4xl mb-2">📷</div>
-                          <div>Video will appear here</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Manual play button for debugging */}
-                    {stream && (
-                      <div className="absolute top-2 right-2">
-                        <button 
-                          onClick={async () => {
-                            if (videoRef.current) {
-                              try {
-                                console.log('🎯 Manual play button clicked');
-                                videoRef.current.muted = true;
-                                await videoRef.current.play();
-                                console.log('✅ Manual play successful');
-                              } catch (err) {
-                                console.error('❌ Manual play failed:', err);
-                              }
-                            }
-                          }}
-                          className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
-                        >
-                          ▶️ Play
-                        </button>
-                      </div>
-                    )}
                     
                     {/* Show controls when stream is active */}
                     {stream && (
