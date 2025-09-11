@@ -128,8 +128,8 @@ const Register = () => {
         });
       }
 
-      // Redirect to onboarding or home
-      navigate('/');
+      // Redirect to onboarding 
+      navigate('/onboarding');
       
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Registration failed';

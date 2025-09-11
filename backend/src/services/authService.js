@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const prisma = require('../config/database');
+const EmailService = require('../../services/emailService');
 
 class AuthService {
   /**
@@ -115,6 +116,21 @@ class AuthService {
         }
 
         return { user, profile, subscription, creatorApplication };
+      });
+
+      // Send welcome/registration email (don't wait for it to complete)
+      const emailService = new EmailService();
+      setImmediate(async () => {
+        try {
+          await emailService.sendRegistrationEmail(
+            result.user.email, 
+            firstName || 'there', 
+            !!result.creatorApplication
+          );
+        } catch (emailError) {
+          console.error('❌ Failed to send registration email:', emailError.message);
+          // Don't throw error - registration should succeed even if email fails
+        }
       });
 
       // Generate token

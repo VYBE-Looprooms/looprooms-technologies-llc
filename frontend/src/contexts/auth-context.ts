@@ -27,6 +27,11 @@ export interface User {
     status: 'ACTIVE' | 'CANCELED' | 'EXPIRED' | 'TRIAL';
     currentPeriodEnd: string;
   };
+  creatorApplication?: {
+    id: string;
+    status: 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'REQUIRES_ADDITIONAL_INFO';
+    submittedAt: string;
+  };
 }
 
 export interface AuthContextType {
