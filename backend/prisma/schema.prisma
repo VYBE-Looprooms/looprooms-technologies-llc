@@ -139,6 +139,7 @@ model CreatorApplication {
   // Identity Verification - Primary Method (Required)
   identityDocumentType   IdentityDocumentType // NATIONAL_ID, PASSPORT, DRIVERS_LICENSE
   identityDocumentUrl    String               // Secure S3/Cloudinary URL to document image
+  identityDocumentBackUrl String?             // Secure URL to back of document
   identityDocumentNumber String?              // Optional reference number
   
   // Face Verification - Secondary Method (Optional but recommended)

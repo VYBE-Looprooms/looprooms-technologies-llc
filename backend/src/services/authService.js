@@ -149,6 +149,7 @@ class AuthService {
           username: result.user.username,
           role: result.user.role,
           isVerified: result.user.isVerified,
+          identityVerified: false, // Always false for new registrations
           profile: result.profile,
           subscription: result.subscription,
           creatorApplication: result.creatorApplication
@@ -176,7 +177,8 @@ class AuthService {
             where: { status: 'ACTIVE' },
             orderBy: { createdAt: 'desc' },
             take: 1
-          }
+          },
+          creatorApplication: true
         }
       });
 
@@ -207,6 +209,13 @@ class AuthService {
         subscriptionTier: user.subscriptions[0]?.tier || 'FREE'
       });
 
+      // Check identity verification status
+      const identityVerified = user.creatorApplication ? 
+        (user.creatorApplication.identityDocumentUrl && 
+         user.creatorApplication.identityDocumentUrl !== 'pending_upload' &&
+         user.creatorApplication.identityDocumentBackUrl &&
+         user.creatorApplication.faceVerificationCompleted) : false;
+
       return {
         success: true,
         user: {
@@ -215,8 +224,10 @@ class AuthService {
           username: user.username,
           role: user.role,
           isVerified: user.isVerified,
+          identityVerified,
           profile: user.profile,
-          subscription: user.subscriptions[0] || null
+          subscription: user.subscriptions[0] || null,
+          creatorApplication: user.creatorApplication
         },
         token
       };
@@ -244,7 +255,8 @@ class AuthService {
             where: { status: 'ACTIVE' },
             orderBy: { createdAt: 'desc' },
             take: 1
-          }
+          },
+          creatorApplication: true
         }
       });
 
@@ -252,14 +264,23 @@ class AuthService {
         return null;
       }
 
+      // Check identity verification status
+      const identityVerified = user.creatorApplication ? 
+        (user.creatorApplication.identityDocumentUrl && 
+         user.creatorApplication.identityDocumentUrl !== 'pending_upload' &&
+         user.creatorApplication.identityDocumentBackUrl &&
+         user.creatorApplication.faceVerificationCompleted) : false;
+
       return {
         id: user.id,
         email: user.email,
         username: user.username,
         role: user.role,
         isVerified: user.isVerified,
+        identityVerified,
         profile: user.profile,
         subscription: user.subscriptions[0] || null,
+        creatorApplication: user.creatorApplication,
         lastActiveAt: user.lastActiveAt
       };
 

@@ -8,6 +8,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Heart } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -89,8 +91,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-background p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen">
+      <Navbar />
+      
+      <div className="pt-24 pb-16 flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-background p-4">
+        <div className="w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center space-x-2 mb-4">
@@ -255,7 +260,10 @@ const Login = () => {
             Experience positive wellness content in a supportive community
           </p>
         </div>
+        </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

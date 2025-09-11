@@ -6,14 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Heart, CheckCircle, ArrowRight, Mail, Shield, Users, Zap } from 'lucide-react';
+import IdentityVerification from '@/components/IdentityVerification';
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [identityVerified, setIdentityVerified] = useState(false);
 
-  const totalSteps = 4;
+  const isCreatorApplication = user?.creatorApplication;
+  const totalSteps = isCreatorApplication ? 5 : 4;
 
   useEffect(() => {
     // Redirect if not logged in
@@ -37,20 +40,19 @@ const Onboarding = () => {
   };
 
   const skipOnboarding = () => {
-    navigate('/');
+    navigate('/dashboard');
   };
 
   const finishOnboarding = () => {
     markStepComplete(currentStep);
     // TODO: Mark onboarding as complete in backend
-    navigate('/');
+    navigate('/dashboard');
   };
 
   if (!user) {
     return <div>Loading...</div>;
   }
 
-  const isCreatorApplication = user.creatorApplication;
   const progress = (completedSteps.length / totalSteps) * 100;
 
   return (
@@ -154,17 +156,23 @@ const Onboarding = () => {
 
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                    <div className="text-2xl mb-3">🌱</div>
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Heart className="w-6 h-6 text-green-600" />
+                    </div>
                     <h3 className="font-semibold text-green-800 mb-2">Recovery Looproom</h3>
                     <p className="text-green-700 text-sm">Healing spaces for emotional recovery and personal growth</p>
                   </div>
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                    <div className="text-2xl mb-3">💪</div>
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Zap className="w-6 h-6 text-blue-600" />
+                    </div>
                     <h3 className="font-semibold text-blue-800 mb-2">Fitness Looproom</h3>
                     <p className="text-blue-700 text-sm">Energizing workouts and movement therapy</p>
                   </div>
                   <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-6 text-center">
-                    <div className="text-2xl mb-3">🧘</div>
+                    <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Users className="w-6 h-6 text-indigo-600" />
+                    </div>
                     <h3 className="font-semibold text-indigo-800 mb-2">Meditation Looproom</h3>
                     <p className="text-indigo-700 text-sm">Mindful journeys and breathing exercises</p>
                   </div>
@@ -181,7 +189,7 @@ const Onboarding = () => {
               </div>
             )}
 
-            {currentStep === 4 && (
+            {currentStep === 4 && !isCreatorApplication && (
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Users className="w-8 h-8 text-blue-600" />
@@ -213,24 +221,79 @@ const Onboarding = () => {
                   </div>
                 </div>
 
-                {isCreatorApplication && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <div className="flex items-center gap-2 text-red-800 font-semibold mb-2">
-                      <Shield className="w-5 h-5" />
-                      Creator Application Timeline
-                    </div>
-                    <p className="text-red-700 text-sm">
-                      Your creator application will be reviewed within 2-3 business days. Identity verification instructions have been sent to your email.
-                    </p>
-                  </div>
-                )}
-
                 <div className="flex gap-4 justify-center">
                   <Button variant="outline" onClick={() => setCurrentStep(3)}>
                     Back
                   </Button>
                   <Button onClick={finishOnboarding} size="lg">
                     Start My Journey <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {currentStep === 4 && isCreatorApplication && (
+              <div>
+                <IdentityVerification
+                  onComplete={() => {
+                    setIdentityVerified(true);
+                    nextStep();
+                  }}
+                />
+              </div>
+            )}
+
+            {currentStep === 5 && isCreatorApplication && (
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Users className="w-8 h-8 text-blue-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">You're All Set!</h2>
+                <p className="text-lg text-gray-600 mb-6">
+                  Your VYBE LOOPROOMS™ journey begins now. Your creator application is being processed.
+                </p>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                  <h3 className="font-semibold text-blue-800 mb-4">What's Next?</h3>
+                  <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-blue-700">Explore the three core Looprooms</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-blue-700">Connect with like-minded individuals</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-blue-700">Start your first Loopchain journey</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-blue-700">Enjoy your 14-day free trial</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-2 text-red-800 font-semibold mb-2">
+                    <Shield className="w-5 h-5" />
+                    Creator Application Status
+                  </div>
+                  <p className="text-red-700 text-sm">
+                    {identityVerified 
+                      ? "Identity verification completed! Your creator application will be reviewed within 2-3 business days."
+                      : "Identity verification pending. Complete verification in your dashboard to proceed with creator application review."
+                    }
+                  </p>
+                </div>
+
+                <div className="flex gap-4 justify-center">
+                  <Button variant="outline" onClick={() => setCurrentStep(isCreatorApplication ? 4 : 3)}>
+                    Back
+                  </Button>
+                  <Button onClick={finishOnboarding} size="lg">
+                    Enter Dashboard <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
               </div>

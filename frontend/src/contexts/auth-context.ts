@@ -7,6 +7,7 @@ export interface User {
   username?: string;
   role: 'MEMBER' | 'CREATOR' | 'MODERATOR' | 'ADMIN';
   isVerified: boolean;
+  identityVerified?: boolean;
   profile?: {
     id: string;
     firstName?: string;

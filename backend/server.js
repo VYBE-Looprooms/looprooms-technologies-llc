@@ -8,6 +8,7 @@ require('dotenv').config();
 const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
 const authRoutes = require('./src/routes/auth');
+const identityRoutes = require('./src/routes/identity');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -95,6 +96,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/identity', identityRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 

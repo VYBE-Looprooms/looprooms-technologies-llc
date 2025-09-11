@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import ThemeSwitcher from "./ThemeSwitcher";
 import useGSAP from "@/hooks/useGSAP";
 
@@ -9,6 +10,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   // Initialize GSAP animations - disabled on mobile for navbar stability
   useGSAP();
@@ -129,21 +131,46 @@ const Navbar = () => {
             
             {/* Authentication Buttons */}
             <div className="flex items-center space-x-3">
-              <Button 
-                variant="ghost"
-                className="text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium"
-                onClick={() => navigate('/login')}
-              >
-                Login
-              </Button>
-              
-              <Button 
-                className="btn-glow relative overflow-hidden group" 
-                onClick={() => navigate('/register')}
-              >
-                <span className="relative z-10">Sign Up</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </Button>
+              {user ? (
+                <>
+                  <Button 
+                    variant="ghost"
+                    className="text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium"
+                    onClick={() => navigate('/dashboard')}
+                  >
+                    Dashboard
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="text-foreground/80 hover:text-vybe-purple hover:bg-vybe-purple/10 transition-all duration-300 font-medium"
+                    onClick={() => {
+                      logout();
+                      navigate('/');
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    variant="ghost"
+                    className="text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium"
+                    onClick={() => navigate('/login')}
+                  >
+                    Login
+                  </Button>
+                  
+                  <Button 
+                    className="btn-glow relative overflow-hidden group" 
+                    onClick={() => navigate('/register')}
+                  >
+                    <span className="relative z-10">Sign Up</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
@@ -207,21 +234,47 @@ const Navbar = () => {
             
             {/* Authentication Buttons */}
             <div className="pt-3 border-t border-vybe-cyan/20 scale-in space-y-3">
-              <Button 
-                variant="ghost"
-                className="w-full text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium text-base py-3"
-                onClick={() => {setIsOpen(false); navigate('/login');}}
-              >
-                Login
-              </Button>
-              
-              <Button 
-                className="btn-glow w-full text-base py-3 relative overflow-hidden group" 
-                onClick={() => {setIsOpen(false); navigate('/register');}}
-              >
-                <span className="relative z-10">Sign Up</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </Button>
+              {user ? (
+                <>
+                  <Button 
+                    variant="ghost"
+                    className="w-full text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium text-base py-3"
+                    onClick={() => {setIsOpen(false); navigate('/dashboard');}}
+                  >
+                    Dashboard
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="w-full text-foreground/80 hover:text-vybe-purple hover:bg-vybe-purple/10 transition-all duration-300 font-medium text-base py-3"
+                    onClick={() => {
+                      setIsOpen(false);
+                      logout();
+                      navigate('/');
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    variant="ghost"
+                    className="w-full text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium text-base py-3"
+                    onClick={() => {setIsOpen(false); navigate('/login');}}
+                  >
+                    Login
+                  </Button>
+                  
+                  <Button 
+                    className="btn-glow w-full text-base py-3 relative overflow-hidden group" 
+                    onClick={() => {setIsOpen(false); navigate('/register');}}
+                  >
+                    <span className="relative z-10">Sign Up</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </Button>
+                </>
+              )}
             </div>
             
             {/* Enhanced Mobile Social Proof */}

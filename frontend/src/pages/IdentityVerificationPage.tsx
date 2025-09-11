@@ -1,0 +1,68 @@
+import React from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import IdentityVerification from '@/components/IdentityVerification';
+
+const IdentityVerificationPage = () => {
+  const { user, refreshUser } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if not logged in
+  React.useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
+  const handleVerificationComplete = async () => {
+    try {
+      // Call backend API to complete verification
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/identity/complete`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('vybe_token')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Refresh user data to get updated verification status
+        await refreshUser();
+        
+        // Navigate to dashboard
+        navigate('/dashboard');
+      } else {
+        console.error('Error completing verification:', data.message);
+        alert('Error completing verification. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error completing verification:', error);
+      alert('Error completing verification. Please try again.');
+    }
+  };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
+      <Navbar />
+      
+      {/* Main Content */}
+      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <IdentityVerification onComplete={handleVerificationComplete} />
+        </div>
+      </div>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default IdentityVerificationPage;
