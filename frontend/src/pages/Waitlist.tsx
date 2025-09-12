@@ -269,6 +269,17 @@ const Waitlist = () => {
                 Thank you for joining our waitlist! You're now part of an exclusive community 
                 of early adopters who will shape the future of emotional technology.
               </p>
+              
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4 mb-8">
+                <div className="flex items-center justify-center mb-2">
+                  <Mail className="w-5 h-5 text-orange-500 mr-2" />
+                  <span className="font-semibold text-orange-400">📧 Important: Check Your Spam Folder</span>
+                </div>
+                <p className="text-sm text-orange-300">
+                  To ensure you receive all our updates, please check your spam/junk folder and mark our emails as "Not Spam" or add us to your contacts.
+                </p>
+              </div>
+              
               <div className="bg-secondary/30 rounded-lg p-6 mb-8">
                 <h3 className="text-xl font-bold mb-4 text-gradient-reverse">What's Next?</h3>
                 <ul className="text-left space-y-3 text-foreground/70">
