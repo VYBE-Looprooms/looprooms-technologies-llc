@@ -1,6 +1,8 @@
 const express = require('express');
 const https = require('https');
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const { pki } = require('node-forge');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -11,8 +13,7 @@ require('dotenv').config();
 const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
 const authRoutes = require('./src/routes/auth');
-const identityRoutes = require('./src/routes/identity');
-const mobileVerificationRoutes = require('./src/routes/mobileVerification');
+const verificationRoutes = require('./src/routes/verification');
 
 const app = express();
 const HTTP_PORT = process.env.PORT || 3001;
@@ -68,20 +69,31 @@ function generateSelfSignedCert() {
   return { cert: certPem, key: keyPem };
 }
 
-// Try to generate certificate with fallback
+// Try to load existing certificates first, then generate if needed
 let httpsOptions;
+
 try {
-  if (require.resolve('node-forge')) {
+  // First, try to load existing certificates
+  const certPath = path.join(__dirname, 'ssl', 'certificate.pem');
+  const keyPath = path.join(__dirname, 'ssl', 'private-key.pem');
+  
+  if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+    console.log('🔐 Loading existing SSL certificates...');
+    httpsOptions = {
+      cert: fs.readFileSync(certPath, 'utf8'),
+      key: fs.readFileSync(keyPath, 'utf8')
+    };
+    console.log('✅ Existing SSL certificates loaded successfully');
+  } else {
+    console.log('🔐 Generating new self-signed certificate...');
     httpsOptions = generateSelfSignedCert();
   }
 } catch (err) {
-  console.log('⚠️  node-forge not available, installing...');
-  // If node-forge is not available, we'll install it
+  console.log('⚠️  Error loading certificates, generating new ones...', err.message);
   try {
-    require('child_process').execSync('npm install node-forge', { stdio: 'inherit' });
     httpsOptions = generateSelfSignedCert();
-  } catch (installErr) {
-    console.log('❌ Could not install node-forge, using fallback approach');
+  } catch (generateErr) {
+    console.log('❌ Could not generate certificate:', generateErr.message);
     httpsOptions = null;
   }
 }
@@ -136,8 +148,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/identity', identityRoutes);
-app.use('/api/mobile-verification', mobileVerificationRoutes);
+app.use('/api/verification', verificationRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 
@@ -170,9 +181,10 @@ app.get('/', (req, res) => {
         login: 'POST /api/auth/login',
         me: 'GET /api/auth/me'
       },
-      mobileVerification: {
-        createSession: 'POST /api/mobile-verification/create-session',
-        validateSession: 'GET /api/mobile-verification/validate/:sessionId'
+      verification: {
+        createSession: 'POST /api/verification/create-session',
+        getStatus: 'GET /api/verification/status/:sessionId',
+        submit: 'POST /api/verification/submit'
       }
     },
     documentation: 'Camera access requires HTTPS - use this HTTPS endpoint on mobile devices'

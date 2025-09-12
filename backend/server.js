@@ -8,8 +8,7 @@ require('dotenv').config();
 const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
 const authRoutes = require('./src/routes/auth');
-const identityRoutes = require('./src/routes/identity');
-const mobileVerificationRoutes = require('./src/routes/mobileVerification');
+const verificationRoutes = require('./src/routes/verification');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -72,7 +71,7 @@ app.use(cors(corsOptions));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 300, // Increased from 100 to 300 for camera operations
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 500, // Increased from 100 to 300 for camera operations
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.',
@@ -105,8 +104,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/identity', identityRoutes);
-app.use('/api/mobile-verification', mobileVerificationRoutes);
+app.use('/api/verification', verificationRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 
@@ -138,19 +136,10 @@ app.get('/', (req, res) => {
         logout: 'POST /api/auth/logout',
         health: 'GET /api/auth/health'
       },
-      identity: {
-        uploadDocument: 'POST /api/identity/upload-document',
-        uploadFace: 'POST /api/identity/upload-face',
-        complete: 'POST /api/identity/complete',
-        status: 'GET /api/identity/status'
-      },
-      mobileVerification: {
-        createSession: 'POST /api/mobile-verification/create-session',
-        validateSession: 'GET /api/mobile-verification/validate/:sessionId',
-        uploadDocument: 'POST /api/mobile-verification/:sessionId/upload-document',
-        uploadFace: 'POST /api/mobile-verification/:sessionId/upload-face',
-        complete: 'POST /api/mobile-verification/:sessionId/complete',
-        status: 'GET /api/mobile-verification/status/:sessionId'
+      verification: {
+        createSession: 'POST /api/verification/create-session',
+        getStatus: 'GET /api/verification/status/:sessionId',
+        submit: 'POST /api/verification/submit'
       },
       email: {
         sendWelcome: 'POST /api/email/send-welcome',
@@ -239,6 +228,10 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log('   POST /api/auth/verify-email - Verify email');
   console.log('   POST /api/auth/logout - User logout');
   console.log('   GET  /api/auth/health - Auth service health');
+  console.log('   🔍 Verification:');
+  console.log('   POST /api/verification/create-session - Create verification session');
+  console.log('   GET  /api/verification/status/:sessionId - Get verification status');
+  console.log('   POST /api/verification/submit - Submit verification from mobile');
   console.log('   📧 Email:');
   console.log('   POST /api/email/send-welcome - Send welcome email');
   console.log('   GET  /api/email/test-connection - Test email connection');

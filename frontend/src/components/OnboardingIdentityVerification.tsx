@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { isDesktop, isMobile } from '@/lib/deviceDetection';
 import QRCodeVerification from './QRCodeVerification';
-import IdentityVerification from './IdentityVerification';
+import VerificationV2 from './VerificationV2';
 
 interface OnboardingIdentityVerificationProps {
   onComplete: () => void;
@@ -290,7 +290,7 @@ const OnboardingIdentityVerification: React.FC<OnboardingIdentityVerificationPro
       </div>
 
       {/* Enhanced Identity Verification Component */}
-      <IdentityVerification onComplete={handleVerificationComplete} />
+      <VerificationV2 onComplete={handleVerificationComplete} />
 
       {/* Back Button */}
       <div className="mt-6 text-center">

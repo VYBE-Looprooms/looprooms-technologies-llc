@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import IdentityVerification from '@/components/IdentityVerification';
+import VerificationV2 from '@/components/VerificationV2';
 
 const IdentityVerificationPage = () => {
   const { user, refreshUser } = useAuth();
@@ -56,7 +56,7 @@ const IdentityVerificationPage = () => {
       {/* Main Content */}
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <IdentityVerification onComplete={handleVerificationComplete} />
+          <VerificationV2 onComplete={handleVerificationComplete} />
         </div>
       </div>
 

@@ -30,23 +30,6 @@ export default defineConfig(({ mode }) => {
           key: fs.readFileSync(keyPath),
           cert: fs.readFileSync(certPath)
         };
-      }
-    } catch (error) {
-      console.warn('Could not load HTTPS certificates, falling back to HTTP');
-    }
-  }
-
-  // Add HTTPS configuration for development
-  if (mode === 'development') {
-    try {
-      const keyPath = path.resolve(__dirname, '../backend/ssl/private-key.pem');
-      const certPath = path.resolve(__dirname, '../backend/ssl/certificate.pem');
-      
-      if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-        serverConfig.https = {
-          key: fs.readFileSync(keyPath),
-          cert: fs.readFileSync(certPath)
-        };
         console.log('🔒 HTTPS enabled for frontend development server');
       } else {
         console.log('⚠️  HTTPS certificates not found, using HTTP');
