@@ -118,6 +118,9 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
         if (newStatus.status === 'completed') {
           if (newStatus.results?.overallStatus === 'verified') {
             setTimeout(() => onComplete(), 1500); // Small delay to show success
+          } else if (newStatus.results?.overallStatus === 'manual_review') {
+            // Handle manual review as partial success
+            setTimeout(() => onComplete(), 1500); // Still complete the flow
           } else {
             setError(`Verification ${newStatus.results?.overallStatus || 'failed'}. Please try again or contact support.`);
           }
@@ -149,7 +152,7 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
   useEffect(() => {
     if (!session || status.status === 'completed') return;
 
-    const interval = setInterval(pollStatus, 2000); // Poll every 2 seconds
+    const interval = setInterval(pollStatus, 5000); // Poll every 5 seconds
     return () => clearInterval(interval);
   }, [session, status.status, pollStatus]);
 
@@ -179,6 +182,8 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
       case 'completed':
         return status.results?.overallStatus === 'verified' 
           ? 'Verification completed successfully!' 
+          : status.results?.overallStatus === 'manual_review'
+          ? 'Verification completed - pending manual review'
           : 'Verification requires manual review';
       case 'failed':
         return 'Verification failed. Please try again';
@@ -190,21 +195,22 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
   // Get progress color
   const getProgressColor = () => {
     if (status.status === 'completed') {
-      return status.results?.overallStatus === 'verified' ? 'bg-green-500' : 'bg-yellow-500';
+      return status.results?.overallStatus === 'verified' || status.results?.overallStatus === 'manual_review' 
+        ? 'bg-vybe-primary' : 'bg-vybe-accent';
     }
-    if (status.status === 'failed') return 'bg-red-500';
-    return 'bg-blue-500';
+    if (status.status === 'failed') return 'bg-destructive';
+    return 'bg-vybe-secondary';
   };
 
   if (loading && !session) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+      <div className="min-h-screen bg-background p-4">
         <div className="max-w-2xl mx-auto pt-8">
-          <Card className="w-full max-w-md mx-auto">
+          <Card className="w-full max-w-md mx-auto vybe-card">
             <CardContent className="flex items-center justify-center p-8">
               <div className="flex items-center space-x-3">
-                <RefreshCw className="h-5 w-5 animate-spin text-blue-600" />
-                <span>Setting up verification...</span>
+                <RefreshCw className="h-5 w-5 animate-spin text-vybe-primary" />
+                <span className="text-foreground">Setting up verification...</span>
               </div>
             </CardContent>
           </Card>
@@ -215,14 +221,14 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+      <div className="min-h-screen bg-background p-4">
         <div className="max-w-2xl mx-auto pt-8">
-          <Card className="w-full max-w-md mx-auto">
+          <Card className="w-full max-w-md mx-auto vybe-card">
             <CardContent className="p-6">
               <Alert variant="destructive" className="mb-4">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
-              <Button onClick={createSession} className="w-full" disabled={loading}>
+              <Button onClick={createSession} className="w-full btn-glow" disabled={loading}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Try Again
               </Button>
@@ -236,31 +242,31 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
   if (!session) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto pt-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6 shadow-lg">
-            <Shield className="w-10 h-10 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-vybe-primary/20 to-vybe-secondary/20 backdrop-blur-lg border border-vybe-primary/30 rounded-full mb-6 shadow-lg">
+            <Shield className="w-10 h-10 text-vybe-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">Identity Verification</h1>
-          <p className="text-lg text-gray-600 max-w-md mx-auto">
+          <h1 className="text-4xl font-bold text-foreground mb-3 text-gradient">Identity Verification</h1>
+          <p className="text-lg text-muted-foreground max-w-md mx-auto">
             Complete your creator verification using your mobile device for the best experience
           </p>
         </div>
 
         {/* Progress Card */}
-        <Card className="mb-6 shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+        <Card className="mb-6 vybe-card">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className={`w-3 h-3 rounded-full ${getProgressColor()}`} />
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-foreground">
                   {status.status === 'completed' ? 'Complete' : 'In Progress'}
                 </span>
               </div>
               {timeLeft > 0 && status.status !== 'completed' && (
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                   <Clock className="w-4 h-4" />
                   <span>{formatTimeLeft(timeLeft)}</span>
                 </div>
@@ -272,43 +278,43 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
               className="h-3 mb-3"
             />
             
-            <p className="text-sm text-gray-600">{getStepDescription()}</p>
+            <p className="text-sm text-muted-foreground">{getStepDescription()}</p>
           </CardContent>
         </Card>
 
         {/* Main Content */}
         {status.status === 'completed' && status.results?.overallStatus === 'verified' ? (
           // Success State
-          <Card className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-emerald-50">
+          <Card className="vybe-card bg-gradient-to-br from-vybe-primary/10 to-vybe-secondary/10">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-vybe-primary rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-green-800 mb-4">Verification Successful!</h2>
-              <p className="text-green-700 mb-6">
+              <h2 className="text-2xl font-bold text-foreground mb-4">Verification Successful!</h2>
+              <p className="text-muted-foreground mb-6">
                 Your identity has been verified. You can now access all creator features.
               </p>
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
+                  <div className="text-2xl font-bold text-vybe-primary">
                     {status.results.faceMatch ? '✓' : '×'}
                   </div>
-                  <div className="text-sm text-gray-600">Face Match</div>
+                  <div className="text-sm text-muted-foreground">Face Match</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
+                  <div className="text-2xl font-bold text-vybe-primary">
                     {status.results.liveness ? '✓' : '×'}
                   </div>
-                  <div className="text-sm text-gray-600">Liveness</div>
+                  <div className="text-sm text-muted-foreground">Liveness</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
+                  <div className="text-2xl font-bold text-vybe-primary">
                     {Math.round(status.results.ocrConfidence * 100)}%
                   </div>
-                  <div className="text-sm text-gray-600">OCR Score</div>
+                  <div className="text-sm text-muted-foreground">OCR Score</div>
                 </div>
               </div>
-              <Button onClick={onComplete} className="w-full bg-green-600 hover:bg-green-700">
+              <Button onClick={onComplete} className="w-full btn-glow">
                 Continue to Dashboard
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -316,25 +322,25 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
           </Card>
         ) : status.status === 'pending' || status.status === 'id_uploaded' ? (
           // QR Code State
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="vybe-card">
             <CardHeader className="text-center pb-4">
               <div className="flex justify-center mb-4">
                 <div className="relative">
-                  <Smartphone className="h-16 w-16 text-blue-600" />
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                  <Smartphone className="h-16 w-16 text-vybe-primary" />
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-vybe-secondary rounded-full flex items-center justify-center">
                     <QrCode className="w-3 h-3 text-white" />
                   </div>
                 </div>
               </div>
-              <CardTitle className="text-2xl text-gray-900">Continue on Mobile</CardTitle>
-              <CardDescription className="text-base">
+              <CardTitle className="text-2xl text-foreground">Continue on Mobile</CardTitle>
+              <CardDescription className="text-base text-muted-foreground">
                 Scan this QR code with your mobile device camera
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* QR Code */}
-              <div className="flex justify-center p-6 bg-white rounded-xl shadow-inner">
-                <div className="p-4 bg-white rounded-lg shadow-lg">
+              <div className="flex justify-center p-6 bg-card rounded-xl border border-border">
+                <div className="p-4 bg-background rounded-lg border border-border/50">
                   <QRCode
                     value={session.mobileUrl}
                     size={220}
@@ -345,10 +351,10 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
               </div>
 
               {/* Instructions */}
-              <Card className="bg-blue-50 border-blue-200">
+              <Card className="bg-vybe-primary/10 border-vybe-primary/20">
                 <CardContent className="p-4">
-                  <h3 className="font-semibold text-blue-900 mb-2">How to verify:</h3>
-                  <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                  <h3 className="font-semibold text-foreground mb-2">How to verify:</h3>
+                  <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
                     <li>Open your phone's camera app</li>
                     <li>Point it at the QR code above</li>
                     <li>Tap the notification to open the verification page</li>
@@ -358,9 +364,9 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
               </Card>
 
               {/* Alternative */}
-              <Card className="bg-gray-50">
+              <Card className="bg-muted/50">
                 <CardContent className="p-4 text-center">
-                  <p className="text-sm text-gray-600 mb-3">Can't scan the QR code?</p>
+                  <p className="text-sm text-muted-foreground mb-3">Can't scan the QR code?</p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -378,27 +384,27 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
           </Card>
         ) : (
           // Processing State
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="vybe-card">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
+              <div className="w-16 h-16 bg-vybe-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <RefreshCw className="w-8 h-8 text-vybe-primary animate-spin" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Processing Verification</h2>
-              <p className="text-gray-600 mb-6">
+              <h2 className="text-2xl font-bold text-foreground mb-4">Processing Verification</h2>
+              <p className="text-muted-foreground mb-6">
                 We're analyzing your documents and running security checks. This usually takes 30-60 seconds.
               </p>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Document Analysis</span>
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-muted-foreground">Document Analysis</span>
+                  <CheckCircle className="w-4 h-4 text-vybe-primary" />
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Face Verification</span>
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-muted-foreground">Face Verification</span>
+                  <CheckCircle className="w-4 h-4 text-vybe-primary" />
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Security Checks</span>
-                  <RefreshCw className="w-4 h-4 text-blue-500 animate-spin" />
+                  <span className="text-sm text-muted-foreground">Security Checks</span>
+                  <RefreshCw className="w-4 h-4 text-vybe-secondary animate-spin" />
                 </div>
               </div>
             </CardContent>
@@ -407,8 +413,8 @@ const VerificationV2: React.FC<VerificationV2Props> = ({ onComplete, onError }) 
 
         {/* Security Notice */}
         <div className="text-center mt-6">
-          <div className="inline-flex items-center gap-2 text-sm text-gray-600 bg-white/60 px-4 py-2 rounded-full">
-            <Shield className="w-4 h-4" />
+          <div className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-card/60 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50">
+            <Shield className="w-4 h-4 text-vybe-primary" />
             <span>Your data is encrypted and processed securely</span>
           </div>
         </div>

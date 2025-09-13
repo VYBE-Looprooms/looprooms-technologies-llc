@@ -211,10 +211,7 @@ class AuthService {
 
       // Check identity verification status
       const identityVerified = user.creatorApplication ? 
-        (user.creatorApplication.identityDocumentUrl && 
-         user.creatorApplication.identityDocumentUrl !== 'pending_upload' &&
-         user.creatorApplication.identityDocumentBackUrl &&
-         user.creatorApplication.faceVerificationCompleted) : false;
+        (user.creatorApplication.status === 'APPROVED') : false;
 
       return {
         success: true,
@@ -266,10 +263,7 @@ class AuthService {
 
       // Check identity verification status
       const identityVerified = user.creatorApplication ? 
-        (user.creatorApplication.identityDocumentUrl && 
-         user.creatorApplication.identityDocumentUrl !== 'pending_upload' &&
-         user.creatorApplication.identityDocumentBackUrl &&
-         user.creatorApplication.faceVerificationCompleted) : false;
+        (user.creatorApplication.status === 'APPROVED') : false;
 
       return {
         id: user.id,

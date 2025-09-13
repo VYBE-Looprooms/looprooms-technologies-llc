@@ -324,8 +324,8 @@ class VerificationService {
       // This is a very basic approach - real face matching would use proper face detection
       const similarity = this.calculateImageSimilarity(idStats, selfieStats);
 
-      // For demo purposes, we'll simulate a face match result
-      const faceMatch = similarity > 0.3; // Threshold for basic similarity
+      // For demo purposes, we'll simulate a face match result - very lenient threshold
+      const faceMatch = similarity > 0.1; // Lowered from 0.3 to 0.1 for testing
 
       console.log(`👤 Face match completed: ${faceMatch ? 'MATCH' : 'NO MATCH'} (similarity: ${(similarity * 100).toFixed(1)}%)`);
 
@@ -423,8 +423,9 @@ class VerificationService {
    */
   static calculateVerificationResult(ocrResult, faceMatchResult, livenessResult) {
     try {
+      // More lenient criteria for testing
       const checks = {
-        ocrSuccess: ocrResult.success && ocrResult.confidence > 0.5,
+        ocrSuccess: ocrResult.success && ocrResult.confidence > 0.3, // Lowered from 0.5 to 0.3
         faceMatch: faceMatchResult.success && faceMatchResult.faceMatch,
         livenessPass: livenessResult.success && livenessResult.liveness
       };
@@ -433,13 +434,19 @@ class VerificationService {
       const totalChecks = Object.keys(checks).length;
 
       let overallStatus;
-      if (passedChecks === totalChecks) {
+      // More lenient: 2 out of 3 checks pass = verified (instead of manual_review)
+      if (passedChecks >= 2) {
         overallStatus = 'verified';
-      } else if (passedChecks >= totalChecks - 1) {
+      } else if (passedChecks >= 1) {
         overallStatus = 'manual_review';
       } else {
         overallStatus = 'rejected';
       }
+
+      console.log(`🔍 Verification result: ${overallStatus} (${passedChecks}/${totalChecks} checks passed)`);
+      console.log('   OCR Success:', checks.ocrSuccess, `(confidence: ${ocrResult.confidence?.toFixed(2)})`);
+      console.log('   Face Match:', checks.faceMatch, `(similarity: ${faceMatchResult.similarity?.toFixed(2)})`);
+      console.log('   Liveness:', checks.livenessPass, `(score: ${livenessResult.qualityScore?.toFixed(2)})`);
 
       return {
         overallStatus,

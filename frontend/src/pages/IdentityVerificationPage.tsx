@@ -18,30 +18,18 @@ const IdentityVerificationPage = () => {
 
   const handleVerificationComplete = async () => {
     try {
-      // Call backend API to complete verification
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/identity/complete`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('vybe_token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Refresh user data to get updated verification status
-        await refreshUser();
-        
-        // Navigate to dashboard
-        navigate('/dashboard');
-      } else {
-        console.error('Error completing verification:', data.message);
-        alert('Error completing verification. Please try again.');
-      }
+      // The verification is already complete and database is updated by the backend
+      // We just need to refresh user data and navigate to dashboard
+      
+      // Refresh user data to get updated verification status
+      await refreshUser();
+      
+      // Navigate to dashboard
+      navigate('/dashboard');
     } catch (error) {
-      console.error('Error completing verification:', error);
-      alert('Error completing verification. Please try again.');
+      console.error('Error refreshing user data:', error);
+      // Still navigate to dashboard even if refresh fails
+      navigate('/dashboard');
     }
   };
 

@@ -84,6 +84,13 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
       description: 'Review and submit your verification',
       completed: false,
       active: currentStep === 4
+    },
+    {
+      id: 'success',
+      title: 'Verification Submitted',
+      description: 'Successfully submitted for processing',
+      completed: currentStep >= 5,
+      active: currentStep === 5
     }
   ];
 
@@ -104,6 +111,19 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
     setLivenessPrompt(generateLivenessPrompt());
   }, [generateLivenessPrompt]);
 
+  // Ensure video element is connected to stream
+  useEffect(() => {
+    if (stream && videoRef.current) {
+      console.log('📹 Connecting stream to video element');
+      videoRef.current.srcObject = stream;
+      
+      // Ensure video plays
+      videoRef.current.play().catch(error => {
+        console.error('📹 Error playing video:', error);
+      });
+    }
+  }, [stream]);
+
   // Handle ID file selection
   const handleIdUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -123,6 +143,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
   const startCamera = useCallback(async () => {
     try {
       setError(null);
+      console.log('📹 Starting camera for selfie...');
       
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -132,10 +153,19 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
         }
       });
 
+      console.log('📹 Camera stream obtained:', mediaStream);
       setStream(mediaStream);
       
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        
+        // Ensure video plays
+        try {
+          await videoRef.current.play();
+          console.log('📹 Video playing successfully');
+        } catch (playError) {
+          console.error('📹 Video play error:', playError);
+        }
       }
 
     } catch (err) {
@@ -236,36 +266,36 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-6 pt-4">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 shadow-lg">
-            <Shield className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-vybe-primary/20 to-vybe-secondary/20 backdrop-blur-lg border border-vybe-primary/30 rounded-full mb-4 shadow-lg">
+            <Shield className="w-8 h-8 text-vybe-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Identity Verification</h1>
-          <p className="text-gray-600">Complete verification to activate your creator account</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2 text-gradient">Identity Verification</h1>
+          <p className="text-muted-foreground">Complete verification to activate your creator account</p>
         </div>
 
         {/* Progress */}
-        <Card className="mb-6 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+        <Card className="mb-6 vybe-card">
           <CardContent className="p-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-foreground">
                 Step {currentStep + 1} of {steps.length}
               </span>
-              <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
+              <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
             </div>
             <Progress value={progress} className="h-2 mb-3" />
             <div className="space-y-2">
               {steps.map((step, index) => (
                 <div key={step.id} className="flex items-center space-x-3">
                   <div className={`w-3 h-3 rounded-full ${
-                    step.completed ? 'bg-green-500' : 
-                    step.active ? 'bg-blue-500' : 'bg-gray-300'
+                    step.completed ? 'bg-vybe-primary' : 
+                    step.active ? 'bg-vybe-secondary' : 'bg-muted'
                   }`} />
                   <span className={`text-sm ${
-                    step.active ? 'font-medium text-gray-900' : 'text-gray-600'
+                    step.active ? 'font-medium text-foreground' : 'text-muted-foreground'
                   }`}>
                     {step.title}
                   </span>
@@ -285,17 +315,17 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
 
         {/* Step Content */}
         {currentStep === 0 && (
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="vybe-card">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Shield className="w-5 h-5 text-blue-600" />
+              <CardTitle className="flex items-center space-x-2 text-foreground">
+                <Shield className="w-5 h-5 text-vybe-primary" />
                 <span>Privacy & Consent</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-900 mb-2">Data Collection Notice</h3>
-                <ul className="text-sm text-blue-800 space-y-1">
+              <div className="bg-vybe-primary/10 border border-vybe-primary/20 rounded-lg p-4">
+                <h3 className="font-semibold text-foreground mb-2">Data Collection Notice</h3>
+                <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• We'll capture your ID image and selfie for verification</li>
                   <li>• Face biometric data is processed and not stored permanently</li>
                   <li>• Documents are encrypted and deleted after 30 days</li>
@@ -314,7 +344,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
                     }
                   }}
                 />
-                <label htmlFor="consent" className="text-sm text-gray-700">
+                <label htmlFor="consent" className="text-sm text-muted-foreground">
                   I consent to the collection and processing of my identity documents and biometric data for verification purposes as described above.
                 </label>
               </div>
@@ -323,25 +353,25 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
         )}
 
         {currentStep === 1 && (
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="vybe-card">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-blue-600" />
+              <CardTitle className="flex items-center space-x-2 text-foreground">
+                <FileText className="w-5 h-5 text-vybe-primary" />
                 <span>Upload ID Document</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground">
                 Take a clear photo of your government-issued ID (passport, driver's license, or national ID)
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!idPreview ? (
                 <>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-4">Tap to take a photo of your ID</p>
+                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                    <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-4">Tap to take a photo of your ID</p>
                     <Button
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full"
+                      className="w-full btn-glow"
                     >
                       <Camera className="w-4 h-4 mr-2" />
                       Take Photo
@@ -365,7 +395,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
                       className="w-full rounded-lg shadow-lg"
                     />
                     <div className="absolute top-2 right-2">
-                      <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                      <div className="bg-vybe-primary text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
                         <CheckCircle className="w-3 h-3" />
                         Captured
                       </div>
@@ -385,7 +415,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
                     </Button>
                     <Button
                       onClick={() => setCurrentStep(2)}
-                      className="flex-1"
+                      className="flex-1 btn-glow"
                     >
                       Continue
                     </Button>
@@ -397,13 +427,13 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
         )}
 
         {currentStep === 2 && (
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="vybe-card">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="w-5 h-5 text-blue-600" />
+              <CardTitle className="flex items-center space-x-2 text-foreground">
+                <User className="w-5 h-5 text-vybe-primary" />
                 <span>Take Selfie</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground">
                 Take a clear selfie for face verification
               </CardDescription>
             </CardHeader>
@@ -411,17 +441,17 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
               {!selfiePreview ? (
                 <>
                   {!stream ? (
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                      <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600 mb-4">Position your face in the frame</p>
-                      <Button onClick={startCamera} className="w-full">
+                    <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                      <Camera className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground mb-4">Position your face in the frame</p>
+                      <Button onClick={startCamera} className="w-full btn-glow">
                         <Camera className="w-4 h-4 mr-2" />
                         Start Camera
                       </Button>
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <div className="relative bg-gray-900 rounded-lg overflow-hidden">
+                      <div className="relative bg-card border border-border rounded-lg overflow-hidden">
                         <video
                           ref={videoRef}
                           autoPlay
@@ -466,7 +496,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
                       style={{ transform: 'scaleX(-1)' }}
                     />
                     <div className="absolute top-2 right-2">
-                      <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                      <div className="bg-vybe-primary text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
                         <CheckCircle className="w-3 h-3" />
                         Captured
                       </div>
@@ -487,7 +517,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
                     </Button>
                     <Button
                       onClick={() => setCurrentStep(3)}
-                      className="flex-1"
+                      className="flex-1 btn-glow"
                     >
                       Continue
                     </Button>
@@ -499,27 +529,27 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
         )}
 
         {currentStep === 3 && (
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="vybe-card">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Eye className="w-5 h-5 text-blue-600" />
+              <CardTitle className="flex items-center space-x-2 text-foreground">
+                <Eye className="w-5 h-5 text-vybe-primary" />
                 <span>Liveness Check</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground">
                 Follow the prompt to verify you're a real person
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+              <div className="bg-vybe-primary/10 border border-vybe-primary/20 rounded-lg p-6 text-center">
                 <div className="text-2xl mb-3">👁️</div>
-                <h3 className="font-semibold text-blue-900 mb-2">Liveness Verification</h3>
-                <p className="text-blue-800 text-lg font-medium mb-4">{livenessPrompt}</p>
+                <h3 className="font-semibold text-foreground mb-2">Liveness Verification</h3>
+                <p className="text-foreground text-lg font-medium mb-4">{livenessPrompt}</p>
                 <Button
                   onClick={() => {
                     setBlinkDetected(true);
                     setCurrentStep(4);
                   }}
-                  className="w-full"
+                  className="w-full btn-glow"
                 >
                   I've Completed the Action
                 </Button>
@@ -540,34 +570,34 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
         )}
 
         {currentStep === 4 && (
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+          <Card className="vybe-card">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-blue-600" />
+              <CardTitle className="flex items-center space-x-2 text-foreground">
+                <CheckCircle className="w-5 h-5 text-vybe-primary" />
                 <span>Submit Verification</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground">
                 Review your information and submit for verification
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <span className="text-sm font-medium">ID Document</span>
-                  <CheckCircle className="w-4 h-4 text-green-600" />
+                <div className="flex items-center justify-between p-3 bg-vybe-primary/10 rounded-lg">
+                  <span className="text-sm font-medium text-foreground">ID Document</span>
+                  <CheckCircle className="w-4 h-4 text-vybe-primary" />
                 </div>
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <span className="text-sm font-medium">Selfie Photo</span>
-                  <CheckCircle className="w-4 h-4 text-green-600" />
+                <div className="flex items-center justify-between p-3 bg-vybe-primary/10 rounded-lg">
+                  <span className="text-sm font-medium text-foreground">Selfie Photo</span>
+                  <CheckCircle className="w-4 h-4 text-vybe-primary" />
                 </div>
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <span className="text-sm font-medium">Liveness Check</span>
-                  <CheckCircle className="w-4 h-4 text-green-600" />
+                <div className="flex items-center justify-between p-3 bg-vybe-primary/10 rounded-lg">
+                  <span className="text-sm font-medium text-foreground">Liveness Check</span>
+                  <CheckCircle className="w-4 h-4 text-vybe-primary" />
                 </div>
               </div>
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-sm text-yellow-800">
+              <div className="bg-vybe-accent/10 border border-vybe-accent/20 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground">
                   <strong>Note:</strong> Processing usually takes 30-60 seconds. You can return to your desktop after submitting.
                 </p>
               </div>
@@ -575,7 +605,7 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
               <Button
                 onClick={submitVerification}
                 disabled={loading}
-                className="w-full"
+                className="w-full btn-glow"
               >
                 {loading ? (
                   <>
@@ -594,17 +624,17 @@ const MobileVerification: React.FC<MobileVerificationProps> = ({ sessionId, toke
         )}
 
         {currentStep === 5 && (
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-green-50 to-emerald-50">
+          <Card className="vybe-card bg-gradient-to-br from-vybe-primary/10 to-vybe-secondary/10">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-vybe-primary rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-green-800 mb-4">Verification Submitted!</h2>
-              <p className="text-green-700 mb-6">
+              <h2 className="text-2xl font-bold text-foreground mb-4">Verification Submitted!</h2>
+              <p className="text-muted-foreground mb-6">
                 Your verification has been submitted successfully. Processing will complete on your desktop device.
               </p>
-              <div className="bg-green-100 border border-green-200 rounded-lg p-4">
-                <p className="text-sm text-green-800">
+              <div className="bg-vybe-primary/10 border border-vybe-primary/20 rounded-lg p-4">
+                <p className="text-sm text-muted-foreground">
                   You can now return to your desktop. The verification will complete automatically.
                 </p>
               </div>

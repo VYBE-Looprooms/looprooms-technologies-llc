@@ -90,31 +90,31 @@ const Dashboard = () => {
 
           {/* Creator Application Status */}
           {isCreatorApplication && (
-            <Card className="mb-8 border-red-200 bg-red-50/50">
+            <Card className="mb-8 vybe-card border-vybe-primary/20">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-red-800">
-                  <Shield className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Shield className="w-5 h-5 text-vybe-accent" />
                   Creator Application Status
                 </CardTitle>
-                <CardDescription className="text-red-700">
+                <CardDescription className="text-muted-foreground">
                   Your application for creator status is currently being processed
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-vybe-accent flex items-center justify-center">
                       <CheckCircle className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="font-medium text-green-800">Application Submitted</p>
-                      <p className="text-sm text-green-700">Your creator application has been received</p>
+                      <p className="font-medium text-foreground">Application Submitted</p>
+                      <p className="text-sm text-muted-foreground">Your creator application has been received</p>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      user.identityVerified ? 'bg-green-500' : 'bg-amber-500'
+                      user.identityVerified ? 'bg-vybe-accent' : 'bg-vybe-secondary'
                     }`}>
                       {user.identityVerified ? (
                         <CheckCircle className="w-4 h-4 text-white" />
@@ -123,14 +123,10 @@ const Dashboard = () => {
                       )}
                     </div>
                     <div>
-                      <p className={`font-medium ${
-                        user.identityVerified ? 'text-green-800' : 'text-amber-800'
-                      }`}>
+                      <p className="font-medium text-foreground">
                         {user.identityVerified ? 'Identity Verified' : 'Identity Verification Required'}
                       </p>
-                      <p className={`text-sm ${
-                        user.identityVerified ? 'text-green-700' : 'text-amber-700'
-                      }`}>
+                      <p className="text-sm text-muted-foreground">
                         {user.identityVerified 
                           ? 'Your identity has been successfully verified'
                           : 'Please complete identity verification to proceed'
@@ -141,23 +137,19 @@ const Dashboard = () => {
                   
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      user.identityVerified ? 'bg-green-500' : 'bg-gray-300'
+                      user.identityVerified ? 'bg-vybe-accent' : 'bg-muted'
                     }`}>
                       {user.identityVerified ? (
                         <CheckCircle className="w-4 h-4 text-white" />
                       ) : (
-                        <AlertCircle className="w-4 h-4 text-gray-600" />
+                        <AlertCircle className="w-4 h-4 text-muted-foreground" />
                       )}
                     </div>
                     <div>
-                      <p className={`font-medium ${
-                        user.identityVerified ? 'text-green-800' : 'text-gray-600'
-                      }`}>
+                      <p className="font-medium text-foreground">
                         Review & Approval
                       </p>
-                      <p className={`text-sm ${
-                        user.identityVerified ? 'text-green-700' : 'text-gray-500'
-                      }`}>
+                      <p className="text-sm text-muted-foreground">
                         {user.identityVerified 
                           ? 'Application ready for review'
                           : 'Pending identity verification completion'
@@ -166,24 +158,22 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className={`mt-6 p-4 rounded-lg ${
-                    user.identityVerified ? 'bg-green-100' : 'bg-amber-100'
-                  }`}>
+                  <div className={`mt-6 p-4 rounded-lg vybe-card border border-vybe-primary/20`}>
                     {!user.identityVerified ? (
                       <>
-                        <h4 className="font-semibold text-amber-800 mb-2">Next Steps Required:</h4>
-                        <div className="space-y-2 text-sm text-amber-700">
+                        <h4 className="font-semibold text-foreground mb-2">Next Steps Required:</h4>
+                        <div className="space-y-2 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
-                            <Camera className="w-4 h-4" />
+                            <Camera className="w-4 h-4 text-vybe-accent" />
                             <span>Upload front and back photos of your ID or passport</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <User className="w-4 h-4" />
+                            <User className="w-4 h-4 text-vybe-accent" />
                             <span>Complete face verification scan</span>
                           </div>
                         </div>
                         <Button 
-                          className="mt-4 bg-amber-600 hover:bg-amber-700" 
+                          className="mt-4 btn-glow" 
                           size="sm"
                           onClick={() => navigate('/identity-verification')}
                         >
@@ -193,18 +183,18 @@ const Dashboard = () => {
                       </>
                     ) : (
                       <>
-                        <h4 className="font-semibold text-green-800 mb-2">Identity Verification Complete!</h4>
-                        <div className="space-y-2 text-sm text-green-700">
+                        <h4 className="font-semibold text-foreground mb-2">Identity Verification Complete!</h4>
+                        <div className="space-y-2 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4" />
+                            <CheckCircle className="w-4 h-4 text-vybe-accent" />
                             <span>ID documents verified successfully</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4" />
+                            <CheckCircle className="w-4 h-4 text-vybe-accent" />
                             <span>Face verification completed</span>
                           </div>
                         </div>
-                        <p className="mt-4 text-sm text-green-700">
+                        <p className="mt-4 text-sm text-muted-foreground">
                           Your application is now under review. You'll be notified once approved.
                         </p>
                       </>
@@ -219,20 +209,20 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             
             {/* Profile Card */}
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="vybe-card hover:shadow-lg transition-all hover:border-vybe-primary/30">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="w-5 h-5 text-blue-600" />
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <User className="w-5 h-5 text-vybe-accent" />
                   Profile
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="text-sm"><strong>Name:</strong> {user.profile?.firstName} {user.profile?.lastName}</p>
-                  <p className="text-sm"><strong>Email:</strong> {user.email}</p>
-                  <p className="text-sm"><strong>Joined:</strong> {new Date().toLocaleDateString()}</p>
+                  <p className="text-sm text-foreground"><strong>Name:</strong> {user.profile?.firstName} {user.profile?.lastName}</p>
+                  <p className="text-sm text-foreground"><strong>Email:</strong> {user.email}</p>
+                  <p className="text-sm text-foreground"><strong>Joined:</strong> {new Date().toLocaleDateString()}</p>
                 </div>
-                <Button variant="outline" size="sm" className="mt-4">
+                <Button variant="outline" size="sm" className="mt-4 border-vybe-primary/30 hover:bg-vybe-primary/10">
                   <Settings className="w-4 h-4 mr-2" />
                   Edit Profile
                 </Button>
@@ -240,45 +230,45 @@ const Dashboard = () => {
             </Card>
 
             {/* Activity Card */}
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="vybe-card hover:shadow-lg transition-all hover:border-vybe-primary/30">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-green-600" />
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Activity className="w-5 h-5 text-vybe-accent" />
                   Activity
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">0</div>
-                    <div className="text-sm text-gray-600">Sessions Completed</div>
+                    <div className="text-2xl font-bold text-vybe-accent">0</div>
+                    <div className="text-sm text-muted-foreground">Sessions Completed</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">3</div>
-                    <div className="text-sm text-gray-600">Looprooms Available</div>
+                    <div className="text-2xl font-bold text-vybe-primary">3</div>
+                    <div className="text-sm text-muted-foreground">Looprooms Available</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Notifications Card */}
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="vybe-card hover:shadow-lg transition-all hover:border-vybe-primary/30">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-yellow-600" />
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Bell className="w-5 h-5 text-vybe-accent" />
                   Notifications
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-foreground">
                     {isCreatorApplication ? 'Identity verification email sent' : 'Welcome to VYBE LOOPROOMS™!'}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-muted-foreground">
                     {new Date().toLocaleDateString()}
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="mt-4">
+                <Button variant="outline" size="sm" className="mt-4 border-vybe-primary/30 hover:bg-vybe-primary/10">
                   View All
                 </Button>
               </CardContent>
@@ -286,47 +276,47 @@ const Dashboard = () => {
           </div>
 
           {/* Looprooms Access */}
-          <Card className="mb-8">
+          <Card className="mb-8 vybe-card">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-purple-600" />
+              <CardTitle className="flex items-center gap-2 text-foreground">
+                <Zap className="w-5 h-5 text-vybe-accent" />
                 Your Looprooms
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground">
                 Explore your available wellness environments
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Activity className="w-6 h-6 text-green-600" />
+                <div className="vybe-card border border-vybe-primary/20 rounded-lg p-6 text-center hover:shadow-lg hover:border-vybe-accent/40 transition-all">
+                  <div className="w-12 h-12 bg-vybe-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Activity className="w-6 h-6 text-vybe-accent" />
                   </div>
-                  <h3 className="font-semibold text-green-800 mb-2">Recovery Looproom</h3>
-                  <p className="text-green-700 text-sm mb-4">Healing spaces for emotional recovery and personal growth</p>
-                  <Button size="sm" variant="outline" className="border-green-300 text-green-700 hover:bg-green-100">
+                  <h3 className="font-semibold text-foreground mb-2">Recovery Looproom</h3>
+                  <p className="text-muted-foreground text-sm mb-4">Healing spaces for emotional recovery and personal growth</p>
+                  <Button size="sm" variant="outline" className="border-vybe-primary/30 text-foreground hover:bg-vybe-primary/10 hover:border-vybe-accent">
                     Enter Looproom
                   </Button>
                 </div>
                 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Zap className="w-6 h-6 text-blue-600" />
+                <div className="vybe-card border border-vybe-primary/20 rounded-lg p-6 text-center hover:shadow-lg hover:border-vybe-accent/40 transition-all">
+                  <div className="w-12 h-12 bg-vybe-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Zap className="w-6 h-6 text-vybe-accent" />
                   </div>
-                  <h3 className="font-semibold text-blue-800 mb-2">Fitness Looproom</h3>
-                  <p className="text-blue-700 text-sm mb-4">Energizing workouts and movement therapy</p>
-                  <Button size="sm" variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100">
+                  <h3 className="font-semibold text-foreground mb-2">Fitness Looproom</h3>
+                  <p className="text-muted-foreground text-sm mb-4">Energizing workouts and movement therapy</p>
+                  <Button size="sm" variant="outline" className="border-vybe-primary/30 text-foreground hover:bg-vybe-primary/10 hover:border-vybe-accent">
                     Enter Looproom
                   </Button>
                 </div>
                 
-                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
-                  <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-6 h-6 text-indigo-600" />
+                <div className="vybe-card border border-vybe-primary/20 rounded-lg p-6 text-center hover:shadow-lg hover:border-vybe-accent/40 transition-all">
+                  <div className="w-12 h-12 bg-vybe-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-6 h-6 text-vybe-accent" />
                   </div>
-                  <h3 className="font-semibold text-indigo-800 mb-2">Meditation Looproom</h3>
-                  <p className="text-indigo-700 text-sm mb-4">Mindful journeys and breathing exercises</p>
-                  <Button size="sm" variant="outline" className="border-indigo-300 text-indigo-700 hover:bg-indigo-100">
+                  <h3 className="font-semibold text-foreground mb-2">Meditation Looproom</h3>
+                  <p className="text-muted-foreground text-sm mb-4">Mindful journeys and breathing exercises</p>
+                  <Button size="sm" variant="outline" className="border-vybe-primary/30 text-foreground hover:bg-vybe-primary/10 hover:border-vybe-accent">
                     Enter Looproom
                   </Button>
                 </div>
@@ -335,27 +325,27 @@ const Dashboard = () => {
           </Card>
 
           {/* Quick Actions */}
-          <Card>
+          <Card className="vybe-card">
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle className="text-foreground">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2">
-                  <Calendar className="w-6 h-6" />
-                  <span className="text-sm">Schedule Session</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 border-vybe-primary/30 hover:bg-vybe-primary/10 hover:border-vybe-accent">
+                  <Calendar className="w-6 h-6 text-vybe-accent" />
+                  <span className="text-sm text-foreground">Schedule Session</span>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2">
-                  <Users className="w-6 h-6" />
-                  <span className="text-sm">Find Community</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 border-vybe-primary/30 hover:bg-vybe-primary/10 hover:border-vybe-accent">
+                  <Users className="w-6 h-6 text-vybe-accent" />
+                  <span className="text-sm text-foreground">Find Community</span>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2">
-                  <FileText className="w-6 h-6" />
-                  <span className="text-sm">View Progress</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 border-vybe-primary/30 hover:bg-vybe-primary/10 hover:border-vybe-accent">
+                  <FileText className="w-6 h-6 text-vybe-accent" />
+                  <span className="text-sm text-foreground">View Progress</span>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2">
-                  <Settings className="w-6 h-6" />
-                  <span className="text-sm">Settings</span>
+                <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 border-vybe-primary/30 hover:bg-vybe-primary/10 hover:border-vybe-accent">
+                  <Settings className="w-6 h-6 text-vybe-accent" />
+                  <span className="text-sm text-foreground">Settings</span>
                 </Button>
               </div>
             </CardContent>
