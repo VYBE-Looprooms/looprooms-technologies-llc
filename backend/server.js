@@ -9,6 +9,7 @@ const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
 const authRoutes = require('./src/routes/auth');
 const verificationRoutes = require('./src/routes/verification');
+const adminRoutes = require('./src/routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -105,6 +106,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/verification', verificationRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 
@@ -141,6 +143,15 @@ app.get('/', (req, res) => {
         getStatus: 'GET /api/verification/status/:sessionId',
         submit: 'POST /api/verification/submit'
       },
+      admin: {
+        applications: 'GET /api/admin/applications',
+        stats: 'GET /api/admin/stats',
+        approve: 'POST /api/admin/applications/:id/approve',
+        reject: 'POST /api/admin/applications/:id/reject',
+        requestInfo: 'POST /api/admin/applications/:id/request-info',
+        setReview: 'POST /api/admin/applications/:id/set-review',
+        notifications: 'GET /api/admin/notifications'
+      },
       email: {
         sendWelcome: 'POST /api/email/send-welcome',
         testConnection: 'GET /api/email/test-connection',
@@ -173,6 +184,13 @@ app.use('*', (req, res) => {
       'POST /api/auth/verify-email',
       'POST /api/auth/logout',
       'GET /api/auth/health',
+      'GET /api/admin/applications',
+      'GET /api/admin/stats',
+      'POST /api/admin/applications/:id/approve',
+      'POST /api/admin/applications/:id/reject',
+      'POST /api/admin/applications/:id/request-info',
+      'POST /api/admin/applications/:id/set-review',
+      'GET /api/admin/notifications',
       'POST /api/email/send-welcome',
       'GET /api/email/test-connection',
       'GET /api/email/health',

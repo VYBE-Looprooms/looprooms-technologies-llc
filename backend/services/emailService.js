@@ -650,6 +650,356 @@ If you believe this was sent in error, please contact our support team.
       return { success: false, error: error.message };
     }
   }
+
+  /**
+   * Send creator application approval email
+   */
+  async sendCreatorApprovalEmail(email, firstName) {
+    try {
+      const subject = '🎉 Creator Application Approved - Welcome to VYBE LOOPROOMS™';
+      const html = this.generateCreatorApprovalEmailHTML(firstName);
+
+      await this.sendEmail(email, subject, html);
+      console.log(`✅ Creator approval email sent to: ${email}`);
+      
+    } catch (error) {
+      console.error('❌ Failed to send creator approval email:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Send creator application rejection email
+   */
+  async sendCreatorRejectionEmail(email, firstName, rejectionReason, additionalInfoRequested = '') {
+    try {
+      const subject = '📋 Creator Application Update - VYBE LOOPROOMS™';
+      const html = this.generateCreatorRejectionEmailHTML(firstName, rejectionReason, additionalInfoRequested);
+
+      await this.sendEmail(email, subject, html);
+      console.log(`📧 Creator rejection email sent to: ${email}`);
+      
+    } catch (error) {
+      console.error('❌ Failed to send creator rejection email:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Send additional information request email
+   */
+  async sendAdditionalInfoRequestEmail(email, firstName, additionalInfoRequested) {
+    try {
+      const subject = '📝 Additional Information Required - Creator Application';
+      const html = this.generateAdditionalInfoRequestEmailHTML(firstName, additionalInfoRequested);
+
+      await this.sendEmail(email, subject, html);
+      console.log(`📋 Additional info request email sent to: ${email}`);
+      
+    } catch (error) {
+      console.error('❌ Failed to send additional info request email:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate creator approval email HTML
+   */
+  generateCreatorApprovalEmailHTML(firstName) {
+    const baseHTML = this.getBaseEmailTemplate();
+    
+    return baseHTML.replace('{{CONTENT}}', `
+      <div class="content">
+        <p class="greeting">Hello ${firstName},</p>
+        
+        <div class="highlight-box" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white;">
+          <h3>🎉 Congratulations! Your Creator Application is Approved!</h3>
+          <p>Welcome to the VYBE LOOPROOMS™ Creator Community. You now have access to all creator tools and can start building transformative content.</p>
+        </div>
+        
+        <p>We're excited to have you join our mission of healing through innovative wellness technology. Your expertise and passion will help countless individuals on their recovery and wellness journeys.</p>
+        
+        <div class="benefits">
+          <h4>Your Creator Access Includes:</h4>
+          <ul>
+            <li><strong>Content Creation Tools:</strong> Build Loopchains™ and individual Looprooms</li>
+            <li><strong>Analytics Dashboard:</strong> Track engagement and impact metrics</li>
+            <li><strong>Revenue Sharing:</strong> Earn from your premium content</li>
+            <li><strong>Creator Community:</strong> Connect with fellow wellness creators</li>
+            <li><strong>Priority Support:</strong> Dedicated creator support team</li>
+          </ul>
+        </div>
+        
+        <p style="text-align: center;">
+          <a href="${process.env.FRONTEND_URL || 'http://localhost:8080'}/dashboard" class="action-button">
+            Access Creator Dashboard →
+          </a>
+        </p>
+        
+        <p>If you have any questions about your new creator privileges or need assistance getting started, our creator support team is here to help.</p>
+        
+        <p>Welcome to the future of wellness technology!</p>
+        
+        <p>Best regards,<br>
+        <strong>The VYBE LOOPROOMS™ Team</strong></p>
+      </div>
+    `);
+  }
+
+  /**
+   * Generate creator rejection email HTML
+   */
+  generateCreatorRejectionEmailHTML(firstName, rejectionReason, additionalInfoRequested = '') {
+    const baseHTML = this.getBaseEmailTemplate();
+    
+    const additionalInfoSection = additionalInfoRequested ? `
+      <div class="highlight-box" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+        <h3>📝 Additional Information Required</h3>
+        <p>${additionalInfoRequested}</p>
+        <p>Please update your application with the requested information and we'll review it promptly.</p>
+      </div>
+    ` : '';
+    
+    return baseHTML.replace('{{CONTENT}}', `
+      <div class="content">
+        <p class="greeting">Hello ${firstName},</p>
+        
+        <p>Thank you for your interest in becoming a VYBE LOOPROOMS™ creator. We appreciate the time and effort you put into your application.</p>
+        
+        <div class="highlight-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;">
+          <h3>📋 Application Update Required</h3>
+          <p>We've reviewed your creator application and need some additional information before we can proceed.</p>
+        </div>
+        
+        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          <h4 style="color: #92400e; margin-top: 0;">Review Notes:</h4>
+          <p style="color: #92400e; margin-bottom: 0;">${rejectionReason}</p>
+        </div>
+        
+        ${additionalInfoSection}
+        
+        <p>We encourage you to review our creator guidelines and resubmit your application when you're ready. Our mission is to ensure all creators maintain the highest standards of care and professionalism.</p>
+        
+        <p style="text-align: center;">
+          <a href="${process.env.FRONTEND_URL || 'http://localhost:8080'}/dashboard" class="action-button">
+            Update Application →
+          </a>
+        </p>
+        
+        <p>If you have any questions about this feedback or need clarification, please don't hesitate to reach out to our support team.</p>
+        
+        <p>Thank you for your understanding.</p>
+        
+        <p>Best regards,<br>
+        <strong>The VYBE LOOPROOMS™ Team</strong></p>
+      </div>
+    `);
+  }
+
+  /**
+   * Generate additional information request email HTML
+   */
+  generateAdditionalInfoRequestEmailHTML(firstName, additionalInfoRequested) {
+    const baseHTML = this.getBaseEmailTemplate();
+    
+    return baseHTML.replace('{{CONTENT}}', `
+      <div class="content">
+        <p class="greeting">Hello ${firstName},</p>
+        
+        <p>Thank you for your creator application with VYBE LOOPROOMS™. We're in the process of reviewing your submission and need some additional information to continue.</p>
+        
+        <div class="highlight-box" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+          <h3>📝 Additional Information Required</h3>
+          <p>To complete your application review, please provide the following:</p>
+        </div>
+        
+        <div style="background: #dbeafe; border: 1px solid #3b82f6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          <h4 style="color: #1d4ed8; margin-top: 0;">Required Information:</h4>
+          <p style="color: #1d4ed8; margin-bottom: 0;">${additionalInfoRequested}</p>
+        </div>
+        
+        <p>This information will help us better understand your qualifications and ensure you have the best possible experience as a VYBE LOOPROOMS™ creator.</p>
+        
+        <div class="benefits">
+          <h4>How to Provide Additional Information:</h4>
+          <ul>
+            <li>Log into your VYBE LOOPROOMS™ dashboard</li>
+            <li>Navigate to the Creator Application section</li>
+            <li>Update your application with the requested details</li>
+            <li>Submit for continued review</li>
+          </ul>
+        </div>
+        
+        <p style="text-align: center;">
+          <a href="${process.env.FRONTEND_URL || 'http://localhost:8080'}/dashboard" class="action-button">
+            Update Application →
+          </a>
+        </p>
+        
+        <p>Once we receive the additional information, we'll continue processing your application promptly. We appreciate your patience and look forward to potentially welcoming you to our creator community.</p>
+        
+        <p>Best regards,<br>
+        <strong>The VYBE LOOPROOMS™ Team</strong></p>
+      </div>
+    `);
+  }
+
+  /**
+   * Get base email template
+   */
+  getBaseEmailTemplate() {
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>VYBE LOOPROOMS™</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 40px 30px;
+                text-align: center;
+                color: white;
+            }
+            .logo {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            .welcome-message {
+                font-size: 28px;
+                margin: 0;
+                font-weight: 600;
+            }
+            .content {
+                padding: 40px 30px;
+                line-height: 1.6;
+                color: #334155;
+            }
+            .greeting {
+                font-size: 18px;
+                margin-bottom: 20px;
+                color: #1e293b;
+            }
+            .highlight-box {
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                color: white;
+                padding: 25px;
+                border-radius: 12px;
+                margin: 25px 0;
+                text-align: center;
+            }
+            .highlight-box h3 {
+                margin: 0 0 10px 0;
+                font-size: 20px;
+            }
+            .highlight-box p {
+                margin: 0;
+            }
+            .action-button {
+                display: inline-block;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 16px;
+                margin: 20px 0;
+                transition: transform 0.2s;
+            }
+            .action-button:hover {
+                transform: translateY(-2px);
+            }
+            .benefits {
+                background: #f8fafc;
+                padding: 25px;
+                border-radius: 8px;
+                margin: 25px 0;
+                border-left: 4px solid #667eea;
+            }
+            .benefits h4 {
+                color: #1e293b;
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+            .benefits ul {
+                margin: 0;
+                padding-left: 20px;
+            }
+            .benefits li {
+                margin-bottom: 8px;
+                color: #475569;
+            }
+            .footer {
+                background: #f1f5f9;
+                padding: 30px;
+                text-align: center;
+                border-top: 1px solid #e2e8f0;
+            }
+            .footer-links {
+                margin-bottom: 20px;
+            }
+            .footer-links a {
+                color: #3b82f6;
+                text-decoration: none;
+                margin: 0 15px;
+                font-weight: 500;
+            }
+            .footer-links a:hover {
+                text-decoration: underline;
+            }
+            .disclaimer {
+                font-size: 12px;
+                color: #94a3b8;
+                margin-top: 20px;
+                line-height: 1.5;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="logo">VYBE LOOPROOMS™</div>
+                <h1 class="welcome-message">Creator Application Update</h1>
+            </div>
+            
+            {{CONTENT}}
+            
+            <div class="footer">
+                <div class="footer-links">
+                    <a href="${process.env.FRONTEND_URL || 'http://localhost:8080'}">Dashboard</a>
+                    <a href="${process.env.FRONTEND_URL || 'http://localhost:8080'}/support">Support</a>
+                    <a href="${process.env.FRONTEND_URL || 'http://localhost:8080'}/about">About</a>
+                </div>
+                <p class="disclaimer">
+                    This email was sent from VYBE LOOPROOMS™. If you have any questions, please contact our support team.
+                    <br>© 2024 VYBE LOOPROOMS™. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+  }
 }
 
 module.exports = EmailService;
