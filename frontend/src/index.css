@@ -7,17 +7,7 @@ html {
   scroll-padding-top: 5rem; /* 80px = 5rem, matches navbar height */
 }
 
-/* Body padding to account for fixed navbar */
-body {
-  padding-top: 80px; /* Match navbar height */
-}
-
-/* Mobile body padding */
-@media (max-width: 768px) {
-  body {
-    padding-top: 70px;
-  }
-}
+/* Body padding removed - navbar is not fixed positioned over content */
 
 /* Section spacing and backgrounds */
 .section-padding {

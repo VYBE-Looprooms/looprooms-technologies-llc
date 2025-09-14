@@ -253,7 +253,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-6">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-6 pb-[88px] lg:pb-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left Sidebar - Hidden on mobile, visible on desktop */}
           <div className="hidden lg:block lg:col-span-3 space-y-6">
