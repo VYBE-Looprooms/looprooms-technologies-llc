@@ -27,7 +27,9 @@ import {
   Star,
   MessageCircle,
   Share2,
-  Bookmark
+  Bookmark,
+  Menu,
+  X
 } from 'lucide-react';
 
 const THEME_COLORS = {
@@ -82,6 +84,7 @@ const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('feed');
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
   const [userType, setUserType] = useState<string>('member');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -128,18 +131,26 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Top Navigation Bar */}
       <nav className="bg-card/80 backdrop-blur-md border-b border-border/20 sticky top-0 z-50 shadow-sm">
-        <div className="w-full px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
+            {/* Mobile Menu Button & Logo */}
             <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="lg:hidden mr-3 hover:bg-muted/50 rounded-xl"
+                onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+              >
+                <Menu className="w-5 h-5 text-muted-foreground" />
+              </Button>
               <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center mr-3 shadow-lg">
                 <Heart className="w-6 h-6 text-white" />
               </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="flex-1 max-w-2xl mx-8">
-              <div className="relative">
+            {/* Search Bar - Hidden on mobile */}
+            <div className="hidden md:flex flex-1 max-w-2xl mx-8">
+              <div className="relative w-full">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <input
                   type="text"
@@ -150,13 +161,18 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Mobile Search Button */}
+              <Button variant="ghost" size="sm" className="md:hidden hover:bg-muted/50 rounded-xl">
+                <Search className="w-5 h-5 text-muted-foreground" />
+              </Button>
+
               <Button variant="ghost" size="sm" className="relative hover:bg-muted/50 rounded-xl">
                 <Bell className="w-5 h-5 text-muted-foreground" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-primary to-secondary rounded-full shadow-sm"></span>
               </Button>
 
-              <Button variant="ghost" size="sm" className="hover:bg-muted/50 rounded-xl">
+              <Button variant="ghost" size="sm" className="hidden sm:flex hover:bg-muted/50 rounded-xl">
                 <Settings className="w-5 h-5 text-muted-foreground" />
               </Button>
 
@@ -168,7 +184,7 @@ const Dashboard: React.FC = () => {
                     {user.profile?.firstName?.charAt(0) || user.email.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
-                <Button variant="ghost" onClick={handleLogout} className="text-sm hover:bg-muted/50 rounded-xl px-4">
+                <Button variant="ghost" onClick={handleLogout} className="hidden sm:flex text-sm hover:bg-muted/50 rounded-xl px-4">
                   Logout
                 </Button>
               </div>
@@ -177,10 +193,70 @@ const Dashboard: React.FC = () => {
         </div>
       </nav>
 
-      <div className="w-full px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-12 gap-8">
-          {/* Left Sidebar */}
-          <div className="col-span-3 space-y-6">
+      {/* Mobile Sidebar Overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <div className={`fixed top-0 left-0 h-full w-80 bg-background/95 backdrop-blur-xl border-r border-border/20 z-50 lg:hidden transform transition-transform duration-300 ${
+        isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <div className="p-6 space-y-6 overflow-y-auto h-full">
+          {/* Close Button */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-foreground">Menu</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="hover:bg-muted/50 rounded-xl"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Mobile User Profile Card */}
+          <Card className="overflow-hidden bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
+            <div className="h-24 bg-gradient-to-r from-primary/80 via-secondary/80 to-accent/80"></div>
+            <CardContent className="px-6 pb-6 -mt-10">
+              <Avatar className="w-20 h-20 border-4 border-card mx-auto mb-4 shadow-lg">
+                <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground text-xl font-bold">
+                  {user.profile?.firstName?.charAt(0) || user.email.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-center">
+                <h3 className="font-bold text-foreground text-lg">
+                  {user.profile?.firstName || 'VYBE Member'} {user.profile?.lastName || ''}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">{user.email}</p>
+                <Badge className={`mt-3 px-4 py-1 rounded-xl font-semibold ${userType === 'creator' ? 'bg-accent/20 text-accent-foreground border border-accent/30' : 'bg-primary/20 text-primary-foreground border border-primary/30'}`}>
+                  {userType === 'creator' ? '✨ Creator' : '🌱 Member'}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Mobile Navigation Menu */}
+          <div className="space-y-3">
+            <Button onClick={handleLogout} variant="outline" className="w-full justify-start rounded-xl border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
+              <Settings className="w-4 h-4 mr-3" />
+              Settings
+            </Button>
+            <Button onClick={handleLogout} variant="outline" className="w-full justify-start rounded-xl border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
+              Logout
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+          {/* Left Sidebar - Hidden on mobile, visible on desktop */}
+          <div className="hidden lg:block lg:col-span-3 space-y-6">
             {/* User Profile Card */}
             <Card className="overflow-hidden bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
               <div className="h-24 bg-gradient-to-r from-primary/80 via-secondary/80 to-accent/80"></div>
@@ -318,25 +394,25 @@ const Dashboard: React.FC = () => {
             </Card>
           </div>
 
-          {/* Main Content */}
-          <div className="col-span-6">
+          {/* Main Content - Full width on mobile, 6 cols on desktop */}
+          <div className="lg:col-span-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <div className="flex justify-between items-center mb-8">
-                <TabsList className="grid grid-cols-4 w-full max-w-md bg-card/80 backdrop-blur-sm border-border/20 rounded-xl p-1">
-                  <TabsTrigger value="feed" className="rounded-lg font-medium">Feed</TabsTrigger>
-                  <TabsTrigger value="looprooms" className="rounded-lg font-medium">Looprooms</TabsTrigger>
-                  <TabsTrigger value="discover" className="rounded-lg font-medium">Discover</TabsTrigger>
-                  <TabsTrigger value="create" className="rounded-lg font-medium">Create</TabsTrigger>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 space-y-4 sm:space-y-0">
+                <TabsList className="grid grid-cols-4 w-full sm:w-auto sm:max-w-md bg-card/80 backdrop-blur-sm border-border/20 rounded-xl p-1">
+                  <TabsTrigger value="feed" className="rounded-lg font-medium text-xs sm:text-sm">Feed</TabsTrigger>
+                  <TabsTrigger value="looprooms" className="rounded-lg font-medium text-xs sm:text-sm">Rooms</TabsTrigger>
+                  <TabsTrigger value="discover" className="rounded-lg font-medium text-xs sm:text-sm">Discover</TabsTrigger>
+                  <TabsTrigger value="create" className="rounded-lg font-medium text-xs sm:text-sm">Create</TabsTrigger>
                 </TabsList>
 
-                <div className="flex space-x-3">
-                  <Button variant="outline" size="sm" className="rounded-xl border-2 hover:bg-muted/50 backdrop-blur-sm">
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filter
+                <div className="flex space-x-2 sm:space-x-3">
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none rounded-xl border-2 hover:bg-muted/50 backdrop-blur-sm">
+                    <Filter className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Filter</span>
                   </Button>
-                  <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground">
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Post
+                  <Button size="sm" className="flex-1 sm:flex-none bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground">
+                    <Plus className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">New Post</span>
                   </Button>
                 </div>
               </div>
@@ -381,8 +457,8 @@ const Dashboard: React.FC = () => {
 
               <TabsContent value="discover" className="mt-0">
                 <div className="space-y-6">
-                  <h2 className="text-3xl font-bold text-foreground mb-6">Discover New Themes</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">Discover New Themes</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     {Object.entries(THEME_COLORS).map(([themeId, colors]) => {
                       const IconComponent = THEME_ICONS[themeId as keyof typeof THEME_ICONS];
                       const isSelected = selectedThemes.includes(themeId);
@@ -420,9 +496,9 @@ const Dashboard: React.FC = () => {
 
               <TabsContent value="create" className="mt-0">
                 <div className="space-y-6">
-                  <h2 className="text-3xl font-bold text-foreground mb-6">Create Content</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">Create Content</h2>
                   {userType === 'creator' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group">
                         <CardContent className="p-8 text-center">
                           <div className="w-20 h-20 bg-gradient-to-r from-primary to-secondary rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
@@ -462,8 +538,8 @@ const Dashboard: React.FC = () => {
             </Tabs>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="col-span-3 space-y-6">
+          {/* Right Sidebar - Hidden on mobile, visible on desktop */}
+          <div className="hidden lg:block lg:col-span-3 space-y-6">
             {/* Trending Now */}
             <Card className="bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
               <CardHeader>
@@ -590,6 +666,61 @@ const Dashboard: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border/20 z-50 safe-area-inset-bottom">
+        <div className="flex items-center justify-around py-3 px-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`flex-1 flex flex-col items-center py-3 space-y-1 rounded-none ${activeTab === 'feed' ? 'text-primary' : 'text-muted-foreground'}`}
+            onClick={() => setActiveTab('feed')}
+          >
+            <Heart className="w-5 h-5" />
+            <span className="text-xs">Feed</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`flex-1 flex flex-col items-center py-3 space-y-1 rounded-none ${activeTab === 'looprooms' ? 'text-primary' : 'text-muted-foreground'}`}
+            onClick={() => setActiveTab('looprooms')}
+          >
+            <Users className="w-5 h-5" />
+            <span className="text-xs">Rooms</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`flex-1 flex flex-col items-center py-3 space-y-1 rounded-none ${activeTab === 'discover' ? 'text-primary' : 'text-muted-foreground'}`}
+            onClick={() => setActiveTab('discover')}
+          >
+            <Search className="w-5 h-5" />
+            <span className="text-xs">Discover</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`flex-1 flex flex-col items-center py-3 space-y-1 rounded-none ${activeTab === 'create' ? 'text-primary' : 'text-muted-foreground'}`}
+            onClick={() => setActiveTab('create')}
+          >
+            <Plus className="w-5 h-5" />
+            <span className="text-xs">Create</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1 flex flex-col items-center py-3 space-y-1 rounded-none text-muted-foreground"
+            onClick={() => setIsMobileSidebarOpen(true)}
+          >
+            <Menu className="w-5 h-5" />
+            <span className="text-xs">Menu</span>
+          </Button>
         </div>
       </div>
     </div>

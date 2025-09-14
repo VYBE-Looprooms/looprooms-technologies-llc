@@ -300,7 +300,7 @@ const SocialFeed: React.FC = () => {
       {/* Suggested Loopchain - Journey Path */}
       <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 backdrop-blur-sm border-primary/20 shadow-lg">
         <CardContent className="p-4 lg:p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div className="flex-1">
               <h3 className="font-bold text-foreground text-lg mb-2 flex items-center">
                 <TrendingUp className="w-5 h-5 mr-2 text-primary" />
@@ -314,17 +314,17 @@ const SocialFeed: React.FC = () => {
 
                   return (
                     <React.Fragment key={theme}>
-                      <div className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                      <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all ${
                         isActive
                           ? 'bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg'
                           : isCompleted
                           ? 'bg-primary/20 text-primary'
                           : 'bg-muted text-muted-foreground'
                       }`}>
-                        <ThemeIcon className="w-5 h-5" />
+                        <ThemeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                       {index < array.length - 1 && (
-                        <div className={`w-8 h-0.5 ${isCompleted ? 'bg-primary' : 'bg-muted'} transition-all`}></div>
+                        <div className={`w-6 sm:w-8 h-0.5 ${isCompleted ? 'bg-primary' : 'bg-muted'} transition-all`}></div>
                       )}
                     </React.Fragment>
                   );
@@ -334,7 +334,7 @@ const SocialFeed: React.FC = () => {
                 Start with <span className="text-primary font-semibold">Recovery</span> to build your foundation, then flow into meditation and fitness.
               </p>
             </div>
-            <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-primary-foreground ml-4">
+            <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-primary-foreground sm:ml-4 w-full sm:w-auto">
               Continue Journey
             </Button>
           </div>
@@ -615,7 +615,7 @@ const SocialFeed: React.FC = () => {
       {/* Mobile Floating Compose Button */}
       <Button
         onClick={() => console.log('Open mobile compose')}
-        className="lg:hidden fixed bottom-20 right-4 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 z-50"
+        className="lg:hidden fixed bottom-28 right-4 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 z-40"
         size="sm"
       >
         <Plus className="w-6 h-6 text-primary-foreground" />
