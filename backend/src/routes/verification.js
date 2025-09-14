@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const VerificationController = require('../controllers/verificationController');
+const CreatorVerificationController = require('../controllers/creatorVerificationController');
 const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
@@ -55,6 +56,61 @@ router.post('/submit',
 );
 
 /**
+ * @route   POST /api/verification/creator/submit
+ * @desc    Submit creator verification with ID documents
+ * @access  Private
+ */
+router.post('/creator/submit',
+  authenticateToken,
+  upload.fields([
+    { name: 'idFront', maxCount: 1 },
+    { name: 'idBack', maxCount: 1 },
+    { name: 'selfie', maxCount: 1 }
+  ]),
+  CreatorVerificationController.submitVerification
+);
+
+/**
+ * @route   GET /api/verification/creator/status
+ * @desc    Get creator verification status
+ * @access  Private
+ */
+router.get('/creator/status',
+  authenticateToken,
+  CreatorVerificationController.getVerificationStatus
+);
+
+/**
+ * @route   POST /api/verification/creator/review/:applicationId
+ * @desc    Review creator verification (Admin/Moderator only)
+ * @access  Private (Admin/Moderator)
+ */
+router.post('/creator/review/:applicationId',
+  authenticateToken,
+  CreatorVerificationController.reviewVerification
+);
+
+/**
+ * @route   GET /api/verification/creator/pending
+ * @desc    Get pending creator verifications (Admin/Moderator only)
+ * @access  Private (Admin/Moderator)
+ */
+router.get('/creator/pending',
+  authenticateToken,
+  CreatorVerificationController.getPendingVerifications
+);
+
+/**
+ * @route   GET /api/verification/creator/statistics
+ * @desc    Get creator verification statistics (Admin/Moderator only)
+ * @access  Private (Admin/Moderator)
+ */
+router.get('/creator/statistics',
+  authenticateToken,
+  CreatorVerificationController.getStatistics
+);
+
+/**
  * @route   GET /api/verification/health
  * @desc    Verification service health check
  * @access  Public
@@ -67,7 +123,11 @@ router.get('/health', (req, res) => {
     endpoints: {
       createSession: 'POST /api/verification/create-session',
       getStatus: 'GET /api/verification/status/:sessionId',
-      submit: 'POST /api/verification/submit'
+      submit: 'POST /api/verification/submit',
+      creatorSubmit: 'POST /api/verification/creator/submit',
+      creatorStatus: 'GET /api/verification/creator/status',
+      creatorReview: 'POST /api/verification/creator/review/:applicationId',
+      creatorPending: 'GET /api/verification/creator/pending'
     }
   });
 });

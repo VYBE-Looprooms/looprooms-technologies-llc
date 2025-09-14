@@ -15,6 +15,8 @@ import Dashboard from "./pages/Dashboard";
 import IdentityVerificationPage from "./pages/IdentityVerificationPage";
 import MobileVerificationPage from "./pages/MobileVerificationPage";
 import QRTestPage from "./pages/QRTestPage";
+import CreatorVerification from "./pages/CreatorVerification";
+import AdminDashboard from "./pages/AdminDashboard";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +42,8 @@ const App = () => {
                 <Route path="/identity-verification" element={<IdentityVerificationPage />} />
                 <Route path="/mobile-verification" element={<MobileVerificationPage />} />
                 <Route path="/qr-test" element={<QRTestPage />} />
+                <Route path="/creator-verification" element={<CreatorVerification />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

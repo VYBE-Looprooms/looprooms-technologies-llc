@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SocialFeed from '@/components/SocialFeed';
+import CreatorDashboard from '@/components/CreatorDashboard';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import {
   Heart,
@@ -92,6 +93,12 @@ const Dashboard: React.FC = () => {
       return;
     }
 
+    // Redirect admins to admin dashboard
+    if (user.role === 'ADMIN' || user.role === 'MODERATOR') {
+      navigate('/admin');
+      return;
+    }
+
     // Check if onboarding is complete
     const onboardingComplete = localStorage.getItem('vybeOnboardingComplete');
     if (!onboardingComplete) {
@@ -102,6 +109,42 @@ const Dashboard: React.FC = () => {
     // Load user preferences
     const themes = localStorage.getItem('vybeSelectedThemes');
     const type = localStorage.getItem('vybeUserType');
+
+    // Check if user selected creator path but hasn't completed verification
+    if (type === 'creator' && user.role !== 'CREATOR') {
+      // Check if they have a pending application
+      const checkVerificationStatus = async () => {
+        try {
+          const token = localStorage.getItem('vybe_token');
+          const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://192.168.3.10:3443';
+          const response = await fetch(`${backendUrl}/api/verification/creator/status`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (!data.data || data.data.status === 'NOT_FOUND') {
+              // No application found, redirect to verification
+              navigate('/creator-verification');
+              return;
+            } else if (data.data.status === 'PENDING' || data.data.status === 'UNDER_REVIEW') {
+              // Application pending, show waiting message
+              console.log('Creator application is pending admin review');
+            } else if (data.data.status === 'REJECTED') {
+              // Application rejected, can reapply
+              navigate('/creator-verification');
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Error checking verification status:', error);
+        }
+      };
+
+      checkVerificationStatus();
+    }
 
     if (themes) {
       setSelectedThemes(JSON.parse(themes));
@@ -418,7 +461,11 @@ const Dashboard: React.FC = () => {
               </div>
 
               <TabsContent value="feed" className="mt-0">
-                <SocialFeed />
+                {user.role === 'CREATOR' ? (
+                  <CreatorDashboard />
+                ) : (
+                  <SocialFeed />
+                )}
               </TabsContent>
 
               <TabsContent value="looprooms" className="mt-0">

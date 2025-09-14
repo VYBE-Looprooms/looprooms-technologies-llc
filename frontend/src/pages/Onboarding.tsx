@@ -96,8 +96,13 @@ const Onboarding: React.FC = () => {
     localStorage.setItem('vybeSelectedThemes', JSON.stringify(selectedThemes));
     localStorage.setItem('vybeUserType', userType);
 
-    // Navigate to dashboard
-    navigate('/dashboard');
+    // If user selected creator role, redirect to verification
+    if (userType === 'creator') {
+      navigate('/creator-verification');
+    } else {
+      // Navigate to dashboard for regular members
+      navigate('/dashboard');
+    }
   };
 
   const renderStep1 = () => (

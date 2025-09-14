@@ -120,13 +120,23 @@ const Navbar = () => {
             <div className="flex items-center space-x-3">
               {user ? (
                 <>
-                  <Button 
-                    variant="ghost"
-                    className="text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium"
-                    onClick={() => navigate('/dashboard')}
-                  >
-                    Dashboard
-                  </Button>
+                  {(user.role === 'ADMIN' || user.role === 'MODERATOR') ? (
+                    <Button
+                      variant="ghost"
+                      className="text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium"
+                      onClick={() => navigate('/admin')}
+                    >
+                      Admin Panel
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      className="text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium"
+                      onClick={() => navigate('/dashboard')}
+                    >
+                      Dashboard
+                    </Button>
+                  )}
                   
                   <Button 
                     variant="outline"
@@ -223,13 +233,23 @@ const Navbar = () => {
             <div className="pt-3 border-t border-vybe-cyan/20 scale-in space-y-3">
               {user ? (
                 <>
-                  <Button 
-                    variant="ghost"
-                    className="w-full text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium text-base py-3"
-                    onClick={() => {setIsOpen(false); navigate('/dashboard');}}
-                  >
-                    Dashboard
-                  </Button>
+                  {(user.role === 'ADMIN' || user.role === 'MODERATOR') ? (
+                    <Button
+                      variant="ghost"
+                      className="w-full text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium text-base py-3"
+                      onClick={() => {setIsOpen(false); navigate('/admin');}}
+                    >
+                      Admin Panel
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      className="w-full text-foreground/80 hover:text-vybe-cyan hover:bg-vybe-cyan/10 transition-all duration-300 font-medium text-base py-3"
+                      onClick={() => {setIsOpen(false); navigate('/dashboard');}}
+                    >
+                      Dashboard
+                    </Button>
+                  )}
                   
                   <Button 
                     variant="outline"

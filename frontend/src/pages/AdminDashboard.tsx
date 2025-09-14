@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Shield, 
-  Clock, 
-  CheckCircle, 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Shield,
+  Clock,
+  CheckCircle,
   X,
   Eye,
   MessageSquare,
@@ -19,18 +22,28 @@ import {
   Filter,
   Search,
   Download,
-  Mail
+  Mail,
+  Users,
+  UserCheck,
+  Activity,
+  TrendingUp,
+  BarChart3,
+  RefreshCw
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import Navbar from '@/components/Navbar';
+import DocumentViewerModal from '@/components/DocumentViewerModal';
 
 interface CreatorApplication {
   id: string;
   user: {
     id: string;
     email: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     avatar?: string;
   };
   status: 'PENDING' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
@@ -39,6 +52,8 @@ interface CreatorApplication {
   primaryCategory: string;
   identityDocumentType: string;
   identityDocumentUrl?: string;
+  identityDocumentBackUrl?: string;
+  faceVerificationUrl?: string;
   faceVerificationCompleted: boolean;
   faceVerificationScore?: number;
   submittedAt: string;
@@ -48,6 +63,10 @@ interface CreatorApplication {
 }
 
 const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
   const [applications, setApplications] = useState<CreatorApplication[]>([]);
   const [selectedApplication, setSelectedApplication] = useState<CreatorApplication | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -56,10 +75,80 @@ const AdminDashboard: React.FC = () => {
   const [rejectionReason, setRejectionReason] = useState('');
   const [additionalInfoRequest, setAdditionalInfoRequest] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('verifications');
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [statistics, setStatistics] = useState({
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    underReview: 0,
+    approvalRate: 0,
+    recent: {
+      approved: 0,
+      rejected: 0
+    },
+    adminStats: {
+      approved: 0,
+      rejected: 0,
+      total: 0
+    }
+  });
 
   useEffect(() => {
-    // Mock data - will be replaced with API calls
-    const mockApplications: CreatorApplication[] = [
+    // Check if user is admin
+    if (user?.role !== 'ADMIN' && user?.role !== 'MODERATOR') {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to access this page",
+        variant: "destructive",
+      });
+      navigate('/dashboard');
+      return;
+    }
+
+    fetchApplications();
+    fetchStatistics();
+  }, [user, navigate, toast]);
+
+  const fetchStatistics = async () => {
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://192.168.3.10:3443';
+      const response = await fetch(`${backendUrl}/api/verification/creator/statistics`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('vybe_token')}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        setStatistics(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch statistics:', error);
+    }
+  };
+
+  const fetchApplications = async () => {
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://192.168.3.10:3443';
+      const response = await fetch(`${backendUrl}/api/verification/creator/pending`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('vybe_token')}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setApplications(data.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch applications:', error);
+
+      // Use mock data as fallback
+      const mockApplications: CreatorApplication[] = [
       {
         id: '1',
         user: {
@@ -117,9 +206,10 @@ const AdminDashboard: React.FC = () => {
         reviewNotes: 'Excellent qualifications and verification scores. Approved for creator status.'
       }
     ];
-    
+
     setApplications(mockApplications);
-  }, []);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -143,53 +233,127 @@ const AdminDashboard: React.FC = () => {
 
   const filteredApplications = applications.filter(app => {
     const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-    const matchesSearch = 
-      app.user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      (app.user.firstName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (app.user.lastName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (app.user.email?.toLowerCase() || '').includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
   const handleApprove = async (applicationId: string) => {
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setApplications(prev => 
-        prev.map(app => 
-          app.id === applicationId 
-            ? { ...app, status: 'APPROVED' as const, reviewNotes } 
-            : app
-        )
-      );
-      setSelectedApplication(null);
-      setReviewNotes('');
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://192.168.3.10:3443';
+      const response = await fetch(`${backendUrl}/api/verification/creator/review/${applicationId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('vybe_token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: 'APPROVED',
+          reviewNotes: reviewNotes || 'Application approved',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Application Approved",
+          description: "The creator has been successfully verified",
+        });
+
+        // Update local state
+        setApplications(prev =>
+          prev.map(app =>
+            app.id === applicationId
+              ? { ...app, status: 'APPROVED' as const, reviewNotes }
+              : app
+          )
+        );
+        setSelectedApplication(null);
+        setReviewNotes('');
+
+        // Refresh applications list and statistics
+        fetchApplications();
+        fetchStatistics();
+      } else {
+        throw new Error(data.message || 'Failed to approve application');
+      }
+    } catch (error) {
+      console.error('Failed to approve application:', error);
+      toast({
+        title: "Error",
+        description: "Failed to approve application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const handleReject = async (applicationId: string) => {
     if (!rejectionReason.trim()) return;
-    
+
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setApplications(prev => 
-        prev.map(app => 
-          app.id === applicationId 
-            ? { 
-                ...app, 
-                status: 'REJECTED' as const, 
-                rejectionReason,
-                additionalInfoRequested: additionalInfoRequest
-              } 
-            : app
-        )
-      );
-      setSelectedApplication(null);
-      setRejectionReason('');
-      setAdditionalInfoRequest('');
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://192.168.3.10:3443';
+      const response = await fetch(`${backendUrl}/api/verification/creator/review/${applicationId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('vybe_token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: 'REJECTED',
+          reviewNotes: reviewNotes || '',
+          rejectionReason: rejectionReason,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Application Rejected",
+          description: "The application has been rejected",
+          variant: "destructive",
+        });
+
+        // Update local state
+        setApplications(prev =>
+          prev.map(app =>
+            app.id === applicationId
+              ? {
+                  ...app,
+                  status: 'REJECTED' as const,
+                  rejectionReason,
+                  additionalInfoRequested: additionalInfoRequest
+                }
+              : app
+          )
+        );
+        setSelectedApplication(null);
+        setRejectionReason('');
+        setAdditionalInfoRequest('');
+
+        // Refresh applications list and statistics
+        fetchApplications();
+        fetchStatistics();
+      } else {
+        throw new Error(data.message || 'Failed to reject application');
+      }
+    } catch (error) {
+      console.error('Failed to reject application:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const handleRequestMoreInfo = async (applicationId: string) => {
@@ -219,8 +383,9 @@ const AdminDashboard: React.FC = () => {
   const underReviewCount = applications.filter(app => app.status === 'UNDER_REVIEW').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-vybe-primary/5 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-vybe-primary/5">
+      <Navbar />
+      <div className="max-w-7xl mx-auto p-6 pt-24">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -249,13 +414,13 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <Card className="vybe-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Pending Review</p>
-                  <p className="text-2xl font-bold text-amber-600">{pendingCount}</p>
+                  <p className="text-2xl font-bold text-amber-600">{statistics.pending}</p>
                 </div>
                 <Clock className="w-8 h-8 text-amber-600" />
               </div>
@@ -267,7 +432,7 @@ const AdminDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Under Review</p>
-                  <p className="text-2xl font-bold text-blue-600">{underReviewCount}</p>
+                  <p className="text-2xl font-bold text-blue-600">{statistics.underReview}</p>
                 </div>
                 <Eye className="w-8 h-8 text-blue-600" />
               </div>
@@ -279,8 +444,9 @@ const AdminDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Approved</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {applications.filter(app => app.status === 'APPROVED').length}
+                  <p className="text-2xl font-bold text-green-600">{statistics.approved}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    +{statistics.recent.approved} this week
                   </p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-green-600" />
@@ -293,15 +459,57 @@ const AdminDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Rejected</p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {applications.filter(app => app.status === 'REJECTED').length}
+                  <p className="text-2xl font-bold text-red-600">{statistics.rejected}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    +{statistics.recent.rejected} this week
                   </p>
                 </div>
                 <X className="w-8 h-8 text-red-600" />
               </div>
             </CardContent>
           </Card>
+
+          <Card className="vybe-card bg-gradient-to-br from-primary/10 to-secondary/10">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Your Reviews</p>
+                  <p className="text-2xl font-bold text-primary">{statistics.adminStats.total}</p>
+                  <div className="flex gap-2 mt-1">
+                    <span className="text-xs text-green-600">✓ {statistics.adminStats.approved}</span>
+                    <span className="text-xs text-red-600">✗ {statistics.adminStats.rejected}</span>
+                  </div>
+                </div>
+                <User className="w-8 h-8 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Approval Rate Banner */}
+        {statistics.total > 0 && (
+          <Card className="mb-8 bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <BarChart3 className="w-6 h-6 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium">Overall Approval Rate</p>
+                    <p className="text-xs text-muted-foreground">
+                      {statistics.total} total applications processed
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-primary">{statistics.approvalRate}%</p>
+                  <p className="text-xs text-muted-foreground">
+                    {statistics.approved} approved / {statistics.total} total
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Applications List */}
@@ -354,15 +562,15 @@ const AdminDashboard: React.FC = () => {
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4">
                           <Avatar className="w-12 h-12">
-                            <AvatarImage src={application.user.avatar} alt={application.user.firstName} />
+                            <AvatarImage src={application.user.avatar} alt={application.user.firstName || ''} />
                             <AvatarFallback>
-                              {application.user.firstName.charAt(0)}{application.user.lastName.charAt(0)}
+                              {(application.user.firstName?.charAt(0) || 'U')}{(application.user.lastName?.charAt(0) || '')}
                             </AvatarFallback>
                           </Avatar>
                           
                           <div className="flex-1">
                             <h3 className="font-semibold text-foreground">
-                              {application.user.firstName} {application.user.lastName}
+                              {application.user.firstName || 'Unknown'} {application.user.lastName || 'User'}
                             </h3>
                             <p className="text-sm text-muted-foreground mb-2">{application.user.email}</p>
                             
@@ -422,7 +630,7 @@ const AdminDashboard: React.FC = () => {
                     <div>
                       <h4 className="font-medium text-foreground mb-2">Personal Information</h4>
                       <div className="space-y-1 text-sm">
-                        <p><strong>Name:</strong> {selectedApplication.user.firstName} {selectedApplication.user.lastName}</p>
+                        <p><strong>Name:</strong> {selectedApplication.user.firstName || 'Unknown'} {selectedApplication.user.lastName || 'User'}</p>
                         <p><strong>Email:</strong> {selectedApplication.user.email}</p>
                         <p><strong>Document:</strong> {selectedApplication.identityDocumentType.replace('_', ' ')}</p>
                       </div>
@@ -447,7 +655,12 @@ const AdminDashboard: React.FC = () => {
                     {selectedApplication.identityDocumentUrl && (
                       <div>
                         <h4 className="font-medium text-foreground mb-2">Identity Documents</h4>
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => setShowDocumentModal(true)}
+                        >
                           <FileText className="w-4 h-4 mr-2" />
                           View Documents
                         </Button>
@@ -571,6 +784,15 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Document Viewer Modal */}
+      {selectedApplication && (
+        <DocumentViewerModal
+          isOpen={showDocumentModal}
+          onClose={() => setShowDocumentModal(false)}
+          application={selectedApplication}
+        />
+      )}
     </div>
   );
 };
