@@ -59,31 +59,18 @@ const Navbar = () => {
     }
   };
 
-  // Prevent body scroll when mobile menu is open and fix layout shifts
+  // Prevent body scroll when mobile menu is open - simplified without position changes
   useEffect(() => {
     if (isOpen) {
-      // Prevent scrolling and fix viewport
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.top = `-${window.scrollY}px`;
+      // Add class to prevent scrolling without changing position
+      document.body.classList.add('mobile-menu-open');
     } else {
-      // Restore scrolling
-      const scrollY = document.body.style.top;
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
+      // Remove class to restore scrolling
+      document.body.classList.remove('mobile-menu-open');
     }
-    
+
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
+      document.body.classList.remove('mobile-menu-open');
     };
   }, [isOpen]);
 
@@ -194,8 +181,8 @@ const Navbar = () => {
         </div>
 
         {/* Enhanced Mobile Navigation */}
-        <div className={`md:hidden fixed left-0 right-0 transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`} style={{ top: '80px', width: '100vw', zIndex: 40 }}>
-          <div className="bg-background/95 backdrop-blur-xl border-t border-vybe-cyan/30 px-6 py-4 space-y-4 shadow-lg shadow-vybe-cyan/10">
+        <div className={`md:hidden fixed left-0 right-0 transition-all duration-500 ease-in-out ${isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`} style={{ top: '80px', width: '100vw', zIndex: 40, maxHeight: isOpen ? 'calc(100vh - 80px)' : '0' }}>
+          <div className="bg-background/95 backdrop-blur-xl border-t border-vybe-cyan/30 px-6 py-4 space-y-4 shadow-lg shadow-vybe-cyan/10 overflow-y-auto h-full">
             {/* Navigation Links */}
             <div className="space-y-3 stagger-in">
               <a 
