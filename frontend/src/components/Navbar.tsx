@@ -88,7 +88,7 @@ const Navbar = () => {
   }, [isOpen]);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-xl bg-background/80 border-b border-vybe-cyan/30 shadow-lg shadow-vybe-cyan/10' : 'backdrop-blur-lg border-b border-vybe-cyan/20'}`} style={{ position: 'fixed', top: 0, width: '100vw' }}>
+    <nav className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-xl bg-background/80 border-b border-vybe-cyan/30 shadow-lg shadow-vybe-cyan/10' : 'backdrop-blur-lg border-b border-vybe-cyan/20'}`} style={{ position: 'fixed', top: 0, width: '100%' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ width: '100%' }}>
         <div className="flex items-center justify-between h-20" style={{ minHeight: '80px' }}>
           {/* Enhanced Logo */}

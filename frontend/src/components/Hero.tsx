@@ -7,16 +7,16 @@ const Hero = () => {
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-vybe-primary/10 via-vybe-secondary/10 to-vybe-accent/10 animate-pulse pointer-events-none"></div>
       
-      {/* Floating orbs with improved animations */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-vybe-primary/20 rounded-full blur-3xl animate-float parallax pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-vybe-secondary/20 rounded-full blur-3xl animate-float parallax pointer-events-none" style={{ animationDelay: '2s' }}></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-vybe-accent/15 rounded-full blur-2xl animate-float parallax pointer-events-none" style={{ animationDelay: '4s' }}></div>
+      {/* Floating orbs with improved animations - fully contained within safe area */}
+      <div className="absolute top-1/4 left-4 sm:left-12 lg:left-20 w-16 h-16 sm:w-32 sm:h-32 lg:w-64 lg:h-64 bg-vybe-primary/20 rounded-full blur-3xl animate-float parallax pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-4 sm:right-12 lg:right-20 w-16 h-16 sm:w-32 sm:h-32 lg:w-64 lg:h-64 bg-vybe-secondary/20 rounded-full blur-3xl animate-float parallax pointer-events-none" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 sm:w-24 sm:h-24 lg:w-48 lg:h-48 bg-vybe-accent/15 rounded-full blur-2xl animate-float parallax pointer-events-none" style={{ animationDelay: '4s' }}></div>
       
-      {/* Connection lines animation */}
+      {/* Connection lines animation - mobile responsive */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <div className="absolute top-1/3 left-1/4 w-px h-32 bg-gradient-to-b from-vybe-primary to-transparent animate-pulse"></div>
-        <div className="absolute top-2/3 right-1/3 w-32 h-px bg-gradient-to-r from-vybe-secondary to-transparent animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/3 left-1/2 w-px h-24 bg-gradient-to-t from-vybe-accent to-transparent animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/3 left-1/4 w-px h-16 sm:h-32 bg-gradient-to-b from-vybe-primary to-transparent animate-pulse"></div>
+        <div className="absolute top-2/3 right-1/3 w-16 sm:w-32 h-px bg-gradient-to-r from-vybe-secondary to-transparent animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/3 left-1/2 w-px h-12 sm:h-24 bg-gradient-to-t from-vybe-accent to-transparent animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
       
       <div className="text-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
