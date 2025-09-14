@@ -32,39 +32,39 @@ import {
 
 const THEME_COLORS = {
   recovery: {
-    bg: 'bg-gradient-to-br from-orange-50/50 to-red-50/30 dark:from-orange-950/30 dark:to-red-950/20',
-    text: 'text-orange-700 dark:text-orange-400',
-    icon: 'text-orange-600 dark:text-orange-500',
-    border: 'border-orange-200/60 dark:border-orange-800/60',
-    hover: 'hover:bg-orange-100/60 dark:hover:bg-orange-900/40'
+    bg: 'bg-card/80',
+    text: 'text-primary',
+    icon: 'text-primary',
+    border: 'border-primary/30',
+    hover: 'hover:bg-card'
   },
   meditation: {
-    bg: 'bg-gradient-to-br from-purple-50/50 to-indigo-50/30 dark:from-purple-950/30 dark:to-indigo-950/20',
-    text: 'text-purple-700 dark:text-purple-400',
-    icon: 'text-purple-600 dark:text-purple-500',
-    border: 'border-purple-200/60 dark:border-purple-800/60',
-    hover: 'hover:bg-purple-100/60 dark:hover:bg-purple-900/40'
+    bg: 'bg-card/80',
+    text: 'text-secondary',
+    icon: 'text-secondary',
+    border: 'border-secondary/30',
+    hover: 'hover:bg-card'
   },
   fitness: {
-    bg: 'bg-gradient-to-br from-green-50/50 to-emerald-50/30 dark:from-green-950/30 dark:to-emerald-950/20',
-    text: 'text-green-700 dark:text-green-400',
-    icon: 'text-green-600 dark:text-green-500',
-    border: 'border-green-200/60 dark:border-green-800/60',
-    hover: 'hover:bg-green-100/60 dark:hover:bg-green-900/40'
+    bg: 'bg-card/80',
+    text: 'text-accent',
+    icon: 'text-accent',
+    border: 'border-accent/30',
+    hover: 'hover:bg-card'
   },
   music: {
-    bg: 'bg-gradient-to-br from-pink-50/50 to-rose-50/30 dark:from-pink-950/30 dark:to-rose-950/20',
-    text: 'text-pink-700 dark:text-pink-400',
-    icon: 'text-pink-600 dark:text-pink-500',
-    border: 'border-pink-200/60 dark:border-pink-800/60',
-    hover: 'hover:bg-pink-100/60 dark:hover:bg-pink-900/40'
+    bg: 'bg-card/80',
+    text: 'text-primary',
+    icon: 'text-primary',
+    border: 'border-primary/30',
+    hover: 'hover:bg-card'
   },
   art: {
-    bg: 'bg-gradient-to-br from-yellow-50/50 to-amber-50/30 dark:from-yellow-950/30 dark:to-amber-950/20',
-    text: 'text-yellow-700 dark:text-yellow-400',
-    icon: 'text-yellow-600 dark:text-yellow-500',
-    border: 'border-yellow-200/60 dark:border-yellow-800/60',
-    hover: 'hover:bg-yellow-100/60 dark:hover:bg-yellow-900/40'
+    bg: 'bg-card/80',
+    text: 'text-secondary',
+    icon: 'text-secondary',
+    border: 'border-secondary/30',
+    hover: 'hover:bg-card'
   }
 };
 
@@ -153,7 +153,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm" className="relative hover:bg-muted/50 rounded-xl">
                 <Bell className="w-5 h-5 text-muted-foreground" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-sm"></span>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-primary to-secondary rounded-full shadow-sm"></span>
               </Button>
 
               <Button variant="ghost" size="sm" className="hover:bg-muted/50 rounded-xl">
@@ -226,7 +226,7 @@ const Dashboard: React.FC = () => {
                     </div>
                   );
                 })}
-                <Button variant="outline" size="sm" className="w-full mt-4 rounded-xl border-2 hover:bg-gradient-to-r hover:from-orange-500 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-200">
+                <Button variant="outline" size="sm" className="w-full mt-4 rounded-xl border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Theme
                 </Button>
@@ -334,7 +334,7 @@ const Dashboard: React.FC = () => {
                     <Filter className="w-4 h-4 mr-2" />
                     Filter
                   </Button>
-                  <Button size="sm" className="bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                  <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground">
                     <Plus className="w-4 h-4 mr-2" />
                     New Post
                   </Button>
@@ -368,7 +368,7 @@ const Dashboard: React.FC = () => {
                                 <span className="flex items-center px-3 py-1 bg-accent/20 text-accent rounded-full font-medium">⏰ Next in 30min</span>
                               </div>
                             </div>
-                            <Button variant="outline" className={`${colors.text} border-2 rounded-xl px-6 hover:bg-gradient-to-r hover:from-orange-500 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-200`}>
+                            <Button variant="outline" className={`${colors.text} border-2 rounded-xl px-6 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200`}>
                               Join Now
                             </Button>
                           </div>
@@ -405,7 +405,7 @@ const Dashboard: React.FC = () => {
                                   ✓ Following
                                 </Badge>
                               ) : (
-                                <Button variant="outline" size="sm" className={`${colors.text} border-2 rounded-xl px-6 hover:bg-gradient-to-r hover:from-orange-500 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-200`}>
+                                <Button variant="outline" size="sm" className={`${colors.text} border-2 rounded-xl px-6 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200`}>
                                   Follow
                                 </Button>
                               )}
@@ -476,29 +476,34 @@ const Dashboard: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {[
-                  { tag: '#MorningMeditation', posts: '2.3k posts', creator: { name: 'Sarah', avatar: 'S', gradient: 'from-purple-400 to-indigo-500' } },
-                  { tag: '#RecoveryJourney', posts: '1.8k posts', creator: { name: 'Marcus', avatar: 'M', gradient: 'from-orange-400 to-pink-500' } },
-                  { tag: '#FitnessGoals', posts: '1.2k posts', creator: { name: 'Emma', avatar: 'E', gradient: 'from-green-400 to-teal-500' } },
-                  { tag: '#ArtTherapy', posts: '956 posts', creator: { name: 'Alex', avatar: 'A', gradient: 'from-yellow-400 to-orange-500' } }
-                ].map((trend, index) => (
-                  <div key={trend.tag} className="flex justify-between items-center hover:bg-muted/50 p-3 rounded-xl cursor-pointer transition-all duration-200 backdrop-blur-sm">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="w-8 h-8">
-                        <AvatarFallback className={`bg-gradient-to-r ${trend.creator.gradient} text-white text-xs font-semibold`}>
-                          {trend.creator.avatar}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold text-sm text-foreground flex items-center">
-                          {trend.tag}
-                          <span className="text-xs text-muted-foreground ml-2">by {trend.creator.name}</span>
-                        </p>
-                        <p className="text-xs text-muted-foreground">{trend.posts}</p>
+                  { tag: '#MorningMeditation', posts: '2.3k posts', creator: { name: 'Sarah', avatar: 'S' } },
+                  { tag: '#RecoveryJourney', posts: '1.8k posts', creator: { name: 'Marcus', avatar: 'M' } },
+                  { tag: '#FitnessGoals', posts: '1.2k posts', creator: { name: 'Emma', avatar: 'E' } },
+                  { tag: '#ArtTherapy', posts: '956 posts', creator: { name: 'Alex', avatar: 'A' } }
+                ].map((trend, index) => {
+                  const gradients = ['from-primary to-secondary', 'from-secondary to-accent', 'from-accent to-primary', 'from-primary to-accent'];
+                  const gradient = gradients[index % gradients.length];
+
+                  return (
+                    <div key={trend.tag} className="flex justify-between items-center hover:bg-muted/50 p-3 rounded-xl cursor-pointer transition-all duration-200 backdrop-blur-sm">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarFallback className={`bg-gradient-to-r ${gradient} text-primary-foreground text-xs font-semibold`}>
+                            {trend.creator.avatar}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-semibold text-sm text-foreground flex items-center">
+                            {trend.tag}
+                            <span className="text-xs text-muted-foreground ml-2">by {trend.creator.name}</span>
+                          </p>
+                          <p className="text-xs text-muted-foreground">{trend.posts}</p>
+                        </div>
                       </div>
+                      <TrendingUp className="w-4 h-4 text-muted-foreground" />
                     </div>
-                    <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
 
@@ -514,12 +519,14 @@ const Dashboard: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 {[
-                  { name: 'Morning Breathwork', time: '9:00 AM', theme: 'recovery', creator: { name: 'Dr. Sarah', avatar: '🧘‍♀️', gradient: 'from-orange-400 to-pink-500' } },
-                  { name: 'Mindful Movement', time: '2:00 PM', theme: 'fitness', creator: { name: 'Coach Emma', avatar: '💪', gradient: 'from-green-400 to-teal-500' } },
-                  { name: 'Sound Healing', time: '7:00 PM', theme: 'meditation', creator: { name: 'Master Alex', avatar: '🎵', gradient: 'from-purple-400 to-indigo-500' } }
+                  { name: 'Morning Breathwork', time: '9:00 AM', theme: 'recovery', creator: { name: 'Dr. Sarah', avatar: '🧘‍♀️' } },
+                  { name: 'Mindful Movement', time: '2:00 PM', theme: 'fitness', creator: { name: 'Coach Emma', avatar: '💪' } },
+                  { name: 'Sound Healing', time: '7:00 PM', theme: 'meditation', creator: { name: 'Master Alex', avatar: '🎵' } }
                 ].map((session, index) => {
                   const colors = THEME_COLORS[session.theme as keyof typeof THEME_COLORS] || THEME_COLORS.recovery;
                   const IconComponent = THEME_ICONS[session.theme as keyof typeof THEME_ICONS] || Heart;
+                  const gradients = ['from-primary to-secondary', 'from-secondary to-accent', 'from-accent to-primary'];
+                  const gradient = gradients[index % gradients.length];
 
                   return (
                     <div key={index} className="flex items-center space-x-3 p-3 hover:bg-muted/50 rounded-xl cursor-pointer transition-all duration-200 backdrop-blur-sm">
@@ -527,7 +534,7 @@ const Dashboard: React.FC = () => {
                         <div className={`w-12 h-12 rounded-xl bg-card/50 border border-border/30 flex items-center justify-center shadow-sm`}>
                           <IconComponent className={`w-5 h-5 text-primary`} />
                         </div>
-                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r ${session.creator.gradient} rounded-full flex items-center justify-center text-xs shadow-sm`}>
+                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r ${gradient} rounded-full flex items-center justify-center text-xs shadow-sm`}>
                           {session.creator.avatar}
                         </div>
                       </div>
@@ -556,25 +563,30 @@ const Dashboard: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  { name: 'Sarah M.', role: 'Recovery Coach', mutual: '3 mutual', gradient: 'from-pink-400 to-rose-500' },
-                  { name: 'Alex K.', role: 'Meditation Guide', mutual: '5 mutual', gradient: 'from-blue-400 to-indigo-500' },
-                  { name: 'Emma L.', role: 'Fitness Creator', mutual: '2 mutual', gradient: 'from-green-400 to-emerald-500' }
-                ].map((person, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 hover:bg-muted/50 rounded-xl transition-all duration-200">
-                    <Avatar className="w-12 h-12 ring-2 ring-white/50">
-                      <AvatarFallback className={`bg-gradient-to-r ${person.gradient} text-white font-semibold`}>
-                        {person.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm text-foreground">{person.name}</p>
-                      <p className="text-xs text-muted-foreground">{person.role} • {person.mutual}</p>
+                  { name: 'Sarah M.', role: 'Recovery Coach', mutual: '3 mutual' },
+                  { name: 'Alex K.', role: 'Meditation Guide', mutual: '5 mutual' },
+                  { name: 'Emma L.', role: 'Fitness Creator', mutual: '2 mutual' }
+                ].map((person, index) => {
+                  const gradients = ['from-primary to-secondary', 'from-secondary to-accent', 'from-accent to-primary'];
+                  const gradient = gradients[index % gradients.length];
+
+                  return (
+                    <div key={index} className="flex items-center space-x-3 p-3 hover:bg-muted/50 rounded-xl transition-all duration-200">
+                      <Avatar className="w-12 h-12 ring-2 ring-border/30">
+                        <AvatarFallback className={`bg-gradient-to-r ${gradient} text-primary-foreground font-semibold`}>
+                          {person.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm text-foreground">{person.name}</p>
+                        <p className="text-xs text-muted-foreground">{person.role} • {person.mutual}</p>
+                      </div>
+                      <Button size="sm" variant="outline" className="rounded-lg border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
+                        Follow
+                      </Button>
                     </div>
-                    <Button size="sm" variant="outline" className="rounded-lg border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
-                      Follow
-                    </Button>
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
           </div>

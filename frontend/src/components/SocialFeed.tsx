@@ -41,7 +41,7 @@ const THEME_COLORS = {
     border: 'border-primary/30',
     accent: 'bg-primary',
     hover: 'hover:bg-card',
-    gradient: 'from-orange-400 via-orange-500 to-pink-500', // Recovery: warm orange/pink gradient
+    gradient: 'from-primary via-primary to-secondary', // Uses theme CSS variables
     glow: 'shadow-primary/20'
   },
   meditation: {
@@ -51,7 +51,7 @@ const THEME_COLORS = {
     border: 'border-secondary/30',
     accent: 'bg-secondary',
     hover: 'hover:bg-card',
-    gradient: 'from-purple-400 via-indigo-500 to-blue-500', // Meditation: purple/blue gradient
+    gradient: 'from-secondary via-secondary to-accent', // Uses theme CSS variables
     glow: 'shadow-secondary/20'
   },
   fitness: {
@@ -61,7 +61,7 @@ const THEME_COLORS = {
     border: 'border-accent/30',
     accent: 'bg-accent',
     hover: 'hover:bg-card',
-    gradient: 'from-green-400 via-emerald-500 to-teal-500', // Fitness: green/teal gradient
+    gradient: 'from-accent via-accent to-primary', // Uses theme CSS variables
     glow: 'shadow-accent/20'
   }
 };
@@ -370,7 +370,7 @@ const SocialFeed: React.FC = () => {
                       onClick={() => setSelectedTheme(theme as keyof typeof THEME_COLORS)}
                       className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                         isSelected
-                          ? `bg-gradient-to-r ${colors.gradient} text-white shadow-lg border-2 border-white/20`
+                          ? `bg-gradient-to-r ${colors.gradient} text-primary-foreground shadow-lg border-2 border-primary/20`
                           : 'bg-card border border-border/30 text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                     >
@@ -457,16 +457,16 @@ const SocialFeed: React.FC = () => {
                           {post.isAnonymous ? 'Anonymous Warrior' : post.author.name}
                         </h3>
                         {post.author.isVerified && (
-                          <Award className="w-4 h-4 text-blue-500" />
+                          <Award className="w-4 h-4 text-primary" />
                         )}
                         {post.author.isCreator && (
-                          <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground text-xs px-2 py-1">
+                          <Badge className="bg-primary/20 text-primary border border-primary/30 text-xs px-2 py-1">
                             Creator
                           </Badge>
                         )}
                       </div>
                       <div className="flex items-center space-x-2 mt-1 flex-wrap">
-                        <Badge className={`text-xs bg-gradient-to-r ${themeColors.gradient} text-white border-0 font-semibold px-3 py-1 shadow-sm`}>
+                        <Badge className={`text-xs bg-gradient-to-r ${themeColors.gradient} text-primary-foreground border-0 font-semibold px-3 py-1 shadow-sm`}>
                           <ThemeIcon className="w-3 h-3 mr-1" />
                           {post.theme.toUpperCase()} LOOPROOM
                         </Badge>
@@ -509,7 +509,7 @@ const SocialFeed: React.FC = () => {
                         <div className="flex items-center space-x-3">
                           <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full ${themeColors.accent} flex items-center justify-center`}>
                             {post.looproom.isLive ? (
-                              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                              <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
                             ) : (
                               <Play className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
                             )}
@@ -523,7 +523,7 @@ const SocialFeed: React.FC = () => {
                                 {post.looproom.participants} participants
                               </span>
                               {post.looproom.isLive && (
-                                <Badge className="bg-red-500 text-white text-xs">
+                                <Badge className="bg-primary text-primary-foreground text-xs">
                                   🔴 LIVE
                                 </Badge>
                               )}
@@ -551,7 +551,7 @@ const SocialFeed: React.FC = () => {
                         onClick={() => handleReaction(post.id, type)}
                         className={`flex items-center space-x-1 px-2 lg:px-3 py-1 lg:py-1.5 rounded-full text-xs lg:text-sm transition-all hover:bg-muted/60 whitespace-nowrap ${
                           post.userReacted === type
-                            ? `bg-gradient-to-r ${themeColors.gradient} text-white shadow-md ring-2 ring-white/20`
+                            ? `bg-gradient-to-r ${themeColors.gradient} text-primary-foreground shadow-md ring-2 ring-primary/20`
                             : 'text-muted-foreground hover:text-foreground'
                         }`}
                       >
@@ -573,17 +573,17 @@ const SocialFeed: React.FC = () => {
               <CardContent className="px-4 lg:px-6 py-3 lg:py-4 border-t border-border/30">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4 lg:space-x-6">
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 p-0">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary p-0">
                       <Heart className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2" />
                       <span className="font-medium text-xs lg:text-sm">{post.stats.likes}</span>
                     </Button>
 
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 p-0">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-secondary p-0">
                       <MessageCircle className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2" />
                       <span className="font-medium text-xs lg:text-sm">{post.stats.comments}</span>
                     </Button>
 
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 p-0">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-accent p-0">
                       <Share2 className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2" />
                       <span className="font-medium text-xs lg:text-sm">{post.stats.shares}</span>
                     </Button>
