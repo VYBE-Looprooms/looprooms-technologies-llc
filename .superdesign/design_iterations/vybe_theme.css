@@ -1,0 +1,323 @@
+:root {
+  /* VYBE Emotional Wellness Theme */
+  /* Inspired by healing, growth, and positive transformation */
+
+  /* Core Brand Colors */
+  --vybe-primary: oklch(0.6489 0.2370 26.9728); /* Warm healing orange */
+  --vybe-secondary: oklch(0.5635 0.2408 260.8178); /* Calming purple */
+  --vybe-accent: oklch(0.7323 0.2492 142.4953); /* Growth green */
+  --vybe-tertiary: oklch(0.5931 0.2726 328.3634); /* Inspiration pink */
+
+  /* Semantic Colors for Looprooms */
+  --looproom-recovery: oklch(0.6489 0.2370 26.9728); /* Warm orange */
+  --looproom-meditation: oklch(0.5635 0.2408 260.8178); /* Calming purple */
+  --looproom-fitness: oklch(0.7323 0.2492 142.4953); /* Energizing green */
+  --looproom-music: oklch(0.5931 0.2726 328.3634); /* Creative pink */
+  --looproom-art: oklch(0.6800 0.2200 45.0000); /* Artistic yellow */
+
+  /* Background Hierarchy */
+  --background: oklch(1.0000 0 0); /* Pure white base */
+  --background-soft: oklch(0.9850 0.0050 270.0000); /* Very subtle purple tint */
+  --background-card: oklch(0.9900 0.0100 270.0000); /* Card background */
+  --background-elevated: oklch(0.9750 0.0150 270.0000); /* Modal/drawer background */
+
+  /* Text Hierarchy */
+  --foreground: oklch(0.1200 0.0100 270.0000); /* Almost black with purple hint */
+  --foreground-secondary: oklch(0.4500 0.0200 270.0000); /* Medium gray */
+  --foreground-muted: oklch(0.6500 0.0150 270.0000); /* Light gray */
+  --foreground-disabled: oklch(0.8000 0.0100 270.0000); /* Very light gray */
+
+  /* Interactive States */
+  --interactive-primary: var(--vybe-primary);
+  --interactive-primary-hover: oklch(0.7000 0.2500 26.9728);
+  --interactive-secondary: var(--vybe-secondary);
+  --interactive-secondary-hover: oklch(0.6200 0.2600 260.8178);
+
+  /* Borders and Dividers */
+  --border-primary: oklch(0.9200 0.0200 270.0000);
+  --border-secondary: oklch(0.9500 0.0150 270.0000);
+  --border-accent: oklch(0.8500 0.0300 270.0000);
+
+  /* Status Colors */
+  --status-success: oklch(0.7500 0.2000 142.0000); /* Gentle green */
+  --status-warning: oklch(0.7800 0.2200 65.0000); /* Soft orange */
+  --status-error: oklch(0.6200 0.2400 25.0000); /* Muted red */
+  --status-info: oklch(0.6800 0.2000 250.0000); /* Calming blue */
+
+  /* VYBE Reaction Colors */
+  --reaction-progress: oklch(0.6500 0.2800 30.0000); /* Fire orange */
+  --reaction-inspired: oklch(0.5800 0.2600 320.0000); /* Heart purple */
+  --reaction-growth: oklch(0.7200 0.2400 140.0000); /* Plant green */
+  --reaction-breakthrough: oklch(0.7500 0.2000 60.0000); /* Sparkle gold */
+
+  /* Typography Scale */
+  --font-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  --font-brand: 'Space Grotesk', var(--font-sans);
+
+  /* Typography Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* Spacing Scale (Based on 8px grid) */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem;  /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem;    /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem;  /* 24px */
+  --space-8: 2rem;    /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem;   /* 48px */
+  --space-16: 4rem;   /* 64px */
+  --space-20: 5rem;   /* 80px */
+  --space-24: 6rem;   /* 96px */
+
+  /* Border Radius Scale */
+  --radius-none: 0px;
+  --radius-sm: 0.125rem; /* 2px */
+  --radius-base: 0.375rem; /* 6px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem; /* 16px */
+  --radius-2xl: 1.5rem; /* 24px */
+  --radius-full: 9999px;
+
+  /* Shadow System (Emotional/Soft) */
+  --shadow-xs: 0 1px 3px 0 oklch(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.08);
+  --shadow-base: 0 4px 8px 0 oklch(0 0 0 / 0.06), 0 1px 3px 0 oklch(0 0 0 / 0.06);
+  --shadow-md: 0 8px 16px 0 oklch(0 0 0 / 0.08), 0 2px 4px 0 oklch(0 0 0 / 0.04);
+  --shadow-lg: 0 16px 32px 0 oklch(0 0 0 / 0.10), 0 4px 8px 0 oklch(0 0 0 / 0.06);
+  --shadow-xl: 0 24px 48px 0 oklch(0 0 0 / 0.12), 0 8px 16px 0 oklch(0 0 0 / 0.08);
+
+  /* Gradient System */
+  --gradient-primary: linear-gradient(135deg, var(--vybe-primary), var(--vybe-secondary));
+  --gradient-healing: linear-gradient(135deg, var(--looproom-recovery), var(--looproom-meditation));
+  --gradient-growth: linear-gradient(135deg, var(--vybe-accent), var(--looproom-fitness));
+  --gradient-inspiration: linear-gradient(135deg, var(--vybe-tertiary), var(--looproom-music));
+  --gradient-background: linear-gradient(180deg, var(--background), var(--background-soft));
+
+  /* Animation Durations */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --duration-slower: 500ms;
+  --duration-slowest: 750ms;
+
+  /* Animation Easings */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0.0, 1, 1);
+  --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-emotional: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Custom gentle easing */
+
+  /* Z-Index Scale */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+
+  /* Layout Breakpoints (for JS usage) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Component Specific Variables */
+
+  /* Cards */
+  --card-background: var(--background-card);
+  --card-border: var(--border-secondary);
+  --card-radius: var(--radius-lg);
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-md);
+  --card-padding: var(--space-6);
+
+  /* Buttons */
+  --button-radius: var(--radius-md);
+  --button-shadow: var(--shadow-xs);
+  --button-shadow-hover: var(--shadow-sm);
+  --button-transition: all var(--duration-fast) var(--ease-out);
+
+  /* Posts/Feed Items */
+  --post-border: var(--border-primary);
+  --post-radius: var(--radius-xl);
+  --post-shadow: var(--shadow-base);
+  --post-shadow-hover: var(--shadow-md);
+  --post-padding: var(--space-6);
+  --post-gap: var(--space-4);
+
+  /* Avatars */
+  --avatar-ring-width: 2px;
+  --avatar-ring-color: var(--vybe-primary);
+  --avatar-ring-offset: 2px;
+
+  /* Progress Indicators */
+  --progress-background: oklch(0.9400 0.0100 270.0000);
+  --progress-fill: var(--gradient-growth);
+  --progress-height: 8px;
+  --progress-radius: var(--radius-full);
+
+  /* Reactions */
+  --reaction-size: 44px;
+  --reaction-icon-size: 20px;
+  --reaction-border-radius: var(--radius-lg);
+  --reaction-active-scale: 1.1;
+  --reaction-transition: all var(--duration-normal) var(--ease-emotional);
+
+  /* Chain/Connection Visualizations */
+  --chain-line-color: var(--vybe-primary);
+  --chain-line-width: 2px;
+  --chain-node-size: 12px;
+  --chain-glow: 0 0 20px oklch(0.6489 0.2370 26.9728 / 0.3);
+
+  /* Looproom Specific */
+  --looproom-badge-size: 24px;
+  --looproom-preview-height: 120px;
+  --looproom-progress-height: 6px;
+
+  /* Mobile Specific Adjustments */
+  --mobile-padding: var(--space-4);
+  --mobile-card-radius: var(--radius-lg);
+  --mobile-button-height: 48px;
+  --mobile-touch-target: 44px;
+}
+
+/* Dark Mode Variables (Optional Enhancement) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.1100 0.0100 270.0000);
+    --background-soft: oklch(0.1200 0.0150 270.0000);
+    --background-card: oklch(0.1400 0.0200 270.0000);
+    --background-elevated: oklch(0.1600 0.0250 270.0000);
+
+    --foreground: oklch(0.9500 0.0100 270.0000);
+    --foreground-secondary: oklch(0.7500 0.0200 270.0000);
+    --foreground-muted: oklch(0.6000 0.0150 270.0000);
+    --foreground-disabled: oklch(0.4000 0.0100 270.0000);
+
+    --border-primary: oklch(0.2500 0.0200 270.0000);
+    --border-secondary: oklch(0.2000 0.0150 270.0000);
+    --border-accent: oklch(0.3000 0.0300 270.0000);
+
+    --card-shadow: 0 4px 8px 0 oklch(0 0 0 / 0.15);
+    --card-shadow-hover: 0 8px 16px 0 oklch(0 0 0 / 0.20);
+  }
+}
+
+/* Utility Classes for Common Patterns */
+.vybe-gradient-text {
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.vybe-card {
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: var(--card-padding);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.vybe-card:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.vybe-button-primary {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  border-radius: var(--button-radius);
+  box-shadow: var(--button-shadow);
+  transition: var(--button-transition);
+  font-weight: var(--font-weight-medium);
+}
+
+.vybe-button-primary:hover {
+  box-shadow: var(--button-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.vybe-reaction-active {
+  transform: scale(var(--reaction-active-scale));
+  box-shadow: 0 0 0 2px var(--vybe-primary);
+}
+
+.vybe-chain-glow {
+  box-shadow: var(--chain-glow);
+}
+
+/* Responsive Typography Scale */
+.vybe-heading-xl {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: var(--font-weight-black);
+  line-height: 1.1;
+  font-family: var(--font-brand);
+}
+
+.vybe-heading-lg {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  font-family: var(--font-brand);
+}
+
+.vybe-body-lg {
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  line-height: 1.6;
+  font-family: var(--font-sans);
+}
+
+.vybe-caption {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  color: var(--foreground-muted);
+  font-family: var(--font-sans);
+}
+
+/* Animation Classes */
+.vybe-fade-in {
+  animation: vybeFedeIn var(--duration-normal) var(--ease-out);
+}
+
+@keyframes vybeFedeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vybe-bounce-in {
+  animation: vybeBounceIn var(--duration-slow) var(--ease-bounce);
+}
+
+@keyframes vybeBounceIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

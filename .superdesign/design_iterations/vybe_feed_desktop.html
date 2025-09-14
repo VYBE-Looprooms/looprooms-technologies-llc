@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYBE LOOPROOMS™ - Transformation Feed</title>
+    <link rel="stylesheet" href="vybe_theme.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Enhanced VYBE-specific styles */
+        body {
+            font-family: var(--font-sans);
+            background: var(--gradient-background);
+            color: var(--foreground);
+            overflow-x: hidden;
+        }
+
+        .vybe-nav {
+            backdrop-filter: blur(20px);
+            background: oklch(1 0 0 / 0.8);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .vybe-sidebar {
+            background: var(--background-card);
+            border-right: 1px solid var(--border-primary);
+            backdrop-filter: blur(10px);
+        }
+
+        .vybe-main-feed {
+            background: transparent;
+        }
+
+        .vybe-post {
+            background: var(--card-background);
+            border: 1px solid var(--card-border);
+            border-radius: var(--post-radius);
+            box-shadow: var(--post-shadow);
+            transition: all var(--duration-normal) var(--ease-out);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vybe-post::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity var(--duration-fast);
+        }
+
+        .vybe-post:hover::before {
+            opacity: 1;
+        }
+
+        .vybe-post:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--post-shadow-hover);
+        }
+
+        .vybe-reaction {
+            background: var(--background-soft);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--reaction-border-radius);
+            width: var(--reaction-size);
+            height: var(--reaction-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--reaction-transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .vybe-reaction:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .vybe-reaction.active {
+            transform: scale(var(--reaction-active-scale));
+            box-shadow: 0 0 0 2px var(--vybe-primary);
+        }
+
+        .vybe-chain-visualization {
+            background: linear-gradient(90deg, transparent, var(--vybe-primary), transparent);
+            height: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vybe-chain-visualization::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: var(--vybe-primary);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: var(--chain-glow);
+        }
+
+        .vybe-looproom-preview {
+            background: var(--gradient-healing);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vybe-progress-bar {
+            background: var(--progress-background);
+            height: var(--progress-height);
+            border-radius: var(--progress-radius);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .vybe-progress-fill {
+            background: var(--progress-fill);
+            height: 100%;
+            border-radius: var(--progress-radius);
+            transition: width var(--duration-slower) var(--ease-out);
+            position: relative;
+        }
+
+        .vybe-milestone-badge {
+            background: var(--gradient-inspiration);
+            color: white;
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-weight: var(--font-weight-semibold);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            animation: vybeBounceIn var(--duration-slow) var(--ease-bounce);
+        }
+
+        .vybe-live-indicator {
+            background: #ef4444;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: vybePulse 2s infinite;
+        }
+
+        @keyframes vybePulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.1);
+            }
+        }
+
+        .vybe-sparkle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 12px;
+            animation: vybeSparkle 2s infinite;
+        }
+
+        @keyframes vybeSparkle {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1) rotate(180deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) rotate(360deg);
+            }
+        }
+
+        .vybe-floating-action {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--duration-normal) var(--ease-out);
+            z-index: var(--z-fixed);
+        }
+
+        .vybe-floating-action:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .vybe-sidebar {
+                transform: translateX(-100%);
+                transition: transform var(--duration-normal);
+            }
+
+            .vybe-sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background-soft);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-accent);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--vybe-primary);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="vybe-nav fixed top-0 left-0 right-0 z-50 h-16">
+        <div class="max-w-full mx-auto px-6 h-full flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-r from-orange-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="vybe-gradient-text text-xl font-bold font-brand">VYBE LOOPROOMS™</span>
+                </div>
+
+                <div class="hidden md:flex items-center gap-6">
+                    <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i data-lucide="home" class="w-4 h-4"></i>
+                        <span class="font-medium">Feed</span>
+                    </button>
+                    <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i data-lucide="target" class="w-4 h-4"></i>
+                        <span class="font-medium">Journey</span>
+                    </button>
+                    <button class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i data-lucide="radio" class="w-4 h-4"></i>
+                        <span class="font-medium">Live</span>
+                        <div class="vybe-live-indicator"></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <input
+                        type="text"
+                        placeholder="Search journeys..."
+                        class="w-80 px-4 py-2 pl-10 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    >
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
+                </div>
+
+                <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+                </button>
+
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center cursor-pointer">
+                    <span class="text-white text-sm font-semibold">S</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="pt-16 flex min-h-screen">
+        <!-- Left Sidebar -->
+        <aside class="vybe-sidebar fixed left-0 top-16 h-[calc(100vh-4rem)] w-80 p-6 overflow-y-auto z-40">
+            <!-- Journey Progress -->
+            <div class="vybe-card mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="target" class="w-5 h-5 text-orange-500"></i>
+                    <h3 class="font-semibold">My Journey</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium">Recovery Path</span>
+                            <span class="text-xs text-gray-500">Day 30</span>
+                        </div>
+                        <div class="vybe-progress-bar">
+                            <div class="vybe-progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="text-center p-3 bg-orange-50 rounded-lg">
+                            <div class="text-lg font-bold text-orange-600">8</div>
+                            <div class="text-xs text-gray-600">Sessions</div>
+                        </div>
+                        <div class="text-center p-3 bg-purple-50 rounded-lg">
+                            <div class="text-lg font-bold text-purple-600">340</div>
+                            <div class="text-xs text-gray-600">VYBE Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Looprooms -->
+            <div class="vybe-card mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="play" class="w-5 h-5 text-purple-500"></i>
+                    <h3 class="font-semibold">Active Looprooms</h3>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="p-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg text-white cursor-pointer hover:shadow-lg transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium text-sm">Recovery Circle</span>
+                            <div class="flex items-center gap-1">
+                                <div class="vybe-live-indicator"></div>
+                                <span class="text-xs">Live</span>
+                            </div>
+                        </div>
+                        <div class="text-xs opacity-90">12 people healing together</div>
+                    </div>
+
+                    <div class="p-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg text-white cursor-pointer hover:shadow-lg transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium text-sm">Mindful Meditation</span>
+                            <span class="text-xs">Starting 2pm</span>
+                        </div>
+                        <div class="text-xs opacity-90">8 people registered</div>
+                    </div>
+
+                    <div class="p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-lg text-white cursor-pointer hover:shadow-lg transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium text-sm">Movement Therapy</span>
+                            <span class="text-xs">Tomorrow 9am</span>
+                        </div>
+                        <div class="text-xs opacity-90">15 people registered</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="vybe-card">
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="zap" class="w-5 h-5 text-green-500"></i>
+                    <h3 class="font-semibold">Quick Actions</h3>
+                </div>
+
+                <div class="space-y-2">
+                    <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                        <span class="text-sm font-medium">Join Live Session</span>
+                    </button>
+                    <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span class="text-sm font-medium">Schedule Journey</span>
+                    </button>
+                    <button class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        <span class="text-sm font-medium">Find Community</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Feed Area -->
+        <main class="vybe-main-feed flex-1 ml-80 px-8 py-6">
+            <div class="max-w-2xl mx-auto space-y-6">
+                <!-- Create Post Card -->
+                <div class="vybe-card">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-orange-500"></i>
+                        <h3 class="vybe-gradient-text font-semibold">Share Your Transformation</h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex gap-4">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                                <span class="text-white text-sm font-semibold">S</span>
+                            </div>
+                            <div class="flex-1">
+                                <textarea
+                                    class="w-full p-4 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    rows="3"
+                                    placeholder="What transformation are you experiencing today? Share your journey..."
+                                ></textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <button class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-orange-500 transition-colors">
+                                    <i data-lucide="image" class="w-4 h-4"></i>
+                                    <span>Photo</span>
+                                </button>
+                                <button class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-purple-500 transition-colors">
+                                    <i data-lucide="target" class="w-4 h-4"></i>
+                                    <span>Milestone</span>
+                                </button>
+                                <button class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-green-500 transition-colors">
+                                    <i data-lucide="eye-off" class="w-4 h-4"></i>
+                                    <span>Anonymous</span>
+                                </button>
+                            </div>
+                            <button class="px-6 py-2 bg-gradient-to-r from-orange-500 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transition-all transform hover:scale-105">
+                                Share Journey
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Milestone Post -->
+                <article class="vybe-post p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-orange-400 to-orange-600 flex items-center justify-center">
+                                    <span class="text-white font-semibold">SM</span>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <i data-lucide="check" class="w-3 h-3 text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-semibold">Sarah M.</h4>
+                                    <span class="vybe-milestone-badge text-xs">
+                                        <i data-lucide="award" class="w-3 h-3"></i>
+                                        Creator
+                                    </span>
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium">Featured</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-500">
+                                    <span>Recovery Coach</span>
+                                    <span>•</span>
+                                    <span>2 hours ago</span>
+                                    <span>•</span>
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="trophy" class="w-3 h-3 text-orange-500"></i>
+                                        <span class="text-orange-600 font-medium">Milestone</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <p class="text-gray-800 leading-relaxed">
+                            Just completed my 10th Recovery Looproom session! 🙏 The breathing exercises are transforming how I process emotions. Each session builds on the last - feeling the power of consistent healing. Grateful for this journey and everyone walking it with me.
+                        </p>
+
+                        <!-- Achievement Badge -->
+                        <div class="p-4 bg-gradient-to-r from-orange-50 to-purple-50 rounded-xl border border-orange-200">
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">🏆</div>
+                                <div class="flex-1">
+                                    <h5 class="font-semibold text-orange-800">10 Session Milestone</h5>
+                                    <p class="text-sm text-orange-600">Completed 10 Recovery sessions</p>
+                                    <div class="mt-2 vybe-progress-bar">
+                                        <div class="vybe-progress-fill" style="width: 100%">
+                                            <div class="vybe-sparkle" style="left: 90%; top: -5px;">✨</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm font-medium">
+                                    Achievement Unlocked!
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Looproom Preview -->
+                        <div class="vybe-looproom-preview">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="play" class="w-6 h-6 text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h5 class="font-semibold text-white">Healing Through Breathwork</h5>
+                                        <span class="px-2 py-1 bg-white/20 rounded text-xs">Session Streak Champion</span>
+                                    </div>
+                                    <p class="text-white/80 text-sm mb-2">Recovery Looproom</p>
+                                    <div class="flex justify-between text-xs text-white/90 mb-1">
+                                        <span>Progress</span>
+                                        <span>66%</span>
+                                    </div>
+                                    <div class="vybe-progress-bar">
+                                        <div class="bg-white/30 h-2 rounded">
+                                            <div class="bg-white h-full rounded" style="width: 66%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors">
+                                    <i data-lucide="play" class="w-3 h-3 mr-1 inline"></i>
+                                    Experience
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chain Connection -->
+                        <div class="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+                            <div class="flex items-center gap-3 mb-2">
+                                <i data-lucide="link-2" class="w-4 h-4 text-blue-500"></i>
+                                <span class="font-medium text-blue-800">Connected to Transformation Chain</span>
+                            </div>
+                            <div class="vybe-chain-visualization mb-3"></div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="heart" class="w-4 h-4 text-pink-500"></i>
+                                    <span class="text-sm text-gray-600">This inspired 12 people</span>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                                    View Chain →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VYBE Reactions -->
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2">
+                                <button class="vybe-reaction active" style="background: #fef3e2; border-color: #fbbf24;">
+                                    <span class="text-lg">🔥</span>
+                                </button>
+                                <span class="text-sm font-medium text-gray-700">12</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="vybe-reaction" style="background: #f3e8ff; border-color: #a855f7;">
+                                    <span class="text-lg">💜</span>
+                                </button>
+                                <span class="text-sm font-medium text-gray-700">8</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="vybe-reaction" style="background: #ecfdf5; border-color: #10b981;">
+                                    <span class="text-lg">🌱</span>
+                                </button>
+                                <span class="text-sm font-medium text-gray-700">15</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="vybe-reaction" style="background: #fffbeb; border-color: #f59e0b;">
+                                    <span class="text-lg">✨</span>
+                                </button>
+                                <span class="text-sm font-medium text-gray-700">5</span>
+                            </div>
+
+                            <div class="flex items-center gap-2 ml-4">
+                                <div class="text-sm font-semibold text-orange-600">340 VYBE Score</div>
+                                <div class="text-sm text-gray-500">• 24 inspired</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <button class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                <span class="text-sm">8 comments</span>
+                            </button>
+                            <button class="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors">
+                                <i data-lucide="share-2" class="w-4 h-4"></i>
+                                <span class="text-sm">Share</span>
+                            </button>
+                            <button class="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors">
+                                <i data-lucide="link-2" class="w-4 h-4"></i>
+                                <span class="text-sm">Chain</span>
+                            </button>
+                            <button class="text-gray-600 hover:text-gray-800 transition-colors">
+                                <i data-lucide="bookmark" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Anonymous Progress Post -->
+                <article class="vybe-post p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
+                                <i data-lucide="user" class="w-6 h-6 text-white"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-semibold">Anonymous Hero</h4>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">
+                                        <i data-lucide="trending-up" class="w-3 h-3 mr-1 inline"></i>
+                                        Progress
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm text-gray-500">
+                                    <span>Recovery Journey</span>
+                                    <span>•</span>
+                                    <span>4 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <p class="text-gray-800 leading-relaxed">
+                            Day 30 of my recovery journey! 💪 Started with the fitness looproom this morning and feeling stronger than ever. Sarah's breathing post yesterday inspired me to try something new. The progress tracking feature is incredible - seeing how far I've come gives me hope for tomorrow.
+                        </p>
+
+                        <!-- Looproom Preview -->
+                        <div class="p-4 bg-gradient-to-r from-green-500 to-green-600 rounded-xl text-white">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="activity" class="w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h5 class="font-semibold">Morning Energy Flow</h5>
+                                    <p class="text-green-100 text-sm mb-2">Fitness Looproom</p>
+                                    <div class="flex justify-between text-xs text-green-100 mb-1">
+                                        <span>Progress</span>
+                                        <span>45%</span>
+                                    </div>
+                                    <div class="bg-white/20 h-1 rounded">
+                                        <div class="bg-white h-full rounded" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                                <button class="px-3 py-1 bg-white/20 hover:bg-white/30 rounded text-sm font-medium transition-colors">
+                                    Join
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Inspired Connection -->
+                        <div class="p-3 bg-purple-50 border-l-4 border-purple-400 rounded">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-purple-500"></i>
+                                <span class="text-sm text-purple-700">Inspired by Sarah's breathing post</span>
+                                <i data-lucide="heart" class="w-4 h-4 text-pink-500"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VYBE Reactions -->
+                    <div class="flex items-center justify-between pt-4 mt-4 border-t border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2">
+                                <button class="vybe-reaction active" style="background: #fef3e2; border-color: #fbbf24;">
+                                    <span class="text-lg">🔥</span>
+                                </button>
+                                <span class="text-sm font-medium text-gray-700">18</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="vybe-reaction" style="background: #f3e8ff; border-color: #a855f7;">
+                                    <span class="text-lg">💜</span>
+                                </button>
+                                <span class="text-sm font-medium text-gray-700">12</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="vybe-reaction" style="background: #ecfdf5; border-color: #10b981;">
+                                    <span class="text-lg">🌱</span>
+                                </button>
+                                <span class="text-sm font-medium text-gray-700">7</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="vybe-reaction" style="background: #fffbeb; border-color: #f59e0b;">
+                                    <span class="text-lg">✨</span>
+                                </button>
+                                <span class="text-sm font-medium text-gray-700">10</span>
+                            </div>
+
+                            <div class="flex items-center gap-2 ml-4">
+                                <div class="text-sm font-semibold text-orange-600">285 VYBE Score</div>
+                                <div class="text-sm text-gray-500">• 47 inspired</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <button class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                <span class="text-sm">15 comments</span>
+                            </button>
+                            <button class="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors">
+                                <i data-lucide="share-2" class="w-4 h-4"></i>
+                                <span class="text-sm">Share</span>
+                            </button>
+                            <button class="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors">
+                                <i data-lucide="link-2" class="w-4 h-4"></i>
+                                <span class="text-sm">Chain</span>
+                            </button>
+                            <button class="text-gray-600 hover:text-gray-800 transition-colors">
+                                <i data-lucide="bookmark" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Load More Button -->
+                <div class="flex justify-center">
+                    <button class="px-8 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                        Load More Transformations
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="fixed right-0 top-16 h-[calc(100vh-4rem)] w-80 p-6 overflow-y-auto bg-white border-l border-gray-200">
+            <!-- Live Sessions -->
+            <div class="vybe-card mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="vybe-live-indicator"></div>
+                    <h3 class="font-semibold">Live Sessions</h3>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="p-3 border border-red-200 bg-red-50 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium text-sm">Recovery Circle</span>
+                            <span class="text-red-600 text-xs font-medium">12 live</span>
+                        </div>
+                        <div class="text-xs text-gray-600 mb-2">Healing through shared stories</div>
+                        <button class="w-full py-2 bg-red-500 text-white rounded text-sm font-medium hover:bg-red-600 transition-colors">
+                            Join Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Creators -->
+            <div class="vybe-card mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-green-500"></i>
+                    <h3 class="font-semibold">Trending Creators</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-orange-400 to-orange-600 flex items-center justify-center">
+                            <span class="text-white font-semibold text-sm">SM</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">Sarah M.</div>
+                            <div class="text-xs text-gray-500">2.3K followers</div>
+                        </div>
+                        <button class="px-3 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium hover:bg-orange-200 transition-colors">
+                            Follow
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-semibold text-sm">MC</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">Marcus Chen</div>
+                            <div class="text-xs text-gray-500">1.8K followers</div>
+                        </div>
+                        <button class="px-3 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 transition-colors">
+                            Follow
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journey Suggestions -->
+            <div class="vybe-card">
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="compass" class="w-5 h-5 text-blue-500"></i>
+                    <h3 class="font-semibold">Suggested Journeys</h3>
+                </div>
+
+                <div class="text-xs text-gray-500 mb-3">Based on your Recovery path</div>
+
+                <div class="space-y-3">
+                    <div class="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                        <div class="font-medium text-sm mb-1">Mindful Breathing</div>
+                        <div class="text-xs text-gray-600 mb-2">Perfect next step in your healing</div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-purple-600">Meditation • 15 min</span>
+                            <button class="text-purple-600 text-xs font-medium hover:underline">
+                                Start →
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div class="font-medium text-sm mb-1">Gentle Movement</div>
+                        <div class="text-xs text-gray-600 mb-2">Build physical strength with healing</div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-green-600">Fitness • 20 min</span>
+                            <button class="text-green-600 text-xs font-medium hover:underline">
+                                Start →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="vybe-floating-action">
+        <i data-lucide="plus" class="w-6 h-6"></i>
+    </button>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Add interactive behaviors
+        document.addEventListener('DOMContentLoaded', function() {
+            // VYBE Reaction buttons
+            const reactionButtons = document.querySelectorAll('.vybe-reaction');
+            reactionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    // Add floating animation
+                    const emoji = this.querySelector('span');
+                    if (emoji) {
+                        emoji.style.animation = 'vybeReactionFloat 0.6s ease-out';
+                        setTimeout(() => {
+                            emoji.style.animation = '';
+                        }, 600);
+                    }
+                });
+            });
+
+            // Looproom cards hover effect
+            const looprooms = document.querySelectorAll('.vybe-looproom-preview');
+            looprooms.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px) scale(1.02)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
+            });
+
+            // Auto-refresh live indicators
+            setInterval(() => {
+                const liveIndicators = document.querySelectorAll('.vybe-live-indicator');
+                liveIndicators.forEach(indicator => {
+                    indicator.style.animation = 'none';
+                    setTimeout(() => {
+                        indicator.style.animation = 'vybePulse 2s infinite';
+                    }, 10);
+                });
+            }, 10000);
+        });
+
+        // Add floating reaction animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes vybeReactionFloat {
+                0% { transform: translateY(0) scale(1); }
+                50% { transform: translateY(-10px) scale(1.2); }
+                100% { transform: translateY(0) scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

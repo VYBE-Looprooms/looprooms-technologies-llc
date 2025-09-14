@@ -1,707 +1,601 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import VYBEReactions, { VYBEReaction } from '@/components/VYBEReactions';
-import LoopchainStories from './LoopchainStories';
-import type { LoopchainConnection, RippleEffect } from './LoopchainStories';
-import { CreatorSpotlightCard, WeeklyReflectionCard } from '@/components/CreatorSpotlight';
-import { 
-  Heart, 
-  MessageCircle, 
-  Share2, 
+import {
+  Heart,
+  MessageCircle,
+  Share2,
   Bookmark,
   MoreHorizontal,
   Play,
   Calendar,
   TrendingUp,
   Users,
-  Zap,
-  Camera,
-  Smile,
+  Brain,
+  Dumbbell,
+  Music,
+  Palette,
+  Plus,
   Image as ImageIcon,
+  Video,
+  Mic,
+  Smile,
   Send,
-  EyeOff,
+  Clock,
+  MapPin,
+  Star,
   Award,
-  Link2,
-  Sparkles,
-  Target,
-  Trophy,
   Flame,
-  Star
+  Sparkles
 } from 'lucide-react';
 
-interface FeedPost {
+// VYBE LOOPROOMS™ Theme System - Using CSS Variables Only
+const THEME_COLORS = {
+  recovery: {
+    bg: 'bg-card/80',
+    text: 'text-primary',
+    icon: 'text-primary',
+    border: 'border-primary/30',
+    accent: 'bg-primary',
+    hover: 'hover:bg-card',
+    gradient: 'from-orange-400 via-orange-500 to-pink-500', // Recovery: warm orange/pink gradient
+    glow: 'shadow-primary/20'
+  },
+  meditation: {
+    bg: 'bg-card/80',
+    text: 'text-secondary',
+    icon: 'text-secondary',
+    border: 'border-secondary/30',
+    accent: 'bg-secondary',
+    hover: 'hover:bg-card',
+    gradient: 'from-purple-400 via-indigo-500 to-blue-500', // Meditation: purple/blue gradient
+    glow: 'shadow-secondary/20'
+  },
+  fitness: {
+    bg: 'bg-card/80',
+    text: 'text-accent',
+    icon: 'text-accent',
+    border: 'border-accent/30',
+    accent: 'bg-accent',
+    hover: 'hover:bg-card',
+    gradient: 'from-green-400 via-emerald-500 to-teal-500', // Fitness: green/teal gradient
+    glow: 'shadow-accent/20'
+  }
+};
+
+const THEME_ICONS = {
+  recovery: Heart,
+  meditation: Brain,
+  fitness: Dumbbell
+};
+
+// Motivational micro-text for reactions
+const REACTION_MESSAGES = {
+  fire: "You're on fire!",
+  heart: "Stay strong!",
+  growth: "Keep growing!",
+  sparkle: "Keep going!"
+};
+
+// Loopchain sequences for guided journeys
+const LOOPCHAIN_PATHS = {
+  healing: ['recovery', 'meditation', 'fitness'],
+  wellness: ['meditation', 'fitness', 'recovery'],
+  growth: ['fitness', 'recovery', 'meditation']
+};
+
+interface Post {
   id: string;
-  user: {
+  author: {
     id: string;
     name: string;
     avatar?: string;
     isCreator: boolean;
+    isVerified: boolean;
     title?: string;
-    isVerified?: boolean;
   };
   content: string;
-  type: 'reflection' | 'milestone' | 'inspiration' | 'progress';
+  timestamp: string;
+  theme: keyof typeof THEME_COLORS;
+  isAnonymous?: boolean;
+  images?: string[];
   looproom?: {
     id: string;
     title: string;
     category: string;
-    thumbnail?: string;
-    progress?: number;
-    badge?: string;
+    participants: number;
+    isLive: boolean;
   };
-  vybeReactions: VYBEReaction[];
-  vybeScore: number;
-  impactCount: number;
-  comments: {
-    count: number;
+  stats: {
+    likes: number;
+    comments: number;
+    shares: number;
   };
-  timestamp: string;
-  isAnonymous?: boolean;
-  
-  // Loopchain features
-  loopchainConnections: LoopchainConnection[];
-  rippleEffect?: RippleEffect;
-  
-  // Achievement badges
-  milestoneAchieved?: {
-    title: string;
-    description: string;
-    icon: string;
-    progress: number;
+  reactions: {
+    fire: number;
+    heart: number;
+    growth: number;
+    sparkle: number;
   };
-  
-  // Creator spotlight
-  featured?: boolean;
-  trending?: boolean;
+  userReacted?: string | null;
+  isBookmarked?: boolean;
 }
 
 const SocialFeed: React.FC = () => {
-  const [posts, setPosts] = useState<FeedPost[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
-  const [postType, setPostType] = useState<'reflection' | 'milestone' | 'inspiration' | 'progress'>('reflection');
+  const [selectedTheme, setSelectedTheme] = useState<keyof typeof THEME_COLORS>('recovery');
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Enhanced mock data with VYBE ecosystem features
-    const mockPosts: FeedPost[] = [
+    // Mock data for professional social feed
+    const mockPosts: Post[] = [
       {
         id: '1',
-        user: {
+        author: {
           id: '1',
-          name: 'Sarah M.',
-          avatar: '/api/placeholder/40/40',
+          name: 'Sarah Chen',
+          avatar: '',
           isCreator: true,
-          title: 'Recovery Coach',
-          isVerified: true
+          isVerified: true,
+          title: 'Recovery Coach'
         },
-        content: 'Just completed my 10th Recovery Looproom session! 🙏 The breathing exercises are transforming how I process emotions. Each session builds on the last - feeling the power of consistent healing. Grateful for this journey and everyone walking it with me.',
-        type: 'milestone',
+        content: "Day 100 of my recovery journey! 🎉 The breathwork sessions in our looproom have been transformative. Sharing this milestone because someone out there needs to know that healing is possible. Your struggles are valid, your progress is meaningful, and you're not alone in this journey. 💙",
+        timestamp: '2 hours ago',
+        theme: 'recovery',
         looproom: {
           id: 'recovery-1',
-          title: 'Healing Through Breathwork',
-          category: 'Recovery',
-          thumbnail: '/api/placeholder/300/200',
-          progress: 66,
-          badge: 'Session Streak Champion'
+          title: 'Morning Breathwork Circle',
+          category: 'Recovery & Healing',
+          participants: 234,
+          isLive: true
         },
-        vybeReactions: [
-          { id: '1', type: 'progress', count: 12, userReacted: false },
-          { id: '2', type: 'inspired', count: 8, userReacted: true },
-          { id: '3', type: 'growth', count: 15, userReacted: false },
-          { id: '4', type: 'breakthrough', count: 5, userReacted: false }
-        ],
-        vybeScore: 340,
-        impactCount: 24,
-        comments: { count: 8 },
-        timestamp: '2 hours ago',
-        loopchainConnections: [
-          {
-            id: 'conn1',
-            fromPostId: '1',
-            toPostId: '2',
-            connectionType: 'inspired',
-            strength: 4
-          }
-        ],
-        rippleEffect: {
-          id: 'ripple1',
-          originPostId: '1',
-          impactRadius: 3,
-          inspirationCount: 12,
-          actionsTaken: 6,
-          communities: ['Recovery', 'Meditation']
-        },
-        milestoneAchieved: {
-          title: '10 Session Milestone',
-          description: 'Completed 10 Recovery sessions',
-          icon: '🏆',
-          progress: 100
-        },
-        featured: true
+        stats: { likes: 127, comments: 23, shares: 8 },
+        reactions: { fire: 45, heart: 82, growth: 28, sparkle: 15 },
+        userReacted: 'heart'
       },
       {
         id: '2',
-        user: {
+        author: {
           id: '2',
-          name: 'Anonymous',
-          isCreator: false
+          name: 'Marcus Rodriguez',
+          avatar: '',
+          isCreator: false,
+          isVerified: false
         },
-        content: 'Day 30 of my recovery journey! 💪 Started with the fitness looproom this morning and feeling stronger than ever. Sarah\'s breathing post yesterday inspired me to try something new. The progress tracking feature is incredible - seeing how far I\'ve come gives me hope for tomorrow.',
-        type: 'progress',
-        looproom: {
-          id: 'fitness-1',
-          title: 'Morning Energy Flow',
-          category: 'Fitness',
-          progress: 45
-        },
-        vybeReactions: [
-          { id: '1', type: 'progress', count: 18, userReacted: true },
-          { id: '2', type: 'inspired', count: 12, userReacted: false },
-          { id: '3', type: 'growth', count: 7, userReacted: false },
-          { id: '4', type: 'breakthrough', count: 10, userReacted: false }
-        ],
-        vybeScore: 285,
-        impactCount: 47,
-        comments: { count: 15 },
+        content: "Started my meditation practice 30 days ago and I can already feel the difference. The guided sessions in the mindfulness looproom help me stay grounded during stressful moments. Thank you to this amazing community for the support! 🧘‍♂️✨",
         timestamp: '4 hours ago',
-        isAnonymous: true,
-        loopchainConnections: [
-          {
-            id: 'conn2',
-            fromPostId: '2',
-            toPostId: '1',
-            connectionType: 'inspired',
-            strength: 5
-          }
-        ]
+        theme: 'meditation',
+        stats: { likes: 89, comments: 15, shares: 4 },
+        reactions: { fire: 12, heart: 67, growth: 34, sparkle: 8 },
+        isBookmarked: true
       },
       {
         id: '3',
-        user: {
+        author: {
           id: '3',
-          name: 'Marcus Chen',
-          avatar: '/api/placeholder/40/40',
-          isCreator: true,
-          title: 'Mindfulness Guide',
-          isVerified: true
+          name: 'Anonymous Warrior',
+          avatar: '',
+          isCreator: false,
+          isVerified: false
         },
-        content: 'Reminder: Your healing journey is not linear. 🌱 Some days will be harder than others, and that\'s completely okay. Every small step forward matters - I see you all growing stronger in your Looprooms. The ripple effect of courage is beautiful to witness. You\'re stronger than you know. 💚',
-        type: 'inspiration',
-        vybeReactions: [
-          { id: '1', type: 'progress', count: 25, userReacted: false },
-          { id: '2', type: 'inspired', count: 32, userReacted: false },
-          { id: '3', type: 'growth', count: 18, userReacted: true },
-          { id: '4', type: 'breakthrough', count: 14, userReacted: false }
-        ],
-        vybeScore: 520,
-        impactCount: 89,
-        comments: { count: 23 },
+        content: "One year clean today. This platform gave me the courage to share my story and connect with others who understand. The recovery looprooms saved my life. If you're reading this and struggling, please don't give up. Healing is possible. 💪❤️",
         timestamp: '6 hours ago',
-        loopchainConnections: [],
-        trending: true
+        theme: 'recovery',
+        isAnonymous: true,
+        stats: { likes: 312, comments: 67, shares: 45 },
+        reactions: { fire: 89, heart: 156, growth: 67, sparkle: 23 },
+        userReacted: 'fire'
+      },
+      {
+        id: '4',
+        author: {
+          id: '4',
+          name: 'Emma Thompson',
+          avatar: '',
+          isCreator: true,
+          isVerified: true,
+          title: 'Fitness & Wellness Guide'
+        },
+        content: "New 'Mindful Movement' looproom starting tomorrow! We'll combine gentle yoga with mindfulness practices. Perfect for beginners and those recovering from trauma. Movement is medicine, and every body is welcome here. 🌱💚",
+        timestamp: '8 hours ago',
+        theme: 'fitness',
+        looproom: {
+          id: 'fitness-1',
+          title: 'Mindful Movement Flow',
+          category: 'Fitness & Wellness',
+          participants: 89,
+          isLive: false
+        },
+        stats: { likes: 145, comments: 31, shares: 12 },
+        reactions: { fire: 34, heart: 78, growth: 45, sparkle: 19 }
+      },
+      {
+        id: '5',
+        author: {
+          id: '5',
+          name: 'Alex Kim',
+          avatar: '',
+          isCreator: true,
+          isVerified: true,
+          title: 'Sound Healing Practitioner'
+        },
+        content: "The power of sound in healing cannot be overstated. Tonight's sound bath session was incredibly moving - watching people release trauma through vibrational healing reminds me why I do this work. Thank you to everyone who joined us. 🎵✨",
+        timestamp: '12 hours ago',
+        theme: 'music',
+        images: ['/api/placeholder/400/300'],
+        stats: { likes: 98, comments: 19, shares: 7 },
+        reactions: { fire: 23, heart: 45, growth: 28, sparkle: 34 }
       }
     ];
-    
-    // Simulate API call
+
     setPosts(mockPosts);
   }, []);
 
-  const handleSubmitPost = async () => {
-    if (!newPost.trim()) return;
-
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      const post: FeedPost = {
-        id: Date.now().toString(),
-        user: {
-          id: 'current-user',
-          name: isAnonymous ? 'Anonymous' : 'You',
-          isCreator: false
-        },
-        content: newPost,
-        type: postType,
-        vybeReactions: [
-          { id: '1', type: 'progress', count: 0, userReacted: false },
-          { id: '2', type: 'inspired', count: 0, userReacted: false },
-          { id: '3', type: 'growth', count: 0, userReacted: false },
-          { id: '4', type: 'breakthrough', count: 0, userReacted: false }
-        ],
-        vybeScore: 0,
-        impactCount: 0,
-        comments: { count: 0 },
-        timestamp: 'Just now',
-        isAnonymous,
-        loopchainConnections: []
-      };
-      
-      setPosts(prev => [post, ...prev]);
-      setNewPost('');
-      setLoading(false);
-    }, 1000);
-  };
-
-  const handleVYBEReaction = (postId: string, type: 'progress' | 'inspired' | 'growth' | 'breakthrough') => {
-    setPosts(prev => prev.map(post => {
+  const handleReaction = (postId: string, reaction: string) => {
+    setPosts(posts.map(post => {
       if (post.id === postId) {
-        const updatedReactions = post.vybeReactions.map(reaction => {
-          if (reaction.type === type) {
-            return {
-              ...reaction,
-              count: reaction.userReacted ? reaction.count - 1 : reaction.count + 1,
-              userReacted: !reaction.userReacted
-            };
+        const newReactions = { ...post.reactions };
+        if (post.userReacted === reaction) {
+          // Remove reaction
+          newReactions[reaction as keyof typeof newReactions]--;
+          return { ...post, reactions: newReactions, userReacted: null };
+        } else {
+          // Add new reaction, remove old one if exists
+          if (post.userReacted) {
+            newReactions[post.userReacted as keyof typeof newReactions]--;
           }
-          return reaction;
-        });
-        
-        // Update VYBE score based on reaction types
-        const vybeScoreChange = type === 'breakthrough' ? 3 : type === 'growth' ? 2 : 1;
-        const newVybeScore = post.vybeScore + (updatedReactions.find(r => r.type === type)?.userReacted ? vybeScoreChange : -vybeScoreChange);
-        
-        return {
-          ...post,
-          vybeReactions: updatedReactions,
-          vybeScore: Math.max(0, newVybeScore),
-          impactCount: post.impactCount + (updatedReactions.find(r => r.type === type)?.userReacted ? 1 : -1)
-        };
+          newReactions[reaction as keyof typeof newReactions]++;
+          return { ...post, reactions: newReactions, userReacted: reaction };
+        }
       }
       return post;
     }));
   };
 
-  const getPostTypeColor = (type: string) => {
-    switch (type) {
-      case 'reflection': return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800';
-      case 'milestone': return 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800';
-      case 'inspiration': return 'bg-vybe-secondary/10 text-vybe-secondary border-vybe-secondary/30 dark:bg-vybe-secondary/20 dark:text-vybe-secondary dark:border-vybe-secondary/40';
-      case 'progress': return 'bg-vybe-primary/10 text-vybe-primary border-vybe-primary/30 dark:bg-vybe-primary/20 dark:text-vybe-primary dark:border-vybe-primary/40';
-      default: return 'bg-muted text-muted-foreground border-border';
-    }
+  const handleBookmark = (postId: string) => {
+    setPosts(posts.map(post =>
+      post.id === postId
+        ? { ...post, isBookmarked: !post.isBookmarked }
+        : post
+    ));
   };
 
-  const getPostTypeIcon = (type: string) => {
-    switch (type) {
-      case 'reflection': return MessageCircle;
-      case 'milestone': return TrendingUp;
-      case 'inspiration': return Zap;
-      case 'progress': return Calendar;
-      default: return MessageCircle;
-    }
+  const handleSubmitPost = () => {
+    if (!newPost.trim()) return;
+
+    const newPostObj: Post = {
+      id: Date.now().toString(),
+      author: {
+        id: 'current-user',
+        name: isAnonymous ? 'Anonymous' : 'You',
+        isCreator: false,
+        isVerified: false
+      },
+      content: newPost,
+      timestamp: 'Just now',
+      theme: selectedTheme,
+      isAnonymous,
+      stats: { likes: 0, comments: 0, shares: 0 },
+      reactions: { fire: 0, heart: 0, growth: 0, sparkle: 0 }
+    };
+
+    setPosts([newPostObj, ...posts]);
+    setNewPost('');
+  };
+
+  const getThemeColors = (theme: keyof typeof THEME_COLORS) => {
+    return THEME_COLORS[theme] || THEME_COLORS.recovery;
+  };
+
+  const getThemeIcon = (theme: keyof typeof THEME_COLORS) => {
+    return THEME_ICONS[theme] || Heart;
   };
 
   return (
-    <div className="space-y-6">
-      {/* Creator Spotlight & Weekly Reflection - Top of Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CreatorSpotlightCard 
-          spotlights={[
-            {
-              id: '1',
-              creator: {
-                id: '1',
-                name: 'Sarah M.',
-                avatar: '/api/placeholder/40/40',
-                title: 'Recovery Coach',
-                isVerified: true
-              },
-              impactMetrics: {
-                storiesInspired: 47,
-                totalReach: 1250,
-                transformationRate: 78,
-                vybeScore: 2340
-              },
-              featuredStory: {
-                id: '1',
-                title: 'Healing Through Breathwork',
-                excerpt: 'My 10-session journey transformed how I process emotions...',
-                category: 'Recovery',
-                reactions: 340
-              },
-              trending: true
-            }
-          ]}
-          onViewCreator={(id) => console.log('View creator', id)}
-        />
-        
-        <WeeklyReflectionCard 
-          summary={{
-            userId: 'current-user',
-            weekStart: '2025-09-07',
-            metrics: {
-              storiesShared: 3,
-              peopleInspired: 12,
-              reactionsReceived: 47,
-              chainConnections: 2,
-              topCategory: 'Recovery',
-              impactRadius: 3
-            },
-            achievements: [
-              {
-                id: '1',
-                title: 'Inspiration Spark',
-                description: 'Your story inspired 10+ people',
-                type: 'impact',
-                earned: true
-              }
-            ],
-            rippleMap: [
-              {
-                yourPost: 'My recovery milestone',
-                inspired: [
-                  { userId: '2', action: 'joined Recovery Looproom', looproom: 'Healing Breathwork' },
-                  { userId: '3', action: 'started meditation', looproom: 'Mindful Moments' }
-                ]
-              }
-            ]
-          }}
-          onViewFullReport={() => console.log('View full report')}
-        />
-      </div>
-
-      {/* Enhanced Create Post */}
-      <Card className="bg-gradient-to-r from-background via-background to-vybe-primary/5 border-2 border-vybe-primary/10 shadow-xl">
-        <CardHeader className="pb-4 px-6">
+    <div className="space-y-4 lg:space-y-6">
+      {/* Suggested Loopchain - Journey Path */}
+      <Card className="bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 backdrop-blur-sm border-primary/20 shadow-lg">
+        <CardContent className="p-4 lg:p-6">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl bg-gradient-to-r from-vybe-primary to-vybe-secondary bg-clip-text text-transparent">
-                Share Your Transformation
-              </CardTitle>
-              <CardDescription className="text-base">
-                Create emotional milestones that inspire the VYBE ecosystem
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-vybe-primary" />
-              <Badge variant="outline" className="text-vybe-primary border-vybe-primary/30">
-                Impact Ready
-              </Badge>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6 px-6">
-          {/* Post Type Selection */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-muted-foreground">
-              What milestone are you sharing?
-            </label>
-            <Select value={postType} onValueChange={(value) => setPostType(value as typeof postType)}>
-              <SelectTrigger className="w-full h-14 text-left border-2 border-vybe-primary/20 hover:border-vybe-primary/40 transition-colors">
-                <SelectValue>
-                  <div className="flex items-center gap-3">
-                    {(() => {
-                      const Icon = getPostTypeIcon(postType);
-                      return (
-                        <>
-                          <div className={`p-3 rounded-full ${getPostTypeColor(postType)} bg-opacity-30`}>
-                            <Icon className="w-5 h-5" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-semibold capitalize text-lg">{postType}</span>
-                            <span className="text-sm text-muted-foreground">
-                              {postType === 'reflection' && 'Share deep insights and learnings'}
-                              {postType === 'milestone' && 'Celebrate meaningful achievements'}
-                              {postType === 'inspiration' && 'Motivate and uplift others'}
-                              {postType === 'progress' && 'Document your transformation'}
-                            </span>
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {(['reflection', 'milestone', 'inspiration', 'progress'] as const).map((type) => {
-                  const Icon = getPostTypeIcon(type);
+            <div className="flex-1">
+              <h3 className="font-bold text-foreground text-lg mb-2 flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-primary" />
+                Your Healing Journey
+              </h3>
+              <div className="flex items-center space-x-2 mb-3">
+                {['recovery', 'meditation', 'fitness'].map((theme, index, array) => {
+                  const ThemeIcon = THEME_ICONS[theme as keyof typeof THEME_ICONS];
+                  const isActive = index === 0;
+                  const isCompleted = false;
+
                   return (
-                    <SelectItem key={type} value={type} className="h-16 cursor-pointer">
-                      <div className="flex items-center gap-3 w-full">
-                        <div className={`p-2 rounded-full ${getPostTypeColor(type)} bg-opacity-20 flex-shrink-0`}>
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div className="flex flex-col flex-1">
-                          <span className="font-medium capitalize">{type}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {type === 'reflection' && 'Share deep insights and learnings'}
-                            {type === 'milestone' && 'Celebrate meaningful achievements'}
-                            {type === 'inspiration' && 'Motivate and uplift others'}
-                            {type === 'progress' && 'Document your transformation'}
-                          </span>
-                        </div>
+                    <React.Fragment key={theme}>
+                      <div className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
+                        isActive
+                          ? 'bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg'
+                          : isCompleted
+                          ? 'bg-primary/20 text-primary'
+                          : 'bg-muted text-muted-foreground'
+                      }`}>
+                        <ThemeIcon className="w-5 h-5" />
                       </div>
-                    </SelectItem>
+                      {index < array.length - 1 && (
+                        <div className={`w-8 h-0.5 ${isCompleted ? 'bg-primary' : 'bg-muted'} transition-all`}></div>
+                      )}
+                    </React.Fragment>
                   );
                 })}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Anonymous Toggle */}
-          <div className="flex items-center justify-between p-4 bg-vybe-accent/20 rounded-lg border border-vybe-accent/30">
-            <div className="flex items-center gap-3">
-              <EyeOff className="w-5 h-5 text-vybe-accent" />
-              <div>
-                <div className="font-medium text-vybe-accent">Share Anonymously</div>
-                <div className="text-sm text-vybe-accent/80">
-                  Perfect for sensitive recovery stories (NA/AA support)
-                </div>
               </div>
+              <p className="text-sm text-muted-foreground">
+                Start with <span className="text-primary font-semibold">Recovery</span> to build your foundation, then flow into meditation and fitness.
+              </p>
             </div>
-            <Switch 
-              checked={isAnonymous}
-              onCheckedChange={setIsAnonymous}
-              className="data-[state=checked]:bg-vybe-accent"
-            />
-          </div>
-
-          <Textarea
-            placeholder={`Share your ${postType} story... What transformation are you experiencing? How can your journey inspire others in the VYBE ecosystem?`}
-            value={newPost}
-            onChange={(e) => setNewPost(e.target.value)}
-            className="min-h-[120px] resize-none border-2 border-vybe-primary/20 focus:border-vybe-primary/40 text-base"
-          />
-
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
-              <Button variant="outline" size="sm" className="min-h-[44px] px-4 flex-shrink-0 border-vybe-primary/30 hover:bg-vybe-primary/10">
-                <ImageIcon className="w-4 h-4 mr-2" />
-                <span>Milestone Photo</span>
-              </Button>
-              <Button variant="outline" size="sm" className="min-h-[44px] px-4 flex-shrink-0 border-vybe-primary/30 hover:bg-vybe-primary/10">
-                <Camera className="w-4 h-4 mr-2" />
-                <span>Looproom Link</span>
-              </Button>
-              <Button variant="outline" size="sm" className="min-h-[44px] px-4 flex-shrink-0 border-vybe-primary/30 hover:bg-vybe-primary/10">
-                <Trophy className="w-4 h-4 mr-2" />
-                <span>Achievement</span>
-              </Button>
-            </div>
-
-            <Button 
-              onClick={handleSubmitPost}
-              disabled={!newPost.trim() || loading}
-              size="lg"
-              className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-vybe-primary to-vybe-secondary hover:from-vybe-primary/90 hover:to-vybe-secondary/90 text-white px-8 font-semibold"
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              {loading ? 'Creating Impact...' : 'Share Transformation'}
+            <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-primary-foreground ml-4">
+              Continue Journey
             </Button>
           </div>
+        </CardContent>
+      </Card>
 
-          {/* VYBE Impact Preview */}
-          <div className="flex items-center justify-center p-3 bg-gradient-to-r from-vybe-primary/10 to-vybe-secondary/10 rounded-lg">
-            <div className="flex items-center gap-2 text-sm text-vybe-primary font-medium">
-              <Flame className="w-4 h-4" />
-              Your story has the power to inspire transformations across the ecosystem
+      {/* Create Post - Desktop Only */}
+      <Card className="hidden lg:block shadow-sm border-0 bg-card/80 backdrop-blur-sm">
+        <CardContent className="p-6">
+          <div className="flex space-x-4">
+            <Avatar className="w-12 h-12">
+              <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold">
+                U
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 space-y-4">
+              <Textarea
+                placeholder="Share your healing journey, celebrate a milestone, or inspire others..."
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+                className="border-0 shadow-none resize-none min-h-[80px] text-base placeholder:text-gray-500 focus-visible:ring-0 p-0"
+              />
+
+              {/* Looproom Selection */}
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(THEME_COLORS).map(([theme, colors]) => {
+                  const IconComponent = getThemeIcon(theme as keyof typeof THEME_COLORS);
+                  const isSelected = selectedTheme === theme;
+
+                  return (
+                    <button
+                      key={theme}
+                      onClick={() => setSelectedTheme(theme as keyof typeof THEME_COLORS)}
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                        isSelected
+                          ? `bg-gradient-to-r ${colors.gradient} text-white shadow-lg border-2 border-white/20`
+                          : 'bg-card border border-border/30 text-muted-foreground hover:bg-muted hover:text-foreground'
+                      }`}
+                    >
+                      <IconComponent className="w-4 h-4" />
+                      <span className="capitalize">{theme} Looproom</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                <div className="flex items-center space-x-4">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    <ImageIcon className="w-5 h-5 mr-2" />
+                    Photo
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    <Video className="w-5 h-5 mr-2" />
+                    Video
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    <Mic className="w-5 h-5 mr-2" />
+                    Voice Note
+                  </Button>
+
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isAnonymous}
+                      onChange={(e) => setIsAnonymous(e.target.checked)}
+                      className="rounded border-gray-300"
+                    />
+                    <span className="text-sm text-muted-foreground">Share anonymously</span>
+                  </label>
+                </div>
+
+                <Button
+                  onClick={handleSubmitPost}
+                  disabled={!newPost.trim()}
+                  className="bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Revolutionary Feed Posts */}
-      <div className="space-y-8">
+      {/* Feed Posts - Mobile Responsive */}
+      <div className="space-y-0 lg:space-y-6">
         {posts.map((post) => {
-          const PostTypeIcon = getPostTypeIcon(post.type);
-          const hasLoopchainConnection = post.loopchainConnections.length > 0;
-          
+          const themeColors = getThemeColors(post.theme);
+          const ThemeIcon = getThemeIcon(post.theme);
+
           return (
-            <Card 
-              key={post.id} 
-              className={`group hover:shadow-2xl transition-all duration-300 border-2 ${
-                post.featured 
-                  ? 'border-vybe-accent/50 bg-gradient-to-br from-vybe-accent/10 to-vybe-secondary/10 dark:from-vybe-accent/20 dark:to-vybe-secondary/20' 
-                  : hasLoopchainConnection
-                  ? 'border-vybe-primary/30 bg-gradient-to-br from-vybe-primary/5 to-vybe-secondary/5'
-                  : 'border-border hover:border-vybe-primary/30'
-              }`}
-            >
-              <CardContent className="p-6 space-y-6">
-                {/* Enhanced Header */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <Avatar className="w-12 h-12 ring-2 ring-vybe-primary/20">
-                      {post.user.avatar ? (
-                        <AvatarImage src={post.user.avatar} alt={post.user.name} />
+            <Card key={post.id} className={`border-2 ${themeColors.border} bg-card/80 backdrop-blur-sm hover:shadow-xl ${themeColors.glow} transition-all duration-300 lg:rounded-xl rounded-none mb-0 lg:mb-0 relative overflow-hidden`}>
+              {/* Looproom Gradient Label */}
+              <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${themeColors.gradient}`}></div>
+              {/* Post Header */}
+              <CardContent className="p-4 lg:p-6 pb-0">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start space-x-3">
+                    <Avatar className="w-10 h-10 lg:w-12 lg:h-12">
+                      {post.author.avatar ? (
+                        <AvatarImage src={post.author.avatar} />
                       ) : (
-                        <AvatarFallback className="bg-vybe-primary/10 text-vybe-primary font-semibold">
-                          {post.isAnonymous ? '?' : post.user.name.charAt(0)}
+                        <AvatarFallback className={`text-primary-foreground font-semibold ${
+                          post.isAnonymous
+                            ? 'bg-muted'
+                            : post.author.isCreator
+                            ? 'bg-gradient-to-r from-primary to-secondary'
+                            : 'bg-gradient-to-r from-primary/70 to-secondary/70'
+                        }`}>
+                          {post.isAnonymous ? '?' : post.author.name.charAt(0)}
                         </AvatarFallback>
                       )}
                     </Avatar>
+
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-bold text-foreground text-lg">
-                          {post.isAnonymous ? 'Anonymous Hero' : post.user.name}
-                        </h4>
-                        {post.user.isCreator && (
-                          <Badge variant="secondary" className="text-xs bg-vybe-secondary/20 text-vybe-secondary border-vybe-secondary/30">
-                            <Award className="w-3 h-3 mr-1" />
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-semibold text-foreground text-sm lg:text-base">
+                          {post.isAnonymous ? 'Anonymous Warrior' : post.author.name}
+                        </h3>
+                        {post.author.isVerified && (
+                          <Award className="w-4 h-4 text-blue-500" />
+                        )}
+                        {post.author.isCreator && (
+                          <Badge className="bg-gradient-to-r from-primary to-secondary text-primary-foreground text-xs px-2 py-1">
                             Creator
                           </Badge>
                         )}
-                        {post.user.isVerified && (
-                          <Award className="w-4 h-4 text-blue-500" />
-                        )}
-                        {post.featured && (
-                          <Badge className="text-xs bg-vybe-accent text-white">
-                            <Star className="w-3 h-3 mr-1" />
-                            Featured
-                          </Badge>
-                        )}
-                        {post.trending && (
-                          <Badge className="text-xs bg-vybe-primary text-white">
-                            <TrendingUp className="w-3 h-3 mr-1" />
-                            Trending
-                          </Badge>
-                        )}
                       </div>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs flex-shrink-0 ${getPostTypeColor(post.type)} border-2`}
-                        >
-                          <PostTypeIcon className="w-3 h-3 mr-1" />
-                          {post.type}
+                      <div className="flex items-center space-x-2 mt-1 flex-wrap">
+                        <Badge className={`text-xs bg-gradient-to-r ${themeColors.gradient} text-white border-0 font-semibold px-3 py-1 shadow-sm`}>
+                          <ThemeIcon className="w-3 h-3 mr-1" />
+                          {post.theme.toUpperCase()} LOOPROOM
                         </Badge>
-                        {post.user.title && (
-                          <span className="text-sm text-muted-foreground">{post.user.title}</span>
+                        {post.author.title && (
+                          <>
+                            <span className="text-muted-foreground hidden lg:inline">•</span>
+                            <span className="text-sm text-muted-foreground hidden lg:inline">{post.author.title}</span>
+                          </>
                         )}
-                        <span className="text-sm text-muted-foreground">•</span>
-                        <p className="text-sm text-muted-foreground">{post.timestamp}</p>
+                        <span className="text-muted-foreground">•</span>
+                        <span className="text-xs lg:text-sm text-muted-foreground">{post.timestamp}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {hasLoopchainConnection && (
-                      <Link2 className="w-5 h-5 text-vybe-primary" />
-                    )}
-                    <Button variant="ghost" size="sm" className="flex-shrink-0">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </div>
+
+                  <Button variant="ghost" size="sm" className="p-1 lg:p-2">
+                    <MoreHorizontal className="w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground" />
+                  </Button>
                 </div>
 
-                {/* Content */}
-                <div className="space-y-4">
-                  <p className="text-foreground text-lg leading-relaxed font-medium">{post.content}</p>
-                  
-                  {/* Milestone Achievement */}
-                  {post.milestoneAchieved && (
-                    <Card className="bg-gradient-to-r from-vybe-secondary/20 to-vybe-accent/20 dark:from-vybe-secondary/30 dark:to-vybe-accent/30 border-vybe-secondary/40 dark:border-vybe-secondary/60">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="text-3xl">{post.milestoneAchieved.icon}</div>
-                          <div className="flex-1">
-                            <h5 className="font-bold text-vybe-secondary dark:text-vybe-secondary">
-                              {post.milestoneAchieved.title}
-                            </h5>
-                            <p className="text-sm text-vybe-secondary/80 dark:text-vybe-secondary/90">
-                              {post.milestoneAchieved.description}
-                            </p>
-                            <Progress 
-                              value={post.milestoneAchieved.progress} 
-                              className="mt-2 h-2 bg-vybe-secondary/20" 
-                            />
-                          </div>
-                          <Badge className="bg-vybe-accent text-white">
-                            Achievement Unlocked!
-                          </Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
+                {/* Post Content */}
+                <div className="mb-4">
+                  <p className="text-foreground leading-relaxed text-sm lg:text-base">{post.content}</p>
+
+                  {/* Images */}
+                  {post.images && post.images.length > 0 && (
+                    <div className="mt-4 rounded-xl overflow-hidden">
+                      <img
+                        src={post.images[0]}
+                        alt="Post content"
+                        className="w-full h-64 object-cover"
+                      />
+                    </div>
                   )}
 
-                  {/* Enhanced Looproom Preview */}
+                  {/* Looproom Preview */}
                   {post.looproom && (
-                    <Card className="bg-gradient-to-r from-vybe-primary/10 to-vybe-secondary/10 border-vybe-primary/30 shadow-lg">
-                      <CardContent className="p-5">
-                        <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-vybe-primary to-vybe-secondary rounded-xl flex items-center justify-center shadow-lg">
-                            <Play className="w-8 h-8 text-white" />
+                    <div className={`mt-4 p-3 lg:p-4 rounded-xl ${themeColors.bg} ${themeColors.border} border`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full ${themeColors.accent} flex items-center justify-center`}>
+                            {post.looproom.isLive ? (
+                              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            ) : (
+                              <Play className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                            )}
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h5 className="font-bold text-foreground text-lg">{post.looproom.title}</h5>
-                              {post.looproom.badge && (
-                                <Badge variant="outline" className="text-xs bg-vybe-accent/20 text-vybe-accent border-vybe-accent/30">
-                                  {post.looproom.badge}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground text-sm lg:text-base">{post.looproom.title}</h4>
+                            <p className="text-xs lg:text-sm text-muted-foreground">{post.looproom.category}</p>
+                            <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-1">
+                              <span className="flex items-center">
+                                <Users className="w-3 h-3 mr-1" />
+                                {post.looproom.participants} participants
+                              </span>
+                              {post.looproom.isLive && (
+                                <Badge className="bg-red-500 text-white text-xs">
+                                  🔴 LIVE
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">{post.looproom.category} Looproom</p>
-                            {post.looproom.progress && (
-                              <div className="space-y-1">
-                                <div className="flex justify-between text-xs">
-                                  <span className="text-muted-foreground">Progress</span>
-                                  <span className="font-medium text-vybe-primary">{post.looproom.progress}%</span>
-                                </div>
-                                <Progress value={post.looproom.progress} className="h-2" />
-                              </div>
-                            )}
                           </div>
-                          <Button size="sm" className="bg-vybe-primary hover:bg-vybe-primary/90 text-white">
-                            <Play className="w-4 h-4 mr-1" />
-                            Experience
-                          </Button>
                         </div>
-                      </CardContent>
-                    </Card>
+                        <Button size="sm" className={`${themeColors.text} border-current text-xs lg:text-sm`} variant="outline">
+                          {post.looproom.isLive ? 'Join Live' : 'Join'}
+                        </Button>
+                      </div>
+                    </div>
                   )}
-
-                  {/* Loopchain Stories */}
-                  <LoopchainStories
-                    connections={post.loopchainConnections}
-                    rippleEffect={post.rippleEffect}
-                    isConnected={hasLoopchainConnection}
-                    onExploreChain={() => console.log('Explore chain for post', post.id)}
-                  />
                 </div>
 
-                {/* VYBE Reactions */}
-                <VYBEReactions
-                  reactions={post.vybeReactions}
-                  vybeScore={post.vybeScore}
-                  impactCount={post.impactCount}
-                  onReact={(type) => handleVYBEReaction(post.id, type)}
-                />
+                {/* Reactions Bar with Motivational Micro-text */}
+                <div className="flex items-center gap-1 lg:gap-2 mb-4 overflow-x-auto pb-1">
+                  {[
+                    { type: 'fire', emoji: '🔥', count: post.reactions.fire, message: REACTION_MESSAGES.fire },
+                    { type: 'heart', emoji: '💙', count: post.reactions.heart, message: REACTION_MESSAGES.heart },
+                    { type: 'growth', emoji: '🌱', count: post.reactions.growth, message: REACTION_MESSAGES.growth },
+                    { type: 'sparkle', emoji: '✨', count: post.reactions.sparkle, message: REACTION_MESSAGES.sparkle }
+                  ].map(({ type, emoji, count, message }) => (
+                    <div key={type} className="relative group">
+                      <button
+                        onClick={() => handleReaction(post.id, type)}
+                        className={`flex items-center space-x-1 px-2 lg:px-3 py-1 lg:py-1.5 rounded-full text-xs lg:text-sm transition-all hover:bg-muted/60 whitespace-nowrap ${
+                          post.userReacted === type
+                            ? `bg-gradient-to-r ${themeColors.gradient} text-white shadow-md ring-2 ring-white/20`
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        <span className="text-sm lg:text-base">{emoji}</span>
+                        <span className="font-medium">{count}</span>
+                      </button>
 
-                {/* Enhanced Actions */}
-                <div className="flex items-center justify-between pt-4 border-t-2 border-vybe-primary/20">
-                  <div className="flex items-center gap-6">
-                    <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-vybe-primary transition-colors">
-                      <MessageCircle className="w-5 h-5" />
-                      <span className="font-medium">{post.comments.count}</span>
-                      <span className="hidden sm:inline">Comments</span>
+                      {/* Motivational Micro-text Tooltip */}
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-foreground text-background text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                        {message}
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-2 border-transparent border-t-foreground"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+
+              {/* Action Bar - Mobile Responsive */}
+              <CardContent className="px-4 lg:px-6 py-3 lg:py-4 border-t border-border/30">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4 lg:space-x-6">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 p-0">
+                      <Heart className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2" />
+                      <span className="font-medium text-xs lg:text-sm">{post.stats.likes}</span>
                     </Button>
 
-                    <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-vybe-secondary transition-colors">
-                      <Share2 className="w-5 h-5" />
-                      <span className="hidden sm:inline font-medium">Share Impact</span>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-blue-500 p-0">
+                      <MessageCircle className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2" />
+                      <span className="font-medium text-xs lg:text-sm">{post.stats.comments}</span>
                     </Button>
 
-                    <Button variant="ghost" size="sm" className="flex items-center gap-2 text-muted-foreground hover:text-vybe-accent transition-colors">
-                      <Link2 className="w-5 h-5" />
-                      <span className="hidden sm:inline font-medium">Add to Chain</span>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 p-0">
+                      <Share2 className="w-4 h-4 lg:w-5 lg:h-5 mr-1 lg:mr-2" />
+                      <span className="font-medium text-xs lg:text-sm">{post.stats.shares}</span>
                     </Button>
                   </div>
 
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-vybe-primary">
-                    <Bookmark className="w-5 h-5" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleBookmark(post.id)}
+                    className={`p-1 ${post.isBookmarked ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                  >
+                    <Bookmark className={`w-4 h-4 lg:w-5 lg:h-5 ${post.isBookmarked ? 'fill-current' : ''}`} />
                   </Button>
                 </div>
               </CardContent>
@@ -710,96 +604,22 @@ const SocialFeed: React.FC = () => {
         })}
       </div>
 
-      {/* Creator Spotlight & Weekly Reflections - Bottom Section */}
-      <div className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
-          <CreatorSpotlightCard
-            spotlights={[
-              {
-                id: 'spotlight-1',
-                creator: {
-                  id: 'creator-1',
-                  name: 'Sarah Chen',
-                  avatar: '',
-                  title: 'Mindfulness & Recovery Guide',
-                  isVerified: true
-                },
-                impactMetrics: {
-                  storiesInspired: 847,
-                  totalReach: 2847,
-                  transformationRate: 87,
-                  vybeScore: 2847
-                },
-                featuredStory: {
-                  id: 'story-1',
-                  title: 'Breaking Free: My 365-Day Journey',
-                  excerpt: 'A year ago, I never imagined I could inspire hundreds of people to start their own recovery journey...',
-                  category: 'Recovery',
-                  reactions: 234
-                },
-                trending: true
-              }
-            ]}
-            onViewCreator={(id) => console.log('View creator:', id)}
-          />
-
-          <WeeklyReflectionCard
-            summary={{
-              userId: 'current-user',
-              weekStart: 'Nov 4, 2024',
-              metrics: {
-                storiesShared: 12,
-                peopleInspired: 89,
-                reactionsReceived: 156,
-                chainConnections: 23,
-                topCategory: 'Recovery',
-                impactRadius: 1250
-              },
-              achievements: [
-                {
-                  id: 'ach-1',
-                  title: 'Recovery Champion',
-                  description: 'Inspired 50+ people to start recovery',
-                  type: 'impact',
-                  earned: true
-                },
-                {
-                  id: 'ach-2',
-                  title: 'Mindfulness Master',
-                  description: '365 days of consistent meditation',
-                  type: 'milestone',
-                  earned: true
-                }
-              ],
-              rippleMap: [
-                {
-                  yourPost: 'Day 100: Small steps, big changes',
-                  inspired: [
-                    {
-                      userId: 'user-1',
-                      action: 'Started meditation practice',
-                      looproom: 'Mindful Recovery'
-                    },
-                    {
-                      userId: 'user-2',
-                      action: 'Joined support group',
-                      looproom: 'Recovery Warriors'
-                    }
-                  ]
-                }
-              ]
-            }}
-            onViewFullReport={() => console.log('View full report')}
-          />
-        </div>
-      </div>
-
-      {/* Load More */}
-      <div className="text-center">
-        <Button variant="outline" size="lg">
-          Load More Posts
+      {/* Load More - Mobile Responsive */}
+      <div className="text-center py-6 lg:py-8">
+        <Button variant="outline" size="lg" className="px-6 lg:px-8">
+          <Sparkles className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+          <span className="text-sm lg:text-base">Load More Stories</span>
         </Button>
       </div>
+
+      {/* Mobile Floating Compose Button */}
+      <Button
+        onClick={() => console.log('Open mobile compose')}
+        className="lg:hidden fixed bottom-20 right-4 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-200 z-50"
+        size="sm"
+      >
+        <Plus className="w-6 h-6 text-primary-foreground" />
+      </Button>
     </div>
   );
 };

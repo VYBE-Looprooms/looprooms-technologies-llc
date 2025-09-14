@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYBE Feed - Mobile Responsive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="onboarding_theme.css">
+    <style>
+        /* Enhanced Mobile Feed Styles */
+        .feed-card {
+            background: var(--surface) !important;
+            border-radius: var(--radius-lg) !important;
+            box-shadow: var(--shadow-soft) !important;
+            border: 1px solid var(--border-light) !important;
+            margin-bottom: var(--space-md) !important;
+            overflow: hidden !important;
+            transition: all var(--transition-normal) !important;
+        }
+
+        .feed-card:hover {
+            box-shadow: var(--shadow-medium) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .mobile-nav {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid var(--border-light) !important;
+        }
+
+        .mobile-bottom-nav {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            border-top: 1px solid var(--border-light) !important;
+        }
+
+        .theme-badge {
+            font-size: 0.75rem !important;
+            padding: 0.25rem 0.5rem !important;
+            border-radius: var(--radius-full) !important;
+            font-weight: 600 !important;
+            border: 1px solid transparent !important;
+        }
+
+        .theme-recovery {
+            background: oklch(0.95 0.02 25) !important;
+            color: oklch(0.45 0.15 25) !important;
+            border-color: oklch(0.85 0.05 25) !important;
+        }
+
+        .theme-meditation {
+            background: oklch(0.95 0.02 260) !important;
+            color: oklch(0.45 0.15 260) !important;
+            border-color: oklch(0.85 0.05 260) !important;
+        }
+
+        .theme-fitness {
+            background: oklch(0.95 0.02 145) !important;
+            color: oklch(0.45 0.15 145) !important;
+            border-color: oklch(0.85 0.05 145) !important;
+        }
+
+        .theme-music {
+            background: oklch(0.95 0.02 320) !important;
+            color: oklch(0.45 0.15 320) !important;
+            border-color: oklch(0.85 0.05 320) !important;
+        }
+
+        .theme-art {
+            background: oklch(0.95 0.02 85) !important;
+            color: oklch(0.45 0.15 85) !important;
+            border-color: oklch(0.85 0.05 85) !important;
+        }
+
+        .reaction-btn {
+            padding: 0.5rem 0.75rem !important;
+            border-radius: var(--radius-full) !important;
+            background: var(--surface-secondary) !important;
+            border: 1px solid var(--border-light) !important;
+            transition: all var(--transition-fast) !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+        }
+
+        .reaction-btn:hover {
+            background: var(--vybe-primary) !important;
+            color: white !important;
+            transform: scale(1.05) !important;
+        }
+
+        .reaction-btn.active {
+            background: var(--vybe-primary) !important;
+            color: white !important;
+            box-shadow: 0 0 0 3px oklch(0.6489 0.2370 26.9728 / 0.2) !important;
+        }
+
+        .floating-compose {
+            position: fixed !important;
+            bottom: 80px !important;
+            right: 1rem !important;
+            width: 56px !important;
+            height: 56px !important;
+            background: var(--gradient-primary) !important;
+            border-radius: var(--radius-full) !important;
+            box-shadow: var(--shadow-strong) !important;
+            border: none !important;
+            color: white !important;
+            font-size: 1.5rem !important;
+            z-index: 40 !important;
+            transition: all var(--transition-normal) !important;
+        }
+
+        .floating-compose:hover {
+            transform: scale(1.1) !important;
+            box-shadow: 0 20px 64px oklch(0.6489 0.2370 26.9728 / 0.4) !important;
+        }
+
+        .sidebar-collapsed {
+            transform: translateX(-100%) !important;
+        }
+
+        .sidebar-overlay {
+            position: fixed !important;
+            inset: 0 !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            z-index: 45 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity var(--transition-normal) !important;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1 !important;
+            pointer-events: all !important;
+        }
+
+        .compose-modal {
+            position: fixed !important;
+            inset: 0 !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            z-index: 50 !important;
+            display: flex !important;
+            align-items: flex-end !important;
+            justify-content: center !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: all var(--transition-normal) !important;
+        }
+
+        .compose-modal.active {
+            opacity: 1 !important;
+            pointer-events: all !important;
+        }
+
+        .compose-content {
+            background: var(--surface) !important;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+            width: 100% !important;
+            max-width: 500px !important;
+            max-height: 80vh !important;
+            overflow-y: auto !important;
+            transform: translateY(100%) !important;
+            transition: transform var(--transition-normal) !important;
+        }
+
+        .compose-modal.active .compose-content {
+            transform: translateY(0) !important;
+        }
+
+        .infinite-scroll-trigger {
+            height: 100px !important;
+        }
+
+        /* Mobile-specific responsive utilities */
+        @media (max-width: 768px) {
+            .desktop-only { display: none !important; }
+            .mobile-hidden { display: none !important; }
+
+            .feed-card {
+                margin-left: -1rem !important;
+                margin-right: -1rem !important;
+                border-radius: 0 !important;
+                border-left: none !important;
+                border-right: none !important;
+            }
+
+            .feed-card:first-child {
+                border-top: none !important;
+            }
+
+            .container-mobile {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .mobile-only { display: none !important; }
+
+            .feed-card {
+                border-radius: var(--radius-lg) !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                border: 1px solid var(--border-light) !important;
+            }
+
+            .floating-compose {
+                display: none !important;
+            }
+
+            .container-mobile {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+        }
+
+        /* Pull to refresh indicator */
+        .pull-refresh {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--vybe-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .pull-refresh.visible {
+            opacity: 1;
+            top: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+
+    <!-- Mobile Navigation Header -->
+    <header class="mobile-nav fixed top-0 left-0 right-0 z-40 lg:hidden">
+        <div class="px-4 py-3">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors" onclick="toggleSidebar()">
+                        <i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">V</span>
+                        </div>
+                        <span class="font-bold text-gray-900">VYBE</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <i data-lucide="search" class="w-5 h-5 text-gray-700"></i>
+                    </button>
+                    <div class="w-8 h-8 bg-gradient-to-r from-orange-400 to-purple-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-semibold text-sm">S</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Tabs -->
+            <div class="flex items-center justify-center">
+                <div class="flex bg-gray-100 rounded-xl p-1">
+                    <button class="px-4 py-2 text-sm font-medium bg-white text-gray-900 rounded-lg shadow-sm tab-active">
+                        Feed
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        Discover
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                        Live
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Desktop Layout Container -->
+    <div class="lg:flex lg:min-h-screen">
+
+        <!-- Desktop Sidebar -->
+        <aside class="desktop-only lg:w-80 lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-r lg:border-gray-200 lg:bg-white">
+            <div class="p-6">
+                <!-- User Profile -->
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-purple-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-semibold">S</span>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Salah Eddine</h3>
+                        <p class="text-sm text-gray-600">🌱 Member</p>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="space-y-2 mb-6">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                        <span class="font-medium">Feed</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <i data-lucide="compass" class="w-5 h-5"></i>
+                        <span>Discover</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <i data-lucide="radio" class="w-5 h-5"></i>
+                        <span>Live Sessions</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <i data-lucide="bookmark" class="w-5 h-5"></i>
+                        <span>Saved</span>
+                    </a>
+                </nav>
+
+                <!-- Trending -->
+                <div class="mb-6">
+                    <h4 class="font-semibold text-gray-900 mb-3">Trending</h4>
+                    <div class="space-y-2">
+                        <div class="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <p class="font-medium text-sm">#MorningMeditation</p>
+                            <p class="text-xs text-gray-600">2.3k posts</p>
+                        </div>
+                        <div class="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <p class="font-medium text-sm">#RecoveryJourney</p>
+                            <p class="text-xs text-gray-600">1.8k posts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="lg:ml-80 flex-1 min-h-screen">
+            <div class="container-mobile max-w-2xl mx-auto pt-20 pb-20 lg:pt-6 lg:pb-6">
+
+                <!-- Pull to refresh indicator -->
+                <div class="pull-refresh lg:hidden">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                </div>
+
+                <!-- Desktop Compose Box -->
+                <div class="desktop-only bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="flex gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span class="text-white font-semibold">S</span>
+                        </div>
+                        <div class="flex-1">
+                            <textarea
+                                class="w-full border-0 resize-none text-lg placeholder-gray-500 focus:outline-none"
+                                placeholder="Share your healing journey..."
+                                rows="3"
+                            ></textarea>
+                            <div class="flex items-center justify-between mt-4">
+                                <div class="flex gap-2">
+                                    <button class="theme-badge theme-recovery">Recovery</button>
+                                    <button class="theme-badge theme-meditation">Meditation</button>
+                                    <button class="theme-badge theme-fitness">Fitness</button>
+                                </div>
+                                <button class="btn-primary">
+                                    <i data-lucide="send" class="w-4 h-4"></i>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed Posts -->
+                <div id="feed-container" class="space-y-0 lg:space-y-4">
+
+                    <!-- Post 1 -->
+                    <article class="feed-card">
+                        <div class="p-4 lg:p-6">
+                            <!-- Post Header -->
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-pink-400 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-white font-semibold text-sm lg:text-base">S</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h3 class="font-semibold text-gray-900 text-sm lg:text-base">Sarah Chen</h3>
+                                            <i data-lucide="award" class="w-4 h-4 text-blue-500"></i>
+                                            <span class="px-2 py-0.5 bg-gradient-primary text-white text-xs font-medium rounded-full">
+                                                Creator
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-xs lg:text-sm text-gray-600">
+                                            <span class="theme-badge theme-recovery">recovery</span>
+                                            <span>•</span>
+                                            <span>Recovery Coach</span>
+                                            <span>•</span>
+                                            <span>2h ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="p-1 hover:bg-gray-100 rounded-lg">
+                                    <i data-lucide="more-horizontal" class="w-5 h-5 text-gray-400"></i>
+                                </button>
+                            </div>
+
+                            <!-- Post Content -->
+                            <div class="mb-4">
+                                <p class="text-gray-800 text-sm lg:text-base leading-relaxed mb-4">
+                                    Day 100 of my recovery journey! 🎉 The breathwork sessions in our looproom have been transformative. Sharing this milestone because someone out there needs to know that healing is possible. Your struggles are valid, your progress is meaningful, and you're not alone in this journey. 💙
+                                </p>
+
+                                <!-- Looproom Card -->
+                                <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                                                <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-gray-900 text-sm lg:text-base">Morning Breathwork Circle</h4>
+                                                <p class="text-sm text-gray-600">Recovery & Healing</p>
+                                                <div class="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                                                    <i data-lucide="users" class="w-3 h-3"></i>
+                                                    <span>234 participants</span>
+                                                    <span class="px-2 py-0.5 bg-red-500 text-white text-xs font-medium rounded-full">
+                                                        🔴 LIVE
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn-primary text-sm">Join Live</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reactions -->
+                            <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-2">
+                                <button class="reaction-btn active flex items-center gap-1">
+                                    <span>🔥</span>
+                                    <span class="font-medium">45</span>
+                                </button>
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>💙</span>
+                                    <span class="font-medium">82</span>
+                                </button>
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>🌱</span>
+                                    <span class="font-medium">28</span>
+                                </button>
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>✨</span>
+                                    <span class="font-medium">15</span>
+                                </button>
+                            </div>
+
+                            <!-- Action Bar -->
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                <div class="flex items-center gap-4">
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors">
+                                        <i data-lucide="heart" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">127</span>
+                                    </button>
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
+                                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">23</span>
+                                    </button>
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors">
+                                        <i data-lucide="share-2" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">8</span>
+                                    </button>
+                                </div>
+                                <button class="text-gray-600 hover:text-orange-500 transition-colors">
+                                    <i data-lucide="bookmark" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Post 2 -->
+                    <article class="feed-card">
+                        <div class="p-4 lg:p-6">
+                            <!-- Post Header -->
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-white font-semibold text-sm lg:text-base">M</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-semibold text-gray-900 text-sm lg:text-base mb-1">Marcus Rodriguez</h3>
+                                        <div class="flex items-center gap-2 text-xs lg:text-sm text-gray-600">
+                                            <span class="theme-badge theme-meditation">meditation</span>
+                                            <span>•</span>
+                                            <span>4h ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="p-1 hover:bg-gray-100 rounded-lg">
+                                    <i data-lucide="more-horizontal" class="w-5 h-5 text-gray-400"></i>
+                                </button>
+                            </div>
+
+                            <!-- Post Content -->
+                            <div class="mb-4">
+                                <p class="text-gray-800 text-sm lg:text-base leading-relaxed">
+                                    Started my meditation practice 30 days ago and I can already feel the difference. The guided sessions in the mindfulness looproom help me stay grounded during stressful moments. Thank you to this amazing community for the support! 🧘‍♂️✨
+                                </p>
+                            </div>
+
+                            <!-- Reactions -->
+                            <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-2">
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>🔥</span>
+                                    <span class="font-medium">12</span>
+                                </button>
+                                <button class="reaction-btn active flex items-center gap-1">
+                                    <span>💙</span>
+                                    <span class="font-medium">67</span>
+                                </button>
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>🌱</span>
+                                    <span class="font-medium">34</span>
+                                </button>
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>✨</span>
+                                    <span class="font-medium">8</span>
+                                </button>
+                            </div>
+
+                            <!-- Action Bar -->
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                <div class="flex items-center gap-4">
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors">
+                                        <i data-lucide="heart" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">89</span>
+                                    </button>
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
+                                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">15</span>
+                                    </button>
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors">
+                                        <i data-lucide="share-2" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">4</span>
+                                    </button>
+                                </div>
+                                <button class="text-orange-500">
+                                    <i data-lucide="bookmark" class="w-5 h-5 fill-current"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Anonymous Post -->
+                    <article class="feed-card">
+                        <div class="p-4 lg:p-6">
+                            <!-- Post Header -->
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 lg:w-12 lg:h-12 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-white font-semibold text-sm lg:text-base">?</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-semibold text-gray-900 text-sm lg:text-base mb-1">Anonymous Warrior</h3>
+                                        <div class="flex items-center gap-2 text-xs lg:text-sm text-gray-600">
+                                            <span class="theme-badge theme-recovery">recovery</span>
+                                            <span>•</span>
+                                            <span>6h ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="p-1 hover:bg-gray-100 rounded-lg">
+                                    <i data-lucide="more-horizontal" class="w-5 h-5 text-gray-400"></i>
+                                </button>
+                            </div>
+
+                            <!-- Post Content -->
+                            <div class="mb-4">
+                                <p class="text-gray-800 text-sm lg:text-base leading-relaxed">
+                                    One year clean today. This platform gave me the courage to share my story and connect with others who understand. The recovery looprooms saved my life. If you're reading this and struggling, please don't give up. Healing is possible. 💪❤️
+                                </p>
+                            </div>
+
+                            <!-- Reactions -->
+                            <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-2">
+                                <button class="reaction-btn active flex items-center gap-1">
+                                    <span>🔥</span>
+                                    <span class="font-medium">89</span>
+                                </button>
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>💙</span>
+                                    <span class="font-medium">156</span>
+                                </button>
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>🌱</span>
+                                    <span class="font-medium">67</span>
+                                </button>
+                                <button class="reaction-btn flex items-center gap-1">
+                                    <span>✨</span>
+                                    <span class="font-medium">23</span>
+                                </button>
+                            </div>
+
+                            <!-- Action Bar -->
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                <div class="flex items-center gap-4">
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors">
+                                        <i data-lucide="heart" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">312</span>
+                                    </button>
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
+                                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">67</span>
+                                    </button>
+                                    <button class="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors">
+                                        <i data-lucide="share-2" class="w-5 h-5"></i>
+                                        <span class="font-medium text-sm">45</span>
+                                    </button>
+                                </div>
+                                <button class="text-gray-600 hover:text-orange-500 transition-colors">
+                                    <i data-lucide="bookmark" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Load More -->
+                    <div class="infinite-scroll-trigger flex items-center justify-center py-8">
+                        <button class="btn-secondary" onclick="loadMorePosts()">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                            Load More Stories
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav mobile-only fixed bottom-0 left-0 right-0 z-30">
+        <div class="flex items-center justify-around py-2">
+            <button class="flex flex-col items-center gap-1 p-2 text-blue-600">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span class="text-xs font-medium">Feed</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 p-2 text-gray-600">
+                <i data-lucide="compass" class="w-5 h-5"></i>
+                <span class="text-xs">Explore</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 p-2 text-gray-600">
+                <i data-lucide="radio" class="w-5 h-5"></i>
+                <span class="text-xs">Live</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 p-2 text-gray-600">
+                <i data-lucide="user" class="w-5 h-5"></i>
+                <span class="text-xs">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Floating Compose Button -->
+    <button class="floating-compose mobile-only" onclick="openCompose()">
+        <i data-lucide="plus" class="w-6 h-6"></i>
+    </button>
+
+    <!-- Mobile Sidebar -->
+    <aside id="mobile-sidebar" class="mobile-only fixed left-0 top-0 h-full w-80 bg-white z-50 transform transition-transform duration-300 sidebar-collapsed overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">V</span>
+                    </div>
+                    <span class="font-bold text-gray-900">VYBE</span>
+                </div>
+                <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5 text-gray-700"></i>
+                </button>
+            </div>
+
+            <!-- User Profile -->
+            <div class="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-purple-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-semibold">S</span>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900">Salah Eddine</h3>
+                    <p class="text-sm text-gray-600">boussettahsallah@gmail.com</p>
+                    <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full mt-1">
+                        🌱 Member
+                    </span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center gap-3 px-3 py-3 bg-blue-50 text-blue-700 rounded-lg">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    <span class="font-medium">Feed</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="compass" class="w-5 h-5"></i>
+                    <span>Discover</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="radio" class="w-5 h-5"></i>
+                    <span>Live Sessions</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="bookmark" class="w-5 h-5"></i>
+                    <span>Saved Posts</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Mobile Compose Modal -->
+    <div id="compose-modal" class="compose-modal">
+        <div class="compose-content p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Create Post</h3>
+                <button onclick="closeCompose()" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5 text-gray-700"></i>
+                </button>
+            </div>
+
+            <div class="flex gap-3 mb-4">
+                <div class="w-10 h-10 bg-gradient-to-r from-orange-400 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-white font-semibold">S</span>
+                </div>
+                <div class="flex-1">
+                    <textarea
+                        class="w-full border-0 resize-none text-base placeholder-gray-500 focus:outline-none"
+                        placeholder="Share your healing journey..."
+                        rows="4"
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button class="theme-badge theme-recovery">Recovery</button>
+                <button class="theme-badge theme-meditation">Meditation</button>
+                <button class="theme-badge theme-fitness">Fitness</button>
+                <button class="theme-badge theme-music">Music</button>
+                <button class="theme-badge theme-art">Art</button>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                        <i data-lucide="image" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                        <i data-lucide="video" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                        <i data-lucide="mic" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                </div>
+                <button class="btn-primary">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    Share
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Mobile Sidebar Functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mobile-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            sidebar.classList.toggle('sidebar-collapsed');
+            overlay.classList.toggle('active');
+        }
+
+        // Mobile Compose Functions
+        function openCompose() {
+            const modal = document.getElementById('compose-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCompose() {
+            const modal = document.getElementById('compose-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Infinite Scroll
+        function loadMorePosts() {
+            // Simulate loading more posts
+            const feedContainer = document.getElementById('feed-container');
+            const loadButton = feedContainer.querySelector('.infinite-scroll-trigger button');
+
+            loadButton.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Loading...';
+
+            setTimeout(() => {
+                loadButton.innerHTML = '<i data-lucide="plus" class="w-5 h-5"></i> Load More Stories';
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        // Pull to Refresh (Mobile)
+        let startY = 0;
+        let currentY = 0;
+        let isRefreshing = false;
+
+        if (window.innerWidth <= 768) {
+            const pullRefresh = document.querySelector('.pull-refresh');
+
+            document.addEventListener('touchstart', (e) => {
+                if (window.scrollY === 0) {
+                    startY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchmove', (e) => {
+                if (window.scrollY === 0 && !isRefreshing) {
+                    currentY = e.touches[0].clientY;
+                    const diff = currentY - startY;
+
+                    if (diff > 0 && diff < 100) {
+                        pullRefresh.style.transform = `translateY(${diff}px)`;
+                        pullRefresh.style.opacity = diff / 60;
+                    } else if (diff >= 100) {
+                        pullRefresh.classList.add('visible');
+                        pullRefresh.style.transform = 'translateY(0)';
+                    }
+                }
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                if (currentY - startY >= 100 && !isRefreshing) {
+                    isRefreshing = true;
+                    pullRefresh.classList.add('visible');
+
+                    // Simulate refresh
+                    setTimeout(() => {
+                        pullRefresh.classList.remove('visible');
+                        pullRefresh.style.transform = '';
+                        pullRefresh.style.opacity = '';
+                        isRefreshing = false;
+                    }, 2000);
+                } else {
+                    pullRefresh.style.transform = '';
+                    pullRefresh.style.opacity = '';
+                }
+
+                startY = 0;
+                currentY = 0;
+            }, { passive: true });
+        }
+
+        // Theme badge interactions
+        document.querySelectorAll('.theme-badge').forEach(badge => {
+            badge.addEventListener('click', () => {
+                badge.classList.toggle('active');
+            });
+        });
+
+        // Reaction button interactions
+        document.querySelectorAll('.reaction-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                btn.classList.toggle('active');
+
+                // Animate count change
+                const countElement = btn.querySelector('.font-medium');
+                if (countElement) {
+                    let count = parseInt(countElement.textContent);
+                    count += btn.classList.contains('active') ? 1 : -1;
+                    countElement.textContent = count;
+
+                    // Add pulse animation
+                    btn.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        btn.style.transform = '';
+                    }, 150);
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feed-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Auto-hide/show nav on scroll (mobile)
+        let lastScrollY = window.scrollY;
+        let ticking = false;
+
+        function updateNavBar() {
+            const nav = document.querySelector('.mobile-nav');
+            if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                nav.style.transform = 'translateY(-100%)';
+            } else {
+                nav.style.transform = 'translateY(0)';
+            }
+            lastScrollY = window.scrollY;
+        }
+
+        if (window.innerWidth <= 768) {
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(updateNavBar);
+                    ticking = true;
+                    setTimeout(() => { ticking = false; }, 100);
+                }
+            }, { passive: true });
+        }
+    </script>
+</body>
+</html>

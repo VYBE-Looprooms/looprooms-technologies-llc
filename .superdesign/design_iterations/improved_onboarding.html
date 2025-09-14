@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYBE Onboarding - Identity Verification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="onboarding_theme.css">
+    <style>
+        /* Custom animations for this specific design */
+        .floating-elements {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px oklch(0.6489 0.2370 26.9728 / 0.3); }
+            50% { box-shadow: 0 0 40px oklch(0.6489 0.2370 26.9728 / 0.6); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .camera-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .camera-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.1) 70%);
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 1; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .verification-step {
+            opacity: 0;
+            transform: translateX(20px);
+            animation: slideInStep 0.5s ease-out forwards;
+        }
+
+        @keyframes slideInStep {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .verification-step:nth-child(1) { animation-delay: 0.1s; }
+        .verification-step:nth-child(2) { animation-delay: 0.2s; }
+        .verification-step:nth-child(3) { animation-delay: 0.3s; }
+        .verification-step:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 min-h-screen">
+
+    <!-- Mobile-First Navigation Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 blur-backdrop border-b border-white/20">
+        <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
+            <button class="flex items-center justify-center w-10 h-10 rounded-full bg-white/80 hover:bg-white/90 transition-all duration-200" onclick="goBack()">
+                <i data-lucide="arrow-left" class="w-5 h-5 text-gray-700"></i>
+            </button>
+
+            <div class="text-center">
+                <div class="text-sm font-medium text-gray-600">Step 2 of 4</div>
+                <div class="text-xs text-gray-500">Identity Verification</div>
+            </div>
+
+            <button class="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors">
+                Skip
+            </button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container mx-4 mb-3">
+            <div class="progress-bar" style="width: 50%;"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-8 px-4">
+        <div class="max-w-lg mx-auto">
+
+            <!-- Header Section -->
+            <div class="text-center mb-8 animate-fade-in">
+                <div class="icon-container w-20 h-20 mx-auto mb-6 pulse-glow">
+                    <i data-lucide="shield-check" class="w-10 h-10"></i>
+                </div>
+
+                <h1 class="text-title gradient-text mb-4">
+                    Verify Your Identity
+                </h1>
+
+                <p class="text-body text-gray-600 mb-6">
+                    Quick verification unlocks creator features and builds trust in our community
+                </p>
+
+                <!-- Trust Indicators -->
+                <div class="flex items-center justify-center gap-6 text-micro">
+                    <div class="flex items-center gap-1">
+                        <i data-lucide="lock" class="w-3 h-3 text-green-500"></i>
+                        <span class="text-green-600">Secure</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <i data-lucide="zap" class="w-3 h-3 text-blue-500"></i>
+                        <span class="text-blue-600">4 min process</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <i data-lucide="check-circle" class="w-3 h-3 text-purple-500"></i>
+                        <span class="text-purple-600">Safe</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document Selection -->
+            <div class="mobile-stack mb-8 animate-slide-up">
+
+                <!-- Government ID Option -->
+                <div class="card-interactive document-option" data-type="government-id" onclick="selectDocument('government-id')">
+                    <div class="p-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="credit-card" class="w-6 h-6 text-white"></i>
+                                </div>
+                            </div>
+
+                            <div class="flex-1">
+                                <h3 class="text-heading text-gray-900 mb-2">Government ID</h3>
+                                <p class="text-caption text-gray-600 mb-3">
+                                    Driver's license or state-issued ID card
+                                </p>
+
+                                <!-- Requirements -->
+                                <div class="flex flex-wrap gap-2">
+                                    <div class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-md">
+                                        <i data-lucide="camera" class="w-3 h-3 text-blue-600"></i>
+                                        <span class="text-xs font-medium text-blue-700">2 photos</span>
+                                    </div>
+                                    <div class="inline-flex items-center gap-1 px-2 py-1 bg-green-50 rounded-md">
+                                        <i data-lucide="clock" class="w-3 h-3 text-green-600"></i>
+                                        <span class="text-xs font-medium text-green-700">3 min</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="selection-indicator">
+                                <div class="w-6 h-6 border-2 border-gray-300 rounded-full transition-all duration-200">
+                                    <div class="w-full h-full bg-gradient-primary rounded-full scale-0 transition-transform duration-200"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passport Option -->
+                <div class="card-interactive document-option" data-type="passport" onclick="selectDocument('passport')">
+                    <div class="p-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="book-open" class="w-6 h-6 text-white"></i>
+                                </div>
+                            </div>
+
+                            <div class="flex-1">
+                                <h3 class="text-heading text-gray-900 mb-2">Passport</h3>
+                                <p class="text-caption text-gray-600 mb-3">
+                                    International passport document
+                                </p>
+
+                                <!-- Requirements -->
+                                <div class="flex flex-wrap gap-2">
+                                    <div class="inline-flex items-center gap-1 px-2 py-1 bg-green-50 rounded-md">
+                                        <i data-lucide="camera" class="w-3 h-3 text-green-600"></i>
+                                        <span class="text-xs font-medium text-green-700">1 photo</span>
+                                    </div>
+                                    <div class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 rounded-md">
+                                        <i data-lucide="clock" class="w-3 h-3 text-blue-600"></i>
+                                        <span class="text-xs font-medium text-blue-700">2 min</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="selection-indicator">
+                                <div class="w-6 h-6 border-2 border-gray-300 rounded-full transition-all duration-200">
+                                    <div class="w-full h-full bg-gradient-primary rounded-full scale-0 transition-transform duration-200"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera Preview Section (Hidden by default) -->
+            <div id="camera-section" class="hidden mb-8 animate-scale-in">
+                <div class="card-elevated camera-preview rounded-2xl h-64 relative mb-4">
+                    <div class="scan-line"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4">
+                                <i data-lucide="camera" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <p class="text-white font-medium">Position your document in frame</p>
+                            <p class="text-white/80 text-sm">Make sure all corners are visible</p>
+                        </div>
+                    </div>
+
+                    <!-- Corner guides -->
+                    <div class="absolute top-4 left-4 w-6 h-6 border-l-3 border-t-3 border-white rounded-tl-md"></div>
+                    <div class="absolute top-4 right-4 w-6 h-6 border-r-3 border-t-3 border-white rounded-tr-md"></div>
+                    <div class="absolute bottom-4 left-4 w-6 h-6 border-l-3 border-b-3 border-white rounded-bl-md"></div>
+                    <div class="absolute bottom-4 right-4 w-6 h-6 border-r-3 border-b-3 border-white rounded-br-md"></div>
+                </div>
+
+                <!-- Camera Controls -->
+                <div class="flex items-center justify-center gap-4">
+                    <button class="btn-secondary">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        Retake
+                    </button>
+                    <button class="btn-primary w-16 h-16 rounded-full">
+                        <i data-lucide="camera" class="w-6 h-6"></i>
+                    </button>
+                    <button class="btn-secondary">
+                        <i data-lucide="image" class="w-5 h-5"></i>
+                        Gallery
+                    </button>
+                </div>
+            </div>
+
+            <!-- Verification Steps Preview -->
+            <div class="glass-card rounded-2xl p-6 mb-8 animate-slide-up">
+                <h3 class="text-heading text-gray-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="list-checks" class="w-5 h-5 text-purple-600"></i>
+                    What happens next?
+                </h3>
+
+                <div class="space-y-4">
+                    <div class="verification-step flex items-start gap-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-blue-600 font-semibold text-sm">1</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Take document photos</p>
+                            <p class="text-caption text-gray-600">Clear, well-lit photos of your ID</p>
+                        </div>
+                    </div>
+
+                    <div class="verification-step flex items-start gap-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-green-600 font-semibold text-sm">2</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Take a selfie</p>
+                            <p class="text-caption text-gray-600">Quick face verification for security</p>
+                        </div>
+                    </div>
+
+                    <div class="verification-step flex items-start gap-3">
+                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-purple-600 font-semibold text-sm">3</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">AI verification</p>
+                            <p class="text-caption text-gray-600">Secure processing (usually under 30 seconds)</p>
+                        </div>
+                    </div>
+
+                    <div class="verification-step flex items-start gap-3">
+                        <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-orange-600 font-semibold text-sm">4</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Get verified</p>
+                            <p class="text-caption text-gray-600">Unlock all creator features</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mobile-stack">
+                <button id="continue-btn" class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled onclick="startVerification()">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    Start Verification
+                </button>
+
+                <button class="btn-secondary" onclick="skipVerification()">
+                    <i data-lucide="clock" class="w-5 h-5"></i>
+                    Verify Later
+                </button>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <div class="flex items-start gap-3">
+                    <i data-lucide="shield" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <p class="text-caption font-medium text-blue-900 mb-1">Privacy Protected</p>
+                        <p class="text-micro text-blue-700">
+                            Your data is encrypted and never shared. Documents are processed securely and deleted after verification.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Desktop Enhancement - QR Code for Mobile Handoff -->
+    <div id="desktop-qr" class="hidden lg:block fixed bottom-6 right-6">
+        <div class="glass-card p-4 rounded-xl shadow-lg">
+            <div class="text-center">
+                <div class="w-32 h-32 bg-gray-100 rounded-lg mb-2 flex items-center justify-center">
+                    <i data-lucide="qr-code" class="w-12 h-12 text-gray-400"></i>
+                </div>
+                <p class="text-micro text-gray-600">Scan with phone for<br>better camera experience</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        let selectedDocumentType = null;
+
+        function selectDocument(type) {
+            selectedDocumentType = type;
+
+            // Update visual selection
+            document.querySelectorAll('.document-option').forEach(option => {
+                option.classList.remove('card-selected');
+                const indicator = option.querySelector('.selection-indicator > div > div');
+                indicator.style.transform = 'scale(0)';
+            });
+
+            const selectedOption = document.querySelector(`[data-type="${type}"]`);
+            selectedOption.classList.add('card-selected');
+            const selectedIndicator = selectedOption.querySelector('.selection-indicator > div > div');
+            selectedIndicator.style.transform = 'scale(1)';
+
+            // Enable continue button
+            const continueBtn = document.getElementById('continue-btn');
+            continueBtn.disabled = false;
+            continueBtn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+        }
+
+        function startVerification() {
+            if (!selectedDocumentType) return;
+
+            // Show camera section
+            document.getElementById('camera-section').classList.remove('hidden');
+            document.getElementById('camera-section').scrollIntoView({ behavior: 'smooth' });
+
+            // Update header
+            document.querySelector('header .text-center .text-sm').textContent = 'Step 3 of 4';
+            document.querySelector('header .text-center .text-xs').textContent = 'Document Capture';
+            document.querySelector('.progress-bar').style.width = '75%';
+
+            // Hide document selection
+            document.querySelectorAll('.document-option').forEach(option => {
+                option.style.opacity = '0.5';
+                option.style.pointerEvents = 'none';
+            });
+        }
+
+        function skipVerification() {
+            if (confirm('You can verify your identity later in settings. Continue to dashboard?')) {
+                window.location.href = '/dashboard';
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Enhanced mobile experience
+        if (window.innerWidth <= 768) {
+            document.body.classList.add('mobile-optimized');
+
+            // Add touch-friendly interactions
+            document.addEventListener('touchstart', function() {}, { passive: true });
+        }
+
+        // Desktop QR code display
+        if (window.innerWidth >= 1024) {
+            document.getElementById('desktop-qr').classList.remove('hidden');
+        }
+
+        // Auto-animations on page load
+        setTimeout(() => {
+            document.querySelectorAll('.animate-fade-in, .animate-slide-up, .animate-scale-in').forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        }, 100);
+
+        // Add scroll-based animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.verification-step').forEach(step => {
+            observer.observe(step);
+        });
+    </script>
+</body>
+</html>

@@ -1,38 +1,110 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import CreatorApplicationStatus from '@/components/CreatorApplicationStatus';
-import SocialFeed from '@/components/SocialFeed';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  User, 
-  Heart, 
-  Settings, 
-  Bell, 
-  Activity, 
-  Calendar, 
-  Users, 
-  Zap,
-  FileText,
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import SocialFeed from '@/components/SocialFeed';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
+import {
+  Heart,
+  Brain,
+  Dumbbell,
+  Music,
+  Palette,
+  Bell,
+  Settings,
+  Search,
+  Plus,
+  Filter,
   TrendingUp,
-  UserPlus
+  Users,
+  Activity,
+  Calendar,
+  MapPin,
+  Star,
+  MessageCircle,
+  Share2,
+  Bookmark
 } from 'lucide-react';
 
-const Dashboard = () => {
+const THEME_COLORS = {
+  recovery: {
+    bg: 'bg-gradient-to-br from-orange-50/50 to-red-50/30 dark:from-orange-950/30 dark:to-red-950/20',
+    text: 'text-orange-700 dark:text-orange-400',
+    icon: 'text-orange-600 dark:text-orange-500',
+    border: 'border-orange-200/60 dark:border-orange-800/60',
+    hover: 'hover:bg-orange-100/60 dark:hover:bg-orange-900/40'
+  },
+  meditation: {
+    bg: 'bg-gradient-to-br from-purple-50/50 to-indigo-50/30 dark:from-purple-950/30 dark:to-indigo-950/20',
+    text: 'text-purple-700 dark:text-purple-400',
+    icon: 'text-purple-600 dark:text-purple-500',
+    border: 'border-purple-200/60 dark:border-purple-800/60',
+    hover: 'hover:bg-purple-100/60 dark:hover:bg-purple-900/40'
+  },
+  fitness: {
+    bg: 'bg-gradient-to-br from-green-50/50 to-emerald-50/30 dark:from-green-950/30 dark:to-emerald-950/20',
+    text: 'text-green-700 dark:text-green-400',
+    icon: 'text-green-600 dark:text-green-500',
+    border: 'border-green-200/60 dark:border-green-800/60',
+    hover: 'hover:bg-green-100/60 dark:hover:bg-green-900/40'
+  },
+  music: {
+    bg: 'bg-gradient-to-br from-pink-50/50 to-rose-50/30 dark:from-pink-950/30 dark:to-rose-950/20',
+    text: 'text-pink-700 dark:text-pink-400',
+    icon: 'text-pink-600 dark:text-pink-500',
+    border: 'border-pink-200/60 dark:border-pink-800/60',
+    hover: 'hover:bg-pink-100/60 dark:hover:bg-pink-900/40'
+  },
+  art: {
+    bg: 'bg-gradient-to-br from-yellow-50/50 to-amber-50/30 dark:from-yellow-950/30 dark:to-amber-950/20',
+    text: 'text-yellow-700 dark:text-yellow-400',
+    icon: 'text-yellow-600 dark:text-yellow-500',
+    border: 'border-yellow-200/60 dark:border-yellow-800/60',
+    hover: 'hover:bg-yellow-100/60 dark:hover:bg-yellow-900/40'
+  }
+};
+
+const THEME_ICONS = {
+  recovery: Heart,
+  meditation: Brain,
+  fitness: Dumbbell,
+  music: Music,
+  art: Palette
+};
+
+const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('feed');
+  const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
+  const [userType, setUserType] = useState<string>('member');
 
-  // Redirect if not logged in
-  React.useEffect(() => {
+  useEffect(() => {
     if (!user) {
       navigate('/login');
-    } else if (user.creatorApplication && !user.identityVerified) {
-      // If user has creator application but hasn't verified identity, redirect to verification
-      navigate('/identity-verification');
+      return;
+    }
+
+    // Check if onboarding is complete
+    const onboardingComplete = localStorage.getItem('vybeOnboardingComplete');
+    if (!onboardingComplete) {
+      navigate('/onboarding');
+      return;
+    }
+
+    // Load user preferences
+    const themes = localStorage.getItem('vybeSelectedThemes');
+    const type = localStorage.getItem('vybeUserType');
+
+    if (themes) {
+      setSelectedThemes(JSON.parse(themes));
+    }
+    if (type) {
+      setUserType(type);
     }
   }, [user, navigate]);
 
@@ -42,146 +114,472 @@ const Dashboard = () => {
   };
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your VYBE experience...</p>
+        </div>
+      </div>
+    );
   }
 
-  const isCreatorApplication = user.creatorApplication;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-vybe-primary/5 relative">
-      <Navbar />
-      
-      {/* Main Dashboard Content */}
-      <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          
-          {/* Welcome Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground mb-2">
-                  Welcome back, {user.profile?.firstName || 'Friend'}!
-                </h1>
-                <p className="text-lg text-foreground/70">
-                  {isCreatorApplication ? 'Your Creator Hub' : 'Your VYBE LOOPROOMS™ community'}
-                </p>
+    <div className="min-h-screen bg-background">
+      {/* Top Navigation Bar */}
+      <nav className="bg-card/80 backdrop-blur-md border-b border-border/20 sticky top-0 z-50 shadow-sm">
+        <div className="w-full px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                <Heart className="w-6 h-6 text-white" />
               </div>
-              <div className="flex items-center gap-3">
-                {isCreatorApplication && (
-                  <Badge variant="destructive" className="flex items-center gap-1">
-                    <Heart className="w-3 h-3" />
-                    Creator
-                  </Badge>
-                )}
-                <Button variant="outline" onClick={handleLogout}>
+            </div>
+
+            {/* Search Bar */}
+            <div className="flex-1 max-w-2xl mx-8">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search looprooms, creators, or topics..."
+                  className="w-full pl-12 pr-4 py-3 bg-background/60 backdrop-blur-sm border border-border/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200 shadow-sm text-foreground placeholder:text-muted-foreground"
+                />
+              </div>
+            </div>
+
+            {/* Right Actions */}
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="sm" className="relative hover:bg-muted/50 rounded-xl">
+                <Bell className="w-5 h-5 text-muted-foreground" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-sm"></span>
+              </Button>
+
+              <Button variant="ghost" size="sm" className="hover:bg-muted/50 rounded-xl">
+                <Settings className="w-5 h-5 text-muted-foreground" />
+              </Button>
+
+              <ThemeSwitcher />
+
+              <div className="flex items-center space-x-3">
+                <Avatar className="w-10 h-10 ring-2 ring-border/50">
+                  <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold">
+                    {user.profile?.firstName?.charAt(0) || user.email.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <Button variant="ghost" onClick={handleLogout} className="text-sm hover:bg-muted/50 rounded-xl px-4">
                   Logout
                 </Button>
               </div>
             </div>
           </div>
+        </div>
+      </nav>
 
-          {/* Creator Application Status */}
-          {isCreatorApplication && (
-            <div className="mb-8">
-              <CreatorApplicationStatus
-                application={user.creatorApplication}
-                identityVerified={user.identityVerified}
-                onStartVerification={() => navigate('/identity-verification')}
-              />
-            </div>
-          )}
+      <div className="w-full px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-12 gap-8">
+          {/* Left Sidebar */}
+          <div className="col-span-3 space-y-6">
+            {/* User Profile Card */}
+            <Card className="overflow-hidden bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
+              <div className="h-24 bg-gradient-to-r from-primary/80 via-secondary/80 to-accent/80"></div>
+              <CardContent className="px-6 pb-6 -mt-10">
+                <Avatar className="w-20 h-20 border-4 border-card mx-auto mb-4 shadow-lg">
+                  <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-primary-foreground text-xl font-bold">
+                    {user.profile?.firstName?.charAt(0) || user.email.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="text-center">
+                  <h3 className="font-bold text-foreground text-lg">
+                    {user.profile?.firstName || 'VYBE Member'} {user.profile?.lastName || ''}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">{user.email}</p>
+                  <Badge className={`mt-3 px-4 py-1 rounded-xl font-semibold ${userType === 'creator' ? 'bg-accent/20 text-accent-foreground border border-accent/30' : 'bg-primary/20 text-primary-foreground border border-primary/30'}`}>
+                    {userType === 'creator' ? '✨ Creator' : '🌱 Member'}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
 
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 lg:gap-8">
-            {/* Left Sidebar - Quick Stats & Actions */}
-            <div className="xl:col-span-1 space-y-6 order-2 xl:order-1">
-              {/* Quick Stats */}
-              <Card className="vybe-card">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-2 text-foreground">
-                    <Activity className="w-5 h-5 text-vybe-accent" />
-                    Your Progress
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-center p-4 bg-vybe-primary/10 rounded-lg">
-                    <div className="text-2xl font-bold text-vybe-primary">0</div>
-                    <div className="text-sm text-muted-foreground">Sessions This Week</div>
-                  </div>
-                  <div className="text-center p-4 bg-vybe-secondary/10 rounded-lg">
-                    <div className="text-2xl font-bold text-vybe-secondary">3</div>
-                    <div className="text-sm text-muted-foreground">Looprooms Available</div>
-                  </div>
-                  {isCreatorApplication && user.identityVerified && (
-                    <div className="text-center p-4 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">0</div>
-                      <div className="text-sm text-muted-foreground">Content Created</div>
+            {/* Your Themes */}
+            <Card className="bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold text-foreground">Your Themes</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {selectedThemes.map(themeId => {
+                  const colors = THEME_COLORS[themeId as keyof typeof THEME_COLORS];
+                  const IconComponent = THEME_ICONS[themeId as keyof typeof THEME_ICONS];
+
+                  return (
+                    <div key={themeId} className={`p-4 rounded-xl ${colors.bg} ${colors.border} border backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200`}>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-xl bg-background/50 flex items-center justify-center">
+                          <IconComponent className={`w-5 h-5 ${colors.icon}`} />
+                        </div>
+                        <div>
+                          <p className={`font-semibold ${colors.text} capitalize`}>{themeId}</p>
+                          <p className="text-xs text-muted-foreground">3 active looprooms</p>
+                        </div>
+                      </div>
                     </div>
+                  );
+                })}
+                <Button variant="outline" size="sm" className="w-full mt-4 rounded-xl border-2 hover:bg-gradient-to-r hover:from-orange-500 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-200">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Theme
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Enhanced Journey Progress */}
+            <Card className="bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold text-foreground flex items-center">
+                  Your Journey
+                  <Badge className="ml-2 bg-primary/20 text-primary border border-primary/30 text-xs">
+                    5-day streak
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Sessions Progress */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/80 flex items-center justify-center">
+                        <Activity className="w-4 h-4 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Sessions</span>
+                        <p className="text-xs text-muted-foreground">8 away from Growth Badge</p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-primary text-lg">12/20</span>
+                  </div>
+                  <div className="w-full bg-muted/30 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full" style={{width: '60%'}}></div>
+                  </div>
+                </div>
+
+                {/* Streak Progress */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-secondary/10 to-secondary/5 border border-secondary/20">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-lg bg-secondary/80 flex items-center justify-center">
+                        <TrendingUp className="w-4 h-4 text-secondary-foreground" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Streak</span>
+                        <p className="text-xs text-muted-foreground">2 days to weekly milestone</p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-secondary text-lg">5 days</span>
+                  </div>
+                  <div className="flex space-x-1">
+                    {[...Array(7)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`h-2 rounded-full flex-1 ${
+                          i < 5 ? 'bg-gradient-to-r from-secondary to-accent' : 'bg-muted/30'
+                        }`}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Impact Progress */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-lg bg-accent/80 flex items-center justify-center">
+                        <Heart className="w-4 h-4 text-accent-foreground" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground">Impact</span>
+                        <p className="text-xs text-muted-foreground">66 to Inspiration Badge</p>
+                      </div>
+                    </div>
+                    <span className="font-bold text-accent text-lg">234</span>
+                  </div>
+                  <div className="w-full bg-muted/30 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-accent to-primary h-2 rounded-full" style={{width: '78%'}}></div>
+                  </div>
+                </div>
+
+                {/* Next Milestone */}
+                <div className="p-3 rounded-xl bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 border border-border/30 text-center">
+                  <Star className="w-5 h-5 text-primary mx-auto mb-1" />
+                  <p className="text-xs font-medium text-foreground">Next: Growth Badge</p>
+                  <p className="text-xs text-muted-foreground">Complete 8 more sessions</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <div className="col-span-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <div className="flex justify-between items-center mb-8">
+                <TabsList className="grid grid-cols-4 w-full max-w-md bg-card/80 backdrop-blur-sm border-border/20 rounded-xl p-1">
+                  <TabsTrigger value="feed" className="rounded-lg font-medium">Feed</TabsTrigger>
+                  <TabsTrigger value="looprooms" className="rounded-lg font-medium">Looprooms</TabsTrigger>
+                  <TabsTrigger value="discover" className="rounded-lg font-medium">Discover</TabsTrigger>
+                  <TabsTrigger value="create" className="rounded-lg font-medium">Create</TabsTrigger>
+                </TabsList>
+
+                <div className="flex space-x-3">
+                  <Button variant="outline" size="sm" className="rounded-xl border-2 hover:bg-muted/50 backdrop-blur-sm">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
+                  </Button>
+                  <Button size="sm" className="bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                    <Plus className="w-4 h-4 mr-2" />
+                    New Post
+                  </Button>
+                </div>
+              </div>
+
+              <TabsContent value="feed" className="mt-0">
+                <SocialFeed />
+              </TabsContent>
+
+              <TabsContent value="looprooms" className="mt-0">
+                <div className="space-y-6">
+                  <h2 className="text-3xl font-bold text-foreground mb-6">Your Looprooms</h2>
+                  {selectedThemes.map(themeId => {
+                    const colors = THEME_COLORS[themeId as keyof typeof THEME_COLORS];
+                    const IconComponent = THEME_ICONS[themeId as keyof typeof THEME_ICONS];
+
+                    return (
+                      <Card key={themeId} className="hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group">
+                        <CardContent className="p-6">
+                          <div className="flex items-start space-x-4">
+                            <div className={`w-14 h-14 rounded-2xl ${colors.bg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200`}>
+                              <IconComponent className={`w-7 h-7 ${colors.icon}`} />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-bold text-xl capitalize text-foreground mb-2">{themeId} Looprooms</h3>
+                              <p className="text-muted-foreground mb-4">Join healing sessions focused on {themeId}</p>
+                              <div className="flex items-center space-x-6 text-sm">
+                                <span className="flex items-center px-3 py-1 bg-primary/20 text-primary rounded-full font-medium">🔥 15 active</span>
+                                <span className="flex items-center px-3 py-1 bg-secondary/20 text-secondary rounded-full font-medium">👥 234 members</span>
+                                <span className="flex items-center px-3 py-1 bg-accent/20 text-accent rounded-full font-medium">⏰ Next in 30min</span>
+                              </div>
+                            </div>
+                            <Button variant="outline" className={`${colors.text} border-2 rounded-xl px-6 hover:bg-gradient-to-r hover:from-orange-500 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-200`}>
+                              Join Now
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="discover" className="mt-0">
+                <div className="space-y-6">
+                  <h2 className="text-3xl font-bold text-foreground mb-6">Discover New Themes</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {Object.entries(THEME_COLORS).map(([themeId, colors]) => {
+                      const IconComponent = THEME_ICONS[themeId as keyof typeof THEME_ICONS];
+                      const isSelected = selectedThemes.includes(themeId);
+
+                      return (
+                        <Card key={themeId} className={`cursor-pointer hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group ${isSelected ? `ring-2 ring-primary shadow-lg` : ''}`}>
+                          <CardContent className="p-6">
+                            <div className="text-center">
+                              <div className={`w-20 h-20 mx-auto mb-4 rounded-2xl ${colors.bg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200`}>
+                                <IconComponent className={`w-10 h-10 ${colors.icon}`} />
+                              </div>
+                              <h3 className="font-bold text-xl capitalize mb-3 text-foreground">{themeId}</h3>
+                              <p className="text-muted-foreground mb-4">Explore healing through {themeId}</p>
+                              <div className="flex justify-center space-x-4 text-sm mb-6">
+                                <span className="px-3 py-1 bg-muted/50 text-muted-foreground rounded-full font-medium">🏠 25 looprooms</span>
+                                <span className="px-3 py-1 bg-muted/50 text-muted-foreground rounded-full font-medium">👥 1.2k members</span>
+                              </div>
+                              {isSelected ? (
+                                <Badge className="bg-primary/20 text-primary border border-primary/30 px-4 py-2 rounded-xl font-semibold">
+                                  ✓ Following
+                                </Badge>
+                              ) : (
+                                <Button variant="outline" size="sm" className={`${colors.text} border-2 rounded-xl px-6 hover:bg-gradient-to-r hover:from-orange-500 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-200`}>
+                                  Follow
+                                </Button>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="create" className="mt-0">
+                <div className="space-y-6">
+                  <h2 className="text-3xl font-bold text-foreground mb-6">Create Content</h2>
+                  {userType === 'creator' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group">
+                        <CardContent className="p-8 text-center">
+                          <div className="w-20 h-20 bg-gradient-to-r from-primary to-secondary rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                            <Plus className="w-10 h-10 text-primary-foreground" />
+                          </div>
+                          <h3 className="font-bold text-xl mb-3 text-foreground">New Looproom</h3>
+                          <p className="text-muted-foreground">Create a guided healing session</p>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group">
+                        <CardContent className="p-8 text-center">
+                          <div className="w-20 h-20 bg-gradient-to-r from-secondary to-accent rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                            <Calendar className="w-10 h-10 text-secondary-foreground" />
+                          </div>
+                          <h3 className="font-bold text-xl mb-3 text-foreground">Schedule Session</h3>
+                          <p className="text-muted-foreground">Plan a live healing session</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ) : (
+                    <Card className="text-center py-16 bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl shadow-xl">
+                      <CardContent>
+                        <div className="w-24 h-24 bg-gradient-to-r from-primary to-secondary rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg">
+                          <Heart className="w-12 h-12 text-primary-foreground" />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-4 text-foreground">Become a Creator</h3>
+                        <p className="text-muted-foreground mb-8 max-w-md mx-auto">Share your healing journey and help others transform their lives</p>
+                        <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground">
+                          Apply to be Creator
+                        </Button>
+                      </CardContent>
+                    </Card>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
 
-              {/* Quick Actions */}
-              <Card className="vybe-card">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-2 text-foreground">
-                    <Zap className="w-5 h-5 text-vybe-accent" />
-                    Quick Actions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start" size="sm">
-                    <Activity className="w-4 h-4 mr-2" />
-                    Enter Looproom
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start" size="sm">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Schedule Session
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start" size="sm">
-                    <Users className="w-4 h-4 mr-2" />
-                    Find Community
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start" size="sm">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </Button>
-                </CardContent>
-              </Card>
+          {/* Right Sidebar */}
+          <div className="col-span-3 space-y-6">
+            {/* Trending Now */}
+            <Card className="bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold flex items-center text-foreground">
+                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                    <TrendingUp className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                  Trending Now
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  { tag: '#MorningMeditation', posts: '2.3k posts', creator: { name: 'Sarah', avatar: 'S', gradient: 'from-purple-400 to-indigo-500' } },
+                  { tag: '#RecoveryJourney', posts: '1.8k posts', creator: { name: 'Marcus', avatar: 'M', gradient: 'from-orange-400 to-pink-500' } },
+                  { tag: '#FitnessGoals', posts: '1.2k posts', creator: { name: 'Emma', avatar: 'E', gradient: 'from-green-400 to-teal-500' } },
+                  { tag: '#ArtTherapy', posts: '956 posts', creator: { name: 'Alex', avatar: 'A', gradient: 'from-yellow-400 to-orange-500' } }
+                ].map((trend, index) => (
+                  <div key={trend.tag} className="flex justify-between items-center hover:bg-muted/50 p-3 rounded-xl cursor-pointer transition-all duration-200 backdrop-blur-sm">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback className={`bg-gradient-to-r ${trend.creator.gradient} text-white text-xs font-semibold`}>
+                          {trend.creator.avatar}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold text-sm text-foreground flex items-center">
+                          {trend.tag}
+                          <span className="text-xs text-muted-foreground ml-2">by {trend.creator.name}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">{trend.posts}</p>
+                      </div>
+                    </div>
+                    <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
-              {/* Profile Summary */}
-              <Card className="vybe-card">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-2 text-foreground">
-                    <User className="w-5 h-5 text-vybe-accent" />
-                    Profile
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="text-sm">
-                    <span className="font-medium">Name:</span> {user.profile?.firstName} {user.profile?.lastName}
+            {/* Upcoming Sessions */}
+            <Card className="bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold flex items-center text-foreground">
+                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                    <Calendar className="w-4 h-4 text-primary-foreground" />
                   </div>
-                  <div className="text-sm">
-                    <span className="font-medium">Email:</span> {user.email}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">Member since:</span> {new Date().toLocaleDateString()}
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full mt-3">
-                    Edit Profile
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+                  Upcoming
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  { name: 'Morning Breathwork', time: '9:00 AM', theme: 'recovery', creator: { name: 'Dr. Sarah', avatar: '🧘‍♀️', gradient: 'from-orange-400 to-pink-500' } },
+                  { name: 'Mindful Movement', time: '2:00 PM', theme: 'fitness', creator: { name: 'Coach Emma', avatar: '💪', gradient: 'from-green-400 to-teal-500' } },
+                  { name: 'Sound Healing', time: '7:00 PM', theme: 'meditation', creator: { name: 'Master Alex', avatar: '🎵', gradient: 'from-purple-400 to-indigo-500' } }
+                ].map((session, index) => {
+                  const colors = THEME_COLORS[session.theme as keyof typeof THEME_COLORS] || THEME_COLORS.recovery;
+                  const IconComponent = THEME_ICONS[session.theme as keyof typeof THEME_ICONS] || Heart;
 
-            {/* Main Content - Social Feed */}
-            <div className="xl:col-span-3 order-1 xl:order-2">
-              <SocialFeed />
-            </div>
+                  return (
+                    <div key={index} className="flex items-center space-x-3 p-3 hover:bg-muted/50 rounded-xl cursor-pointer transition-all duration-200 backdrop-blur-sm">
+                      <div className="relative">
+                        <div className={`w-12 h-12 rounded-xl bg-card/50 border border-border/30 flex items-center justify-center shadow-sm`}>
+                          <IconComponent className={`w-5 h-5 text-primary`} />
+                        </div>
+                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r ${session.creator.gradient} rounded-full flex items-center justify-center text-xs shadow-sm`}>
+                          {session.creator.avatar}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm text-foreground">{session.name}</p>
+                        <p className="text-xs text-muted-foreground">{session.time} • by {session.creator.name}</p>
+                      </div>
+                      <Button size="sm" variant="ghost" className={`text-primary hover:bg-muted/50 rounded-lg px-3`}>
+                        Join
+                      </Button>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+
+            {/* Suggested Connections */}
+            <Card className="bg-card/80 backdrop-blur-sm border-border/20 shadow-xl rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-lg font-bold flex items-center text-foreground">
+                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                    <Users className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                  Connect
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {[
+                  { name: 'Sarah M.', role: 'Recovery Coach', mutual: '3 mutual', gradient: 'from-pink-400 to-rose-500' },
+                  { name: 'Alex K.', role: 'Meditation Guide', mutual: '5 mutual', gradient: 'from-blue-400 to-indigo-500' },
+                  { name: 'Emma L.', role: 'Fitness Creator', mutual: '2 mutual', gradient: 'from-green-400 to-emerald-500' }
+                ].map((person, index) => (
+                  <div key={index} className="flex items-center space-x-3 p-3 hover:bg-muted/50 rounded-xl transition-all duration-200">
+                    <Avatar className="w-12 h-12 ring-2 ring-white/50">
+                      <AvatarFallback className={`bg-gradient-to-r ${person.gradient} text-white font-semibold`}>
+                        {person.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm text-foreground">{person.name}</p>
+                      <p className="text-xs text-muted-foreground">{person.role} • {person.mutual}</p>
+                    </div>
+                    <Button size="sm" variant="outline" className="rounded-lg border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
+                      Follow
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };
