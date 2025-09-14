@@ -422,13 +422,13 @@ const SocialFeed: React.FC = () => {
       </Card>
 
       {/* Feed Posts - Mobile Responsive */}
-      <div className="space-y-0 lg:space-y-6">
+      <div className="space-y-4 lg:space-y-6">
         {posts.map((post) => {
           const themeColors = getThemeColors(post.theme);
           const ThemeIcon = getThemeIcon(post.theme);
 
           return (
-            <Card key={post.id} className={`border-2 ${themeColors.border} bg-card/80 backdrop-blur-sm hover:shadow-xl ${themeColors.glow} transition-all duration-300 lg:rounded-xl rounded-none mb-0 lg:mb-0 relative overflow-hidden`}>
+            <Card key={post.id} className={`border-2 ${themeColors.border} bg-card/80 backdrop-blur-sm hover:shadow-xl ${themeColors.glow} transition-all duration-300 lg:rounded-xl rounded-lg shadow-md relative overflow-hidden`}>
               {/* Looproom Gradient Label */}
               <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${themeColors.gradient}`}></div>
               {/* Post Header */}
