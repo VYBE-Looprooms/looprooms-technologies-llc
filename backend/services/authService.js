@@ -130,9 +130,42 @@ const revokeSession = async (token) => {
   await Session.destroy({ where: { token } });
 };
 
+const refresh = async ({ token, userAgent, ipAddress }) => {
+  const decoded = verifyToken(token);
+
+  if (!decoded?.sub) {
+    const error = new Error('Invalid session token');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const user = await User.findByPk(decoded.sub);
+
+  if (!user) {
+    const error = new Error('User not found for session');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  await revokeSession(token);
+
+  const authPayload = buildAuthPayload(user);
+
+  await createSessionRecord({
+    userId: user.id,
+    token: authPayload.token,
+    expiresAt: authPayload.expiresAt,
+    userAgent,
+    ipAddress,
+  });
+
+  return authPayload;
+};
+
 module.exports = {
   register,
   login,
+  refresh,
   verifyToken,
   revokeSession,
 };

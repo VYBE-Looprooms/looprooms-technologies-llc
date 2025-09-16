@@ -1,5 +1,5 @@
-import { ChangeEvent, FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+﻿import { ChangeEvent, FormEvent, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ const Login = () => {
   const { toast } = useToast();
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [form, setForm] = useState({
     email: "",
@@ -50,7 +51,8 @@ const Login = () => {
         title: "Welcome back!",
         description: "You're now signed in to VYBE LOOPROOMS.",
       });
-      navigate("/", { replace: true });
+      const redirectTo = (location.state as { from?: string } | null)?.from || '/dashboard';
+      navigate(redirectTo, { replace: true });
     } catch (authError) {
       console.error("[VYBE] Login error", authError);
       setError("Unexpected error while logging in. Please try again.");
@@ -123,4 +125,5 @@ const Login = () => {
 };
 
 export default Login;
+
 

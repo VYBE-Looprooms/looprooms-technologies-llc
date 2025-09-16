@@ -1,4 +1,5 @@
-const { Looproom, LooproomCategory, LoopchainStep } = require('../models');
+const { Looproom, LooproomCategory, LoopchainStep, MotivationalMessage } = require('../models');
+const RealtimeService = require('./realtimeService');
 
 const defaultLooproomInclude = [
   {
@@ -33,6 +34,19 @@ const defaultLooproomInclude = [
         ],
       },
     ],
+  },
+  {
+    model: MotivationalMessage,
+    as: 'motivationalMessages',
+    attributes: [
+      'id',
+      ['reaction_type', 'reactionType'],
+      'message',
+      ['display_weight', 'displayWeight'],
+      ['is_active', 'isActive'],
+    ],
+    where: { is_active: true },
+    required: false,
   },
 ];
 
@@ -77,6 +91,14 @@ const serializeLoopchainStep = (step) => ({
     : null,
 });
 
+const serializeMotivationalMessage = (message) => ({
+  id: message.id,
+  reactionType: message.reactionType,
+  message: message.message,
+  displayWeight: message.displayWeight,
+  isActive: message.isActive !== undefined ? message.isActive : true,
+});
+
 const serializeLooproom = (looproom) => {
   const plain = looproom.get({ plain: true });
   return {
@@ -98,6 +120,9 @@ const serializeLooproom = (looproom) => {
           .slice()
           .sort((a, b) => a.sequence - b.sequence)
           .map(serializeLoopchainStep)
+      : [],
+    motivationalMessages: Array.isArray(plain.motivationalMessages)
+      ? plain.motivationalMessages.map(serializeMotivationalMessage)
       : [],
   };
 };
@@ -126,7 +151,17 @@ const getLooproomBySlug = async (slug) => {
     throw error;
   }
 
-  return serializeLooproom(looproom);
+  const serialized = serializeLooproom(looproom);
+  const [recentMessages, reactionSummary] = await Promise.all([
+    RealtimeService.getRecentMessages({ looproomId: looproom.id, limit: 30 }),
+    RealtimeService.getReactionSummary({ looproomId: looproom.id }),
+  ]);
+
+  return {
+    ...serialized,
+    recentMessages,
+    reactionSummary,
+  };
 };
 
 const listCategoriesWithLooprooms = async () => {

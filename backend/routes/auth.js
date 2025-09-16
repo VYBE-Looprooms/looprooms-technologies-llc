@@ -87,4 +87,42 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.post('/refresh', async (req, res) => {
+  try {
+    const token = req.body?.token || req.headers.authorization?.replace('Bearer ', '');
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Refresh token is required',
+      });
+    }
+
+    const authPayload = await AuthService.refresh({
+      token,
+      userAgent: req.get('User-Agent'),
+      ipAddress: req.ip,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Session refreshed successfully',
+      data: authPayload,
+    });
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    console.error('[VYBE] Refresh session error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to refresh session',
+    });
+  }
+});
+
 module.exports = router;

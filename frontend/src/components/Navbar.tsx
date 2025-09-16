@@ -132,12 +132,29 @@ const Navbar = () => {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-vybe-pink to-vybe-cyan group-hover:w-full transition-all duration-300"></span>
             </button>
             
+            {user && (
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="text-foreground/80 hover:text-vybe-cyan transition-all duration-300 font-medium relative group bg-transparent border-none cursor-pointer"
+              >
+                Dashboard
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-vybe-cyan to-vybe-purple group-hover:w-full transition-all duration-300"></span>
+              </button>
+            )}
+            
             {/* Theme Switcher */}
             <ThemeSwitcher className="relative" />
 
             {user ? (
               <>
                 <span className="hidden lg:inline-flex text-sm text-foreground/60">Hi, {user.firstName}</span>
+                <Button
+                  variant="ghost"
+                  className="text-foreground/80 hover:text-vybe-cyan"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  Dashboard
+                </Button>
                 <Button
                   variant="outline"
                   className="border-vybe-cyan/40 hover:bg-vybe-cyan/10"
@@ -230,21 +247,47 @@ const Navbar = () => {
                   <ChevronDown className="w-4 h-4 transform group-hover:rotate-180 transition-transform duration-300" />
                 </span>
               </button>
+              {user && (
+                <button
+                  onClick={() => {
+                    navigate('/dashboard');
+                    setIsOpen(false);
+                  }}
+                  className="block text-foreground/80 hover:text-vybe-cyan transition-all duration-300 text-base font-medium py-2 border-l-4 border-transparent hover:border-vybe-cyan pl-4 rounded-r-lg hover:bg-vybe-cyan/5 group bg-transparent border-none cursor-pointer text-left w-full"
+                >
+                  <span className="flex items-center justify-between">
+                    Dashboard
+                    <ChevronDown className="w-4 h-4 transform group-hover:rotate-180 transition-transform duration-300" />
+                  </span>
+                </button>
+              )}
             </div>
             
             {/* Call to Action */}
             <div className="pt-3 border-t border-vybe-cyan/20 scale-in space-y-3">
               {user ? (
-                <Button
-                  variant="outline"
-                  className="w-full border-vybe-cyan/30 hover:bg-vybe-cyan/10"
-                  onClick={() => {
-                    setIsOpen(false);
-                    handleLogout();
-                  }}
-                >
-                  Sign out
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-foreground/80 hover:text-vybe-cyan"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/dashboard');
+                    }}
+                  >
+                    Dashboard
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-vybe-cyan/30 hover:bg-vybe-cyan/10"
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    Sign out
+                  </Button>
+                </>
               ) : (
                 <>
                   <Button

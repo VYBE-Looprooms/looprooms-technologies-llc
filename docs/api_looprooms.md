@@ -44,6 +44,14 @@ Returns all looprooms seeded for the MVP, including category metadata and ordere
             "title": "Fitness Spark Session"
           }
         }
+      ],
+      "motivationalMessages": [
+        {
+          "id": 1,
+          "reactionType": "anchor",
+          "message": "We are holding space with you...",
+          "displayWeight": 3
+        }
       ]
     }
   ]
@@ -112,3 +120,50 @@ Fallback slug defaults to the Wellness Reset Lab to give users a restorative opt
 - Loopchain steps are ordered by `sequence` and include the next looproom’s basic metadata plus category theme colors.
 - Validation for `/api/moods/recommend` requires at least one of `moodKey` or `moodText` (`middleware/validation.js`).
 - The new routes are mounted in `server.js` and logged on startup, keeping parity with documentation.
+### GET /api/engagement/reactions
+Surfaces the seeded reaction presets used to trigger motivational overlays. Each preset exposes UI metadata for emoji, label, theme color, and ordering.
+
+**Response**
+```
+{
+  "success": true,
+  "message": "Reaction presets retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "key": "breathe",
+      "label": "Deep Breath",
+      "emoji": "??",
+      "description": "Gentle reminder to inhale, exhale, and recentre together.",
+      "themeColor": "#22d3ee",
+      "displayOrder": 1
+    }
+  ]
+}
+```
+
+### GET /api/engagement/motivations
+Returns the motivational copy seeded for each looproom/reaction pairing. Used by clients to display supportive overlays whenever reactions fire.
+
+**Response**
+```
+{
+  "success": true,
+  "message": "Motivational messages retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "reactionType": "anchor",
+      "message": "We are holding space with you...",
+      "displayWeight": 3,
+      "looproom": {
+        "id": 1,
+        "slug": "recovery-anchor-circle",
+        "title": "Recovery Anchor Circle"
+      }
+    }
+  ]
+}
+```
+
+Use `/api/looprooms` to hydrate looproom details and `/api/engagement/*` to layer the seeded positive-only engagement assets on top of the experience.

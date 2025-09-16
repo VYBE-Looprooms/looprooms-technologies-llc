@@ -41,3 +41,10 @@ export const login = (payload: LoginRequest): Promise<ApiResponse<AuthPayload>> 
     body: JSON.stringify(payload),
   });
 };
+
+export const refresh = (token: string): Promise<ApiResponse<AuthPayload>> => {
+  return apiRequest<AuthPayload>('/api/auth/refresh', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+};

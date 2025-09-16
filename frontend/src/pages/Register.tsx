@@ -1,5 +1,5 @@
-import { ChangeEvent, FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+﻿import { ChangeEvent, FormEvent, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ const Register = () => {
   const { toast } = useToast();
   const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [form, setForm] = useState({
     firstName: "",
@@ -52,7 +53,8 @@ const Register = () => {
         title: "Account created",
         description: "You're all set! Let's find the right looproom for your vibe.",
       });
-      navigate("/", { replace: true });
+      const redirectTo = (location.state as { from?: string } | null)?.from || '/dashboard';
+      navigate(redirectTo, { replace: true });
     } catch (authError) {
       console.error("[VYBE] Register error", authError);
       setError("Unexpected error while creating your account. Please try again.");
@@ -153,3 +155,4 @@ const Register = () => {
 };
 
 export default Register;
+

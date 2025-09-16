@@ -112,8 +112,9 @@ This document captures the implementation strategy for evolving the existing VYB
 - Maintain ERD diagrams or textual representation within this plan when schema evolves.
 
 ## Immediate Next Steps
-1. Seed motivational messages and reaction presets to support positive-only engagement flows.
-2. Stand up the mood dashboard experience (frontend) to consume looproom recommendations.
-3. Implement protected-route guardrails and session renewal logic on frontend/backend (refresh tokens or token rotation).
-4. Kick off realtime engagement (Socket.io chat, emoji reactions, motivational overlays).
+1. Stand up the positive social feed skeleton with moderation hooks and reaction constraints.
+2. Expose creator analytics dashboards and endpoints leveraging persisted chat/reaction data.
+3. Extend motivational overlays and reaction tray into the live session UI with scheduling controls.
+4. Scaffold creator onboarding (verification intake + admin approval endpoints) to unblock monetization.
+
 

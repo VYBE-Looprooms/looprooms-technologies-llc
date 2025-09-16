@@ -9,16 +9,24 @@
 - Looproom discovery endpoints (list/detail/categories) and mood recommendation API delivered, serializing categories and loopchain data for the SPA.
 - Navbar now exposes auth-aware actions (sign in/out) on desktop and mobile while keeping the waitlist CTA.
 - Documentation refreshed (development_plan.md, progress_log.md) to reflect the new architecture work and auth milestone.
+- Reaction presets table and seeds shipped with engagement endpoints for reactions and motivations.
+- Motivational messages seeded for each MVP looproom and surfaced through the looproom service.
+- Authenticated mood dashboard launched, combining presets, recommendations, seeded engagement data, and full-width layout polish.
+- Auth refresh endpoint plus protected routes with auto-renew timers keep sessions alive through the dashboard.
+- Looproom detail view exposes individual journeys with motivational overlays and CTA routing.
+- Socket.io realtime scaffold added (presence, chat, reaction relays) with shared frontend hook for upcoming overlays.
+- Looproom chat panel, reaction tray UI, and motivational overlays now live with persisted history and analytics-ready tallies.
 
 ## Current Focus
 - Keep Vite/React SPA as the delivery layer tied to the Express API.
 - Maintain positive-only UX while introducing authenticated flows.
+- Prepare the realtime engagement layer to consume newly seeded reactions and motivations.
 
 ## Next Tasks
-1. Seed motivational messages and reaction presets for positivity overlays.
-2. Build the mood-driven dashboard UI and hook it to the new looproom endpoints.
-3. Add protected route guards and token refresh/renewal logic for long-lived sessions.
-4. Launch realtime engagement work (Socket.io chat, emoji reactions, motivational overlays).
+1. Stand up the positive social feed skeleton with moderation hooks and reaction safeguards.
+2. Expose creator analytics endpoints and dashboards for chat/reaction insights.
+3. Extend motivational overlays into the live session layout with scheduling controls.
+4. Advance creator onboarding groundwork (verification flow scaffolding + admin review endpoints).
 5. Expand documentation with API references and ERD notes as schema stabilizes.
 
 ## Notes
