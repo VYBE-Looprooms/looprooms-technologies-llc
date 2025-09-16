@@ -122,9 +122,19 @@ const validateLoginRequest = (data) => {
   return schema.validate(data, { abortEarly: false });
 };
 
+const validateMoodRequest = (data) => {
+  const schema = Joi.object({
+    moodKey: Joi.string().trim().max(50).optional(),
+    moodText: Joi.string().trim().max(255).optional(),
+  }).or('moodKey', 'moodText');
+
+  return schema.validate(data, { abortEarly: false });
+};
+
 module.exports = {
   validateWaitlistSubmission,
   validateEmailRequest,
   validateRegisterRequest,
   validateLoginRequest,
+  validateMoodRequest,
 };

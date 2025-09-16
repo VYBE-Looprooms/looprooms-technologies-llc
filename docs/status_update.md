@@ -6,6 +6,7 @@
 - Email and webhook routes extended with authentication services: register/login endpoints using hashed passwords, JWT issuance, and session persistence.
 - Database migrations and seeds executed locally to validate schema.
 - Frontend received shared API utilities, auth services, context provider, and new Login/Register pages wrapped by routing updates.
+- Looproom discovery endpoints (list/detail/categories) and mood recommendation API delivered, serializing categories and loopchain data for the SPA.
 - Navbar now exposes auth-aware actions (sign in/out) on desktop and mobile while keeping the waitlist CTA.
 - Documentation refreshed (development_plan.md, progress_log.md) to reflect the new architecture work and auth milestone.
 
@@ -14,10 +15,10 @@
 - Maintain positive-only UX while introducing authenticated flows.
 
 ## Next Tasks
-1. Implement looproom/category/loopchain read APIs and expose them to the frontend dashboard.
-2. Seed motivational messages and reaction presets for positivity overlays.
-3. Build the mood-driven dashboard UI and hook it to the new looproom endpoints.
-4. Add protected route guards and token refresh/renewal logic for long-lived sessions.
+1. Seed motivational messages and reaction presets for positivity overlays.
+2. Build the mood-driven dashboard UI and hook it to the new looproom endpoints.
+3. Add protected route guards and token refresh/renewal logic for long-lived sessions.
+4. Launch realtime engagement work (Socket.io chat, emoji reactions, motivational overlays).
 5. Expand documentation with API references and ERD notes as schema stabilizes.
 
 ## Notes

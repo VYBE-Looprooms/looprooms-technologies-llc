@@ -7,29 +7,32 @@ require('dotenv').config();
 const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
 const authRoutes = require('./routes/auth');
+const looproomRoutes = require('./routes/looprooms');
+const moodRoutes = require('./routes/moods');
 const { connectDatabase } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https:"],
+      },
     },
-  },
-}));
+  })
+);
 
 // CORS configuration
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+  origin(origin, callback) {
     if (!origin) return callback(null, true);
-    
+
     const allowedOrigins = [
       process.env.FRONTEND_URL || 'http://localhost:8080',
       'https://feelyourvybe.com',
@@ -41,40 +44,39 @@ const corsOptions = {
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:3003`,
       `http://${process.env.BACKEND_IP || '192.168.3.10'}:5678`,
       'http://127.0.0.1:3001',
-      'http://localhost:3001'
+      'http://localhost:3001',
     ];
 
-    // Add additional origins from environment variable
     if (process.env.ALLOWED_ORIGINS) {
-      const extraOrigins = process.env.ALLOWED_ORIGINS.split(',');
+      const extraOrigins = process.env.ALLOWED_ORIGINS.split(',').map((item) => item.trim());
       allowedOrigins.push(...extraOrigins);
     }
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log('❌ CORS blocked origin:', origin);
+      console.log('[VYBE] CORS blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 };
 
 app.use(cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000,
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 100,
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.',
-    retryAfter: '15 minutes'
+    retryAfter: '15 minutes',
   },
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 app.use(limiter);
@@ -88,7 +90,7 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`, {
     ip: req.ip,
     userAgent: req.get('User-Agent'),
-    origin: req.get('Origin')
+    origin: req.get('Origin'),
   });
   next();
 });
@@ -96,6 +98,8 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/email', emailRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/looprooms', looproomRoutes);
+app.use('/api/moods', moodRoutes);
 app.use('/api/webhook', webhookRoutes);
 
 // Health check endpoint
@@ -105,7 +109,7 @@ app.get('/health', (req, res) => {
     message: 'VYBE LOOPROOMS Backend API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0'
+    version: '1.0.0',
   });
 });
 
@@ -129,10 +133,19 @@ app.get('/', (req, res) => {
         register: 'POST /api/auth/register',
         login: 'POST /api/auth/login',
       },
+      looprooms: {
+        list: 'GET /api/looprooms',
+        categories: 'GET /api/looprooms/categories',
+        detail: 'GET /api/looprooms/:slug',
+      },
+      mood: {
+        recommend: 'POST /api/moods/recommend',
+      },
     },
     documentation: 'See README.md for detailed API documentation',
   });
 });
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
@@ -150,31 +163,36 @@ app.use('*', (req, res) => {
       'GET /api/webhook/health',
       'POST /api/auth/register',
       'POST /api/auth/login',
+      'GET /api/looprooms',
+      'GET /api/looprooms/categories',
+      'GET /api/looprooms/:slug',
+      'POST /api/moods/recommend',
     ],
   });
 });
+
 // Global error handler
 app.use((error, req, res, next) => {
-  console.error('❌ Global error handler:', {
+  console.error('[VYBE] Global error handler:', {
     error: error.message,
     stack: error.stack,
     path: req.path,
     method: req.method,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   if (error.message === 'Not allowed by CORS') {
     return res.status(403).json({
       success: false,
       message: 'CORS policy violation',
-      error: 'Origin not allowed'
+      error: 'Origin not allowed',
     });
   }
 
   res.status(500).json({
     success: false,
     message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+    error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
   });
 });
 
@@ -183,20 +201,24 @@ const startServer = async () => {
     await connectDatabase();
     app.listen(PORT, '0.0.0.0', () => {
       console.log('[VYBE] Backend API started');
-      console.log('[VYBE] Listening at http://localhost:' + PORT);
-      console.log('[VYBE] Environment: ' + (process.env.NODE_ENV || 'development'));
-      console.log('[VYBE] Email service user: ' + (process.env.GMAIL_USER || 'not-configured'));
-      console.log('[VYBE] CORS origin: ' + (process.env.FRONTEND_URL || 'http://localhost:8080'));
+      console.log(`[VYBE] Listening at http://localhost:${PORT}`);
+      console.log(`[VYBE] Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`[VYBE] Email service user: ${process.env.GMAIL_USER || 'not-configured'}`);
+      console.log(`[VYBE] CORS origin: ${process.env.FRONTEND_URL || 'http://localhost:8080'}`);
       console.log('[VYBE] Available endpoints:');
       console.log('   GET  / - API documentation');
       console.log('   GET  /health - Health check');
-      console.log('   POST /api/email/send-welcome - Send welcome email');
-      console.log('   GET  /api/email/test-connection - Test email connection');
-      console.log('   GET  /api/email/health - Email service health');
-      console.log('   POST /api/webhook/n8n-proxy - Webhook proxy to n8n');
-      console.log('   GET  /api/webhook/health - Webhook service health');
-      console.log('   POST /api/auth/register - User registration');
-      console.log('   POST /api/auth/login - User login');
+      console.log('   POST /api/email/send-welcome');
+      console.log('   GET  /api/email/test-connection');
+      console.log('   GET  /api/email/health');
+      console.log('   POST /api/auth/register');
+      console.log('   POST /api/auth/login');
+      console.log('   GET  /api/looprooms');
+      console.log('   GET  /api/looprooms/categories');
+      console.log('   GET  /api/looprooms/:slug');
+      console.log('   POST /api/moods/recommend');
+      console.log('   POST /api/webhook/n8n-proxy');
+      console.log('   GET  /api/webhook/health');
     });
   } catch (error) {
     console.error('[VYBE] Failed to start server:', error);

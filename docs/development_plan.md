@@ -112,8 +112,8 @@ This document captures the implementation strategy for evolving the existing VYB
 - Maintain ERD diagrams or textual representation within this plan when schema evolves.
 
 ## Immediate Next Steps
-1. Build looproom query endpoints delivering seeded categories, looprooms, and loopchain navigation for the dashboard.
-2. Seed motivational messages and reaction presets to support positive-only engagement flows.
-3. Stand up the mood dashboard experience (frontend) to consume looproom recommendations.
-4. Implement protected-route guardrails and session renewal logic on frontend/backend (refresh tokens or token rotation).
+1. Seed motivational messages and reaction presets to support positive-only engagement flows.
+2. Stand up the mood dashboard experience (frontend) to consume looproom recommendations.
+3. Implement protected-route guardrails and session renewal logic on frontend/backend (refresh tokens or token rotation).
+4. Kick off realtime engagement (Socket.io chat, emoji reactions, motivational overlays).
 
