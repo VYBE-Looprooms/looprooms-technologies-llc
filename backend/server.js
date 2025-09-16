@@ -6,6 +6,8 @@ require('dotenv').config();
 
 const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
+const authRoutes = require('./routes/auth');
+const { connectDatabase } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -93,13 +95,14 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/email', emailRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/webhook', webhookRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'VYBE LOOPROOMS™ Backend API is running',
+    message: 'VYBE LOOPROOMS Backend API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     version: '1.0.0'
@@ -110,23 +113,26 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Welcome to VYBE LOOPROOMS™ Backend API',
+    message: 'Welcome to VYBE LOOPROOMS Backend API',
     endpoints: {
       health: '/health',
       email: {
         sendWelcome: 'POST /api/email/send-welcome',
         testConnection: 'GET /api/email/test-connection',
-        health: 'GET /api/email/health'
+        health: 'GET /api/email/health',
       },
       webhook: {
         n8nProxy: 'POST /api/webhook/n8n-proxy',
-        health: 'GET /api/webhook/health'
-      }
+        health: 'GET /api/webhook/health',
+      },
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+      },
     },
-    documentation: 'See README.md for detailed API documentation'
+    documentation: 'See README.md for detailed API documentation',
   });
 });
-
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
@@ -141,11 +147,12 @@ app.use('*', (req, res) => {
       'GET /api/email/test-connection',
       'GET /api/email/health',
       'POST /api/webhook/n8n-proxy',
-      'GET /api/webhook/health'
-    ]
+      'GET /api/webhook/health',
+      'POST /api/auth/register',
+      'POST /api/auth/login',
+    ],
   });
 });
-
 // Global error handler
 app.use((error, req, res, next) => {
   console.error('❌ Global error handler:', {
@@ -171,24 +178,34 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('🚀 VYBE LOOPROOMS™ Backend API Started');
-  console.log(`📡 Server running on http://localhost:${PORT}`);
-  console.log(`📡 Also accessible via http://127.0.0.1:${PORT}`);
-  console.log(`📡 And via http://0.0.0.0:${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📧 Email service: ${process.env.GMAIL_USER}`);
-  console.log(`🔒 CORS allowed origins: ${process.env.FRONTEND_URL || 'http://localhost:8080'}`);
-  console.log('📋 Available endpoints:');
-  console.log('   GET  / - API documentation');
-  console.log('   GET  /health - Health check');
-  console.log('   POST /api/email/send-welcome - Send welcome email');
-  console.log('   GET  /api/email/test-connection - Test email connection');
-  console.log('   GET  /api/email/health - Email service health');
-  console.log('   POST /api/webhook/n8n-proxy - Webhook proxy to n8n');
-  console.log('   GET  /api/webhook/health - Webhook service health');
-  console.log('✨ Ready to process requests!');
-});
+const startServer = async () => {
+  try {
+    await connectDatabase();
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log('[VYBE] Backend API started');
+      console.log('[VYBE] Listening at http://localhost:' + PORT);
+      console.log('[VYBE] Environment: ' + (process.env.NODE_ENV || 'development'));
+      console.log('[VYBE] Email service user: ' + (process.env.GMAIL_USER || 'not-configured'));
+      console.log('[VYBE] CORS origin: ' + (process.env.FRONTEND_URL || 'http://localhost:8080'));
+      console.log('[VYBE] Available endpoints:');
+      console.log('   GET  / - API documentation');
+      console.log('   GET  /health - Health check');
+      console.log('   POST /api/email/send-welcome - Send welcome email');
+      console.log('   GET  /api/email/test-connection - Test email connection');
+      console.log('   GET  /api/email/health - Email service health');
+      console.log('   POST /api/webhook/n8n-proxy - Webhook proxy to n8n');
+      console.log('   GET  /api/webhook/health - Webhook service health');
+      console.log('   POST /api/auth/register - User registration');
+      console.log('   POST /api/auth/login - User login');
+    });
+  } catch (error) {
+    console.error('[VYBE] Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+if (require.main === module) {
+  startServer();
+}
 
 module.exports = app;

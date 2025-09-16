@@ -4,12 +4,15 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeSwitcher from "./ThemeSwitcher";
 import useGSAP from "@/hooks/useGSAP";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
-
+  const { user, logout } = useAuth();
+  const { toast } = useToast();
   // Initialize GSAP animations - disabled on mobile for navbar stability
   useGSAP();
 
@@ -57,6 +60,11 @@ const Navbar = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    toast({ title: "Signed out", description: "See you soon." });
+    navigate("/");
+  };
   // Prevent body scroll when mobile menu is open and fix layout shifts
   useEffect(() => {
     if (isOpen) {
@@ -90,7 +98,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ width: '100%' }}>
         <div className="flex items-center justify-between h-20" style={{ minHeight: '80px' }}>
           {/* Enhanced Logo */}
-          <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => window.location.href = '/'}>
+          <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => navigate('/')}>
             <img 
               src="/uploads/VybeLoopRoomFULL LOGO.png" 
               alt="VYBE LOOPROOMS™" 
@@ -126,10 +134,40 @@ const Navbar = () => {
             
             {/* Theme Switcher */}
             <ThemeSwitcher className="relative" />
-            
-            <Button 
-              className="btn-glow relative overflow-hidden group" 
-              onClick={() => window.location.href = '/waitlist'}
+
+            {user ? (
+              <>
+                <span className="hidden lg:inline-flex text-sm text-foreground/60">Hi, {user.firstName}</span>
+                <Button
+                  variant="outline"
+                  className="border-vybe-cyan/40 hover:bg-vybe-cyan/10"
+                  onClick={handleLogout}
+                >
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  className="text-foreground/80 hover:text-vybe-cyan"
+                  onClick={() => navigate('/login')}
+                >
+                  Sign in
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-vybe-purple/40 hover:bg-vybe-purple/10"
+                  onClick={() => navigate('/register')}
+                >
+                  Create account
+                </Button>
+              </>
+            )}
+
+            <Button
+              className="btn-glow relative overflow-hidden group"
+              onClick={() => navigate('/waitlist')}
             >
               <span className="relative z-10">Join Waitlist</span>
               <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -195,17 +233,57 @@ const Navbar = () => {
             </div>
             
             {/* Call to Action */}
-            <div className="pt-3 border-t border-vybe-cyan/20 scale-in">
-              <Button 
-                className="btn-glow w-full text-base py-3 relative overflow-hidden group" 
-                onClick={() => {setIsOpen(false); window.location.href = '/waitlist';}}
+            <div className="pt-3 border-t border-vybe-cyan/20 scale-in space-y-3">
+              {user ? (
+                <Button
+                  variant="outline"
+                  className="w-full border-vybe-cyan/30 hover:bg-vybe-cyan/10"
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleLogout();
+                  }}
+                >
+                  Sign out
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-foreground/80 hover:text-vybe-cyan"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/login');
+                    }}
+                  >
+                    Sign in
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-vybe-purple/30 hover:bg-vybe-purple/10"
+                    onClick={() => {
+                      setIsOpen(false);
+                      navigate('/register');
+                    }}
+                  >
+                    Create account
+                  </Button>
+                </>
+              )}
+
+              <Button
+                className="btn-glow w-full text-base py-3 relative overflow-hidden group"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate('/waitlist');
+                }}
               >
                 <span className="relative z-10">Join Waitlist</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-vybe-cyan via-vybe-purple to-vybe-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Button>
             </div>
             
-            {/* Enhanced Mobile Social Proof */}
+            
+{/* Enhanced Mobile Social Proof */}
             <div className="text-center pt-3 space-y-2 fade-in">
               <div className="flex items-center justify-center space-x-2 text-sm text-foreground/60">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
