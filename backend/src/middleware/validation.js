@@ -176,6 +176,120 @@ const schemas = {
     showStats: z.boolean().optional(),
     showProgress: z.boolean().optional(),
     allowDirectMessages: z.boolean().optional()
+  }),
+
+  // Category validation schemas
+  createCategory: z.object({
+    name: z.string()
+      .min(1, 'Category name is required')
+      .max(50, 'Category name too long'),
+
+    slug: z.string()
+      .min(1, 'Category slug is required')
+      .max(50, 'Category slug too long')
+      .regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
+
+    description: z.string()
+      .max(200, 'Description too long')
+      .optional(),
+
+    color: z.string()
+      .regex(/^#[0-9A-F]{6}$/i, 'Invalid color format (use hex format like #FF0000)')
+      .optional(),
+
+    iconUrl: z.string()
+      .url('Invalid icon URL')
+      .optional(),
+
+    sortOrder: z.number()
+      .int()
+      .min(0, 'Sort order must be non-negative')
+      .optional()
+  }),
+
+  updateCategory: z.object({
+    name: z.string()
+      .min(1, 'Category name is required')
+      .max(50, 'Category name too long')
+      .optional(),
+
+    description: z.string()
+      .max(200, 'Description too long')
+      .optional(),
+
+    color: z.string()
+      .regex(/^#[0-9A-F]{6}$/i, 'Invalid color format (use hex format like #FF0000)')
+      .optional(),
+
+    iconUrl: z.string()
+      .url('Invalid icon URL')
+      .optional(),
+
+    sortOrder: z.number()
+      .int()
+      .min(0, 'Sort order must be non-negative')
+      .optional(),
+
+    isActive: z.boolean().optional()
+  }),
+
+  // Social feed validation schemas
+  createPost: z.object({
+    content: z.string()
+      .min(1, 'Post content is required')
+      .max(2000, 'Post content must be less than 2000 characters'),
+
+    type: z.enum(['REFLECTION', 'MILESTONE', 'INSPIRATION', 'GRATITUDE', 'PROGRESS_UPDATE'])
+      .optional()
+      .default('REFLECTION'),
+
+    isAnonymous: z.boolean()
+      .optional()
+      .default(false),
+
+    privacyLevel: z.enum(['PUBLIC', 'FRIENDS_ONLY', 'PRIVATE', 'ANONYMOUS'])
+      .optional()
+      .default('PUBLIC'),
+
+    looproomId: z.string().optional(),
+    loopchainId: z.string().optional()
+  }),
+
+  addReactionToPost: z.object({
+    type: z.enum(['HEART', 'CLAP', 'FIRE', 'PEACE', 'INSPIRE', 'STRENGTH', 'GRATITUDE', 'MINDFUL'], {
+      errorMap: () => ({ message: 'Invalid reaction type' })
+    }),
+
+    isAnonymous: z.boolean()
+      .optional()
+      .default(false)
+  }),
+
+  addComment: z.object({
+    content: z.string()
+      .min(1, 'Comment content is required')
+      .max(500, 'Comment must be less than 500 characters'),
+
+    isAnonymous: z.boolean()
+      .optional()
+      .default(false)
+  }),
+
+  // User progress validation schemas
+  startJourney: z.object({
+    loopchainId: z.string()
+      .min(1, 'Loopchain ID is required')
+  }),
+
+  updateJourneyProgress: z.object({
+    loopchainId: z.string()
+      .min(1, 'Loopchain ID is required'),
+
+    stepCompleted: z.boolean().optional(),
+    timeSpent: z.number().int().min(0, 'Time spent must be non-negative').optional(),
+    confidenceLevel: z.number().int().min(1).max(10).optional(),
+    moodBefore: z.any().optional(),
+    moodAfter: z.any().optional()
   })
 };
 

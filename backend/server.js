@@ -12,6 +12,9 @@ const verificationRoutes = require('./src/routes/verification');
 const adminRoutes = require('./src/routes/admin');
 const looproomRoutes = require('./src/routes/looprooms');
 const liveSessionRoutes = require('./src/routes/liveSessions');
+const categoryRoutes = require('./src/routes/categories');
+const userProgressRoutes = require('./src/routes/userProgress');
+const socialFeedRoutes = require('./src/routes/socialFeed');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -111,6 +114,9 @@ app.use('/api/verification', verificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/looprooms', looproomRoutes);
 app.use('/api/sessions', liveSessionRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/user', userProgressRoutes);
+app.use('/api/feed', socialFeedRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 

@@ -215,11 +215,23 @@ const authRateLimit = require('express-rate-limit')({
   legacyHeaders: false,
 });
 
+/**
+ * Convenience middleware for requiring admin access
+ */
+const requireAdmin = requireRole('ADMIN');
+
+/**
+ * Convenience middleware for requiring creator or admin access
+ */
+const requireCreatorOrAdmin = requireRole('CREATOR', 'ADMIN');
+
 module.exports = {
   authenticateToken,
   requireRole,
   requireSubscription,
   requireApprovedCreator,
+  requireAdmin,
+  requireCreatorOrAdmin,
   optionalAuth,
   authRateLimit
 };

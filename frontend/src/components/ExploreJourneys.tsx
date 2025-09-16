@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,7 @@ const THEME_COLORS = {
 };
 
 const ExploreJourneys: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [featuredJourneys, setFeaturedJourneys] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -142,6 +144,40 @@ const ExploreJourneys: React.FC = () => {
     loadExploreData();
   }, []);
 
+  // Navigation handlers
+  const handleStartFreeJourney = () => {
+    // Navigate to the first available journey/looproom in recovery category
+    if (featuredJourneys.length > 0) {
+      const firstJourney = featuredJourneys[0];
+      navigate(`/looproom/${firstJourney.id}`);
+    } else {
+      // If no featured journeys, go to recovery category
+      navigate('/explore/recovery');
+    }
+  };
+
+  const handleBrowseAllPaths = () => {
+    // Navigate to comprehensive looprooms/journeys view
+    navigate('/looprooms');
+  };
+
+  const handleStartJourney = (looproomId: string) => {
+    navigate(`/looproom/${looproomId}`);
+  };
+
+  const handlePreviewJourney = (looproomId: string) => {
+    navigate(`/looproom/${looproomId}?preview=true`);
+  };
+
+  const handleFeaturedPathStart = (pathId: string) => {
+    // For featured paths, we'll use the first looproom in the category
+    navigate(`/loopchain/${pathId}`);
+  };
+
+  const handleFollowLoopchain = (chainId: string) => {
+    navigate(`/loopchain/${chainId}`);
+  };
+
   // Helper function to map category to theme
   const getThemeFromCategory = (categorySlug: string): 'recovery' | 'meditation' | 'fitness' => {
     if (categorySlug.includes('recovery') || categorySlug.includes('support')) return 'recovery';
@@ -152,18 +188,21 @@ const ExploreJourneys: React.FC = () => {
 
   const quickStartPaths = [
     {
+      id: 'morning-reset-meditation',
       title: '5-Minute Morning Reset',
       theme: 'meditation',
       duration: '5 min',
       participants: 2341
     },
     {
+      id: 'gratitude-recovery',
       title: 'Gratitude Practice',
       theme: 'recovery',
       duration: '3 min',
       participants: 1876
     },
     {
+      id: 'desk-warrior-fitness',
       title: 'Desk Warrior Stretch',
       theme: 'fitness',
       duration: '7 min',
@@ -173,6 +212,7 @@ const ExploreJourneys: React.FC = () => {
 
   const popularLoopchains = [
     {
+      id: 'recovery-meditation-fitness',
       title: 'Recovery → Meditation → Fitness',
       description: 'Complete transformation journey',
       steps: 21,
@@ -180,6 +220,7 @@ const ExploreJourneys: React.FC = () => {
       completions: 456
     },
     {
+      id: 'morning-ritual-path',
       title: 'Morning Ritual Path',
       description: 'Start each day with intention',
       steps: 7,
@@ -187,6 +228,7 @@ const ExploreJourneys: React.FC = () => {
       completions: 1203
     },
     {
+      id: 'stress-relief-circuit',
       title: 'Stress Relief Circuit',
       description: 'Break the cycle of overwhelm',
       steps: 14,
@@ -289,11 +331,18 @@ const ExploreJourneys: React.FC = () => {
               Discover guided paths designed to support your emotional, mental, and physical wellbeing. Each journey is crafted by experienced healers and backed by our community.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl text-primary-foreground shadow-lg">
+              <Button
+                onClick={handleStartFreeJourney}
+                className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl text-primary-foreground shadow-lg"
+              >
                 <PlayCircle className="w-4 h-4 mr-2" />
                 Start Free Journey
               </Button>
-              <Button variant="outline" className="rounded-xl border-2 hover:bg-muted/50">
+              <Button
+                onClick={handleBrowseAllPaths}
+                variant="outline"
+                className="rounded-xl border-2 hover:bg-muted/50"
+              >
                 Browse All Paths
               </Button>
             </div>
@@ -361,7 +410,12 @@ const ExploreJourneys: React.FC = () => {
                           {path.participants.toLocaleString()}
                         </span>
                       </div>
-                      <Button size="sm" className={`w-full rounded-lg ${colors.text} border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200`} variant="outline">
+                      <Button
+                        size="sm"
+                        onClick={() => handleFeaturedPathStart(path.id)}
+                        className={`w-full rounded-lg ${colors.text} border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200`}
+                        variant="outline"
+                      >
                         Start Now
                       </Button>
                     </div>
@@ -455,10 +509,19 @@ const ExploreJourneys: React.FC = () => {
 
                     {/* Action Buttons */}
                     <div className="flex items-center justify-between pt-2 border-t border-border/30">
-                      <Button variant="outline" size="sm" className="rounded-lg border-2 hover:bg-muted/50">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePreviewJourney(journey.id)}
+                        className="rounded-lg border-2 hover:bg-muted/50"
+                      >
                         Preview Journey
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-lg text-primary-foreground shadow-lg">
+                      <Button
+                        size="sm"
+                        onClick={() => handleStartJourney(journey.id)}
+                        className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-lg text-primary-foreground shadow-lg"
+                      >
                         Start Journey
                         <ArrowRight className="w-4 h-4 ml-1" />
                       </Button>
@@ -500,7 +563,12 @@ const ExploreJourneys: React.FC = () => {
                   <p className="font-semibold text-foreground">{chain.completions}</p>
                   <p className="text-xs text-muted-foreground">completed</p>
                 </div>
-                <Button size="sm" variant="outline" className="rounded-lg">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleFollowLoopchain(chain.id)}
+                  className="rounded-lg"
+                >
                   Follow Path
                 </Button>
               </div>

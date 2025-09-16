@@ -89,33 +89,9 @@ const JourneyHub: React.FC<JourneyHubProps> = ({ userType }) => {
         console.error('Error loading journey data:', err);
         setError('Failed to load journey data. Please try again.');
 
-        // Fallback to mock data if API fails
-        setActiveJourneys([
-          {
-            id: 'recovery-basics',
-            title: 'Recovery Foundations',
-            description: 'Essential healing practices for emotional recovery',
-            theme: 'recovery',
-            currentStep: 3,
-            totalSteps: 7,
-            progress: 43,
-            nextSession: 'Morning Reflection',
-            nextSessionTime: '9:00 AM',
-            timeSpent: 145,
-            daysActive: 5
-          }
-        ]);
-
-        setUpcomingSessions([
-          {
-            title: 'Morning Recovery Circle',
-            time: '9:00 AM',
-            theme: 'recovery',
-            creator: 'Dr. Sarah Chen',
-            participants: 23,
-            type: 'live'
-          }
-        ]);
+        // Set empty arrays on API failure instead of mock data
+        setActiveJourneys([]);
+        setUpcomingSessions([]);
       } finally {
         setLoading(false);
       }
@@ -325,7 +301,10 @@ const JourneyHub: React.FC<JourneyHubProps> = ({ userType }) => {
               </div>
               <h3 className="font-bold text-foreground mb-2">Start Your First Journey</h3>
               <p className="text-muted-foreground mb-4">Begin with one of our foundational paths</p>
-              <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl text-primary-foreground">
+              <Button
+                onClick={() => window.location.hash = '#discover'} // This will switch to the discover tab
+                className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl text-primary-foreground"
+              >
                 Explore Journeys
               </Button>
             </div>
@@ -344,7 +323,22 @@ const JourneyHub: React.FC<JourneyHubProps> = ({ userType }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {upcomingSessions.map((session, index) => {
+          {upcomingSessions.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gradient-to-r from-secondary to-accent rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                <Calendar className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <h3 className="font-bold text-foreground mb-2">No Sessions Today</h3>
+              <p className="text-muted-foreground mb-4">Check back later for live sessions</p>
+              <Button
+                onClick={() => console.log('Navigate to schedule')} // Placeholder for now
+                variant="outline"
+                className="rounded-xl"
+              >
+                Browse Schedule
+              </Button>
+            </div>
+          ) : upcomingSessions.map((session, index) => {
             const IconComponent = THEME_ICONS[session.theme as keyof typeof THEME_ICONS];
             const isLive = session.type === 'live';
 
@@ -399,7 +393,22 @@ const JourneyHub: React.FC<JourneyHubProps> = ({ userType }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {achievements.map((achievement, index) => (
+          {achievements.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gradient-to-r from-accent to-primary rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                <Award className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <h3 className="font-bold text-foreground mb-2">No Achievements Yet</h3>
+              <p className="text-muted-foreground mb-4">Complete journeys to unlock achievements</p>
+              <Button
+                onClick={() => window.location.hash = '#discover'} // This will switch to the discover tab
+                variant="outline"
+                className="rounded-xl"
+              >
+                Start a Journey
+              </Button>
+            </div>
+          ) : achievements.map((achievement, index) => (
             <div key={index} className="flex items-center space-x-4 p-3 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl border border-primary/20">
               <div className="w-10 h-10 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center">
                 <achievement.icon className={`w-5 h-5 ${achievement.color}`} />

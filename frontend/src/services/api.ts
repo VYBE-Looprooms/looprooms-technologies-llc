@@ -491,6 +491,8 @@ export const categoryApi = {
       slug: string;
       color?: string;
       description?: string;
+      iconUrl?: string;
+      looproomCount: number;
     }>>('/api/categories');
   },
 
@@ -502,6 +504,9 @@ export const categoryApi = {
       slug: string;
       color?: string;
       description?: string;
+      iconUrl?: string;
+      looproomCount: number;
+      looprooms: Looproom[];
     }>(`/api/categories/${slug}`);
   },
 };
@@ -540,6 +545,104 @@ export const userProgressApi = {
       timeSpent: number;
       daysActive: number;
     }>>('/api/user/journeys/active');
+  },
+};
+
+// Social Feed API
+export const socialFeedApi = {
+  // Get feed posts
+  getPosts: async (params: {
+    page?: number;
+    limit?: number;
+    type?: string;
+    theme?: string;
+    includeAnonymous?: boolean;
+  } = {}) => {
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        queryParams.append(key, value.toString());
+      }
+    });
+
+    return apiRequest<Array<{
+      id: string;
+      author: {
+        id: string;
+        name: string;
+        avatar?: string;
+        isCreator: boolean;
+        isVerified: boolean;
+        title?: string;
+      };
+      content: string;
+      timestamp: string;
+      theme: string;
+      isAnonymous: boolean;
+      looproom?: {
+        id: string;
+        title: string;
+        category: string;
+        participants: number;
+        isLive: boolean;
+      };
+      stats: {
+        likes: number;
+        comments: number;
+        shares: number;
+      };
+      reactions: {
+        fire: number;
+        heart: number;
+        growth: number;
+        sparkle: number;
+      };
+      userReacted?: string;
+      isBookmarked: boolean;
+      comments: Array<{
+        id: string;
+        content: string;
+        author: string;
+        timestamp: string;
+      }>;
+    }>>(`/api/feed?${queryParams}`);
+  },
+
+  // Create new post
+  createPost: async (data: {
+    content: string;
+    type?: string;
+    isAnonymous?: boolean;
+    looproomId?: string;
+    loopchainId?: string;
+  }) => {
+    return apiRequest('/api/feed', {
+      method: 'POST',
+      body: data,
+    });
+  },
+
+  // Add reaction to post
+  addReaction: async (postId: string, type: string, isAnonymous = false) => {
+    return apiRequest(`/api/feed/${postId}/react`, {
+      method: 'POST',
+      body: { type, isAnonymous },
+    });
+  },
+
+  // Remove reaction from post
+  removeReaction: async (postId: string) => {
+    return apiRequest(`/api/feed/${postId}/react`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Add comment to post
+  addComment: async (postId: string, content: string, isAnonymous = false) => {
+    return apiRequest(`/api/feed/${postId}/comment`, {
+      method: 'POST',
+      body: { content, isAnonymous },
+    });
   },
 };
 

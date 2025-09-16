@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ interface CreatorStudioProps {
 }
 
 const CreatorStudio: React.FC<CreatorStudioProps> = ({ userType }) => {
+  const navigate = useNavigate();
   const [looprooms, setLooprooms] = useState<Looproom[]>([]);
   const [sessions, setSessions] = useState<LiveSession[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,6 +89,22 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ userType }) => {
     loadCreatorData();
   }, []);
 
+  // Action handlers
+  const handleGoLive = () => {
+    // Navigate to live session creation
+    navigate('/studio/live');
+  };
+
+  const handleScheduleSession = () => {
+    // Navigate to session scheduling
+    navigate('/studio/schedule');
+  };
+
+  const handleBuildJourney = () => {
+    // Navigate to journey/loopchain builder
+    navigate('/studio/journey');
+  };
+
   const quickActions = [
     {
       icon: Video,
@@ -94,7 +112,7 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ userType }) => {
       description: 'Start an instant live session',
       color: 'from-red-500 to-pink-500',
       action: 'live',
-      onClick: () => console.log('Go Live clicked')
+      onClick: () => handleGoLive()
     },
     {
       icon: Calendar,
@@ -102,7 +120,7 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ userType }) => {
       description: 'Plan a future workshop',
       color: 'from-blue-500 to-purple-500',
       action: 'schedule',
-      onClick: () => console.log('Schedule Session clicked')
+      onClick: () => handleScheduleSession()
     },
     {
       icon: Plus,
@@ -118,7 +136,7 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ userType }) => {
       description: 'Design a Loopchain path',
       color: 'from-orange-500 to-yellow-500',
       action: 'journey',
-      onClick: () => console.log('Build Journey clicked')
+      onClick: () => handleBuildJourney()
     }
   ];
 
@@ -195,7 +213,10 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ userType }) => {
                 <p className="text-xs text-muted-foreground">Transform lives</p>
               </div>
             </div>
-            <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground">
+            <Button
+              onClick={() => navigate('/creator-application')}
+              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground"
+            >
               Apply to be Creator
             </Button>
           </CardContent>
@@ -347,7 +368,12 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ userType }) => {
               </div>
               Upcoming Sessions
             </CardTitle>
-            <Button variant="outline" size="sm" className="rounded-xl">
+            <Button
+              onClick={() => navigate('/studio/sessions')}
+              variant="outline"
+              size="sm"
+              className="rounded-xl"
+            >
               Manage All
             </Button>
           </div>
@@ -367,10 +393,19 @@ const CreatorStudio: React.FC<CreatorStudioProps> = ({ userType }) => {
                 </div>
               </div>
               <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="rounded-lg">
+                <Button
+                  onClick={() => navigate(`/studio/sessions/${session.id}/edit`)}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                >
                   Edit
                 </Button>
-                <Button size="sm" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-lg">
+                <Button
+                  onClick={() => navigate(`/studio/sessions/${session.id}/start`)}
+                  size="sm"
+                  className="bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-lg"
+                >
                   Start
                 </Button>
               </div>

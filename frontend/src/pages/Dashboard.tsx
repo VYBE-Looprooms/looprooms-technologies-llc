@@ -6,6 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import SocialFeed from '@/components/SocialFeed';
 import CreatorDashboard from '@/components/CreatorDashboard';
 import JourneyHub from '@/components/JourneyHub';
@@ -34,8 +42,14 @@ import {
   Share2,
   Bookmark,
   Menu,
-  X
+  X,
+  AlertTriangle,
+  RefreshCw,
+  ExternalLink,
+  Clock,
+  Eye
 } from 'lucide-react';
+import { sessionApi, type LiveSession } from '@/services/api';
 
 const THEME_COLORS = {
   recovery: {
@@ -90,6 +104,12 @@ const Dashboard: React.FC = () => {
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
   const [userType, setUserType] = useState<string>('member');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Live sessions state
+  const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [sessionsError, setSessionsError] = useState<string | null>(null);
+  const [joinLiveModalOpen, setJoinLiveModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -158,6 +178,63 @@ const Dashboard: React.FC = () => {
     }
   }, [user, navigate]);
 
+  // Load live sessions
+  const loadLiveSessions = async () => {
+    try {
+      setSessionsLoading(true);
+      setSessionsError(null);
+
+      // Get upcoming sessions and user's active sessions
+      const [upcomingResponse, userSessionsResponse] = await Promise.all([
+        sessionApi.getUpcoming(10),
+        sessionApi.getByUser()
+      ]);
+
+      const allSessions: LiveSession[] = [];
+
+      if (upcomingResponse.success && upcomingResponse.data) {
+        allSessions.push(...upcomingResponse.data);
+      }
+
+      if (userSessionsResponse.success && userSessionsResponse.data) {
+        // Filter out duplicates and add user's active sessions
+        const userSessions = userSessionsResponse.data.filter(
+          session => !allSessions.some(s => s.id === session.id)
+        );
+        allSessions.push(...userSessions);
+      }
+
+      // Sort by scheduled start time
+      allSessions.sort((a, b) =>
+        new Date(a.scheduledStartTime).getTime() - new Date(b.scheduledStartTime).getTime()
+      );
+
+      setLiveSessions(allSessions);
+
+    } catch (error) {
+      console.error('Error loading live sessions:', error);
+      setSessionsError('Failed to load live sessions');
+    } finally {
+      setSessionsLoading(false);
+    }
+  };
+
+  // Handle joining a live session
+  const handleJoinSession = async (sessionId: string) => {
+    try {
+      const response = await sessionApi.join(sessionId);
+      if (response.success) {
+        // Navigate to the live session page
+        navigate(`/looproom/${sessionId}`);
+      } else {
+        setSessionsError('Failed to join session');
+      }
+    } catch (error) {
+      console.error('Error joining session:', error);
+      setSessionsError('Failed to join session');
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -210,16 +287,31 @@ const Dashboard: React.FC = () => {
             {/* Right Actions */}
             <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Mobile Search Button */}
-              <Button variant="ghost" size="sm" className="md:hidden hover:bg-muted/50 rounded-xl">
+              <Button
+                onClick={() => console.log('Mobile search clicked')}
+                variant="ghost"
+                size="sm"
+                className="md:hidden hover:bg-muted/50 rounded-xl"
+              >
                 <Search className="w-5 h-5 text-muted-foreground" />
               </Button>
 
-              <Button variant="ghost" size="sm" className="relative hover:bg-muted/50 rounded-xl">
+              <Button
+                onClick={() => navigate('/notifications')}
+                variant="ghost"
+                size="sm"
+                className="relative hover:bg-muted/50 rounded-xl"
+              >
                 <Bell className="w-5 h-5 text-muted-foreground" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-primary to-secondary rounded-full shadow-sm"></span>
               </Button>
 
-              <Button variant="ghost" size="sm" className="hidden sm:flex hover:bg-muted/50 rounded-xl">
+              <Button
+                onClick={() => navigate('/settings')}
+                variant="ghost"
+                size="sm"
+                className="hidden sm:flex hover:bg-muted/50 rounded-xl"
+              >
                 <Settings className="w-5 h-5 text-muted-foreground" />
               </Button>
 
@@ -289,7 +381,11 @@ const Dashboard: React.FC = () => {
 
           {/* Mobile Navigation Menu */}
           <div className="space-y-3">
-            <Button onClick={handleLogout} variant="outline" className="w-full justify-start rounded-xl border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
+            <Button
+              onClick={() => navigate('/settings')}
+              variant="outline"
+              className="w-full justify-start rounded-xl border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200"
+            >
               <Settings className="w-4 h-4 mr-3" />
               Settings
             </Button>
@@ -349,7 +445,12 @@ const Dashboard: React.FC = () => {
                     </div>
                   );
                 })}
-                <Button variant="outline" size="sm" className="w-full mt-4 rounded-xl border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
+                <Button
+                  onClick={() => console.log('Add Theme clicked - TODO: implement theme selection modal')}
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-4 rounded-xl border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Theme
                 </Button>
@@ -453,14 +554,166 @@ const Dashboard: React.FC = () => {
                 </TabsList>
 
                 <div className="flex space-x-2 sm:space-x-3">
-                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none rounded-xl border-2 hover:bg-muted/50 backdrop-blur-sm">
+                  <Button
+                    onClick={() => console.log('Filter clicked')}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 sm:flex-none rounded-xl border-2 hover:bg-muted/50 backdrop-blur-sm"
+                  >
                     <Filter className="w-4 h-4 sm:mr-2" />
                     <span className="hidden sm:inline">Filter</span>
                   </Button>
-                  <Button size="sm" className="flex-1 sm:flex-none bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground">
-                    <Plus className="w-4 h-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Join Live</span>
-                  </Button>
+                  <Dialog open={joinLiveModalOpen} onOpenChange={setJoinLiveModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        className="flex-1 sm:flex-none bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground"
+                        onClick={() => {
+                          setJoinLiveModalOpen(true);
+                          loadLiveSessions();
+                        }}
+                      >
+                        <Plus className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Join Live</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center space-x-2">
+                          <Users className="w-5 h-5" />
+                          <span>Join Live Sessions</span>
+                        </DialogTitle>
+                        <DialogDescription>
+                          Join ongoing live sessions or upcoming scheduled sessions from our community
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      {sessionsLoading ? (
+                        <div className="py-8 text-center">
+                          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-muted-foreground" />
+                          <p className="text-muted-foreground">Loading live sessions...</p>
+                        </div>
+                      ) : sessionsError ? (
+                        <div className="py-8 text-center">
+                          <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-destructive" />
+                          <p className="text-destructive mb-4">{sessionsError}</p>
+                          <Button onClick={loadLiveSessions} variant="outline">
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Try Again
+                          </Button>
+                        </div>
+                      ) : liveSessions.length === 0 ? (
+                        <div className="py-8 text-center">
+                          <Calendar className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                          <h3 className="font-semibold text-foreground mb-2">No Live Sessions Available</h3>
+                          <p className="text-muted-foreground mb-4">
+                            There are no live sessions running or scheduled at the moment.
+                          </p>
+                          <Button onClick={loadLiveSessions} variant="outline">
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Refresh
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {liveSessions.map((session) => {
+                            const isActive = session.status === 'ACTIVE';
+                            const isScheduled = session.status === 'SCHEDULED';
+                            const startTime = new Date(session.scheduledStartTime);
+                            const now = new Date();
+                            const timeDiff = startTime.getTime() - now.getTime();
+                            const hoursUntil = Math.ceil(timeDiff / (1000 * 60 * 60));
+
+                            return (
+                              <Card key={session.id} className="hover:shadow-md transition-shadow">
+                                <CardContent className="p-4">
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                      <div className="flex items-center space-x-2 mb-2">
+                                        <h3 className="font-semibold text-foreground">
+                                          {session.title || session.looproom.title}
+                                        </h3>
+                                        {isActive && (
+                                          <Badge variant="destructive" className="text-xs">
+                                            <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse mr-1"></div>
+                                            LIVE
+                                          </Badge>
+                                        )}
+                                        {isScheduled && hoursUntil <= 24 && hoursUntil > 0 && (
+                                          <Badge variant="secondary" className="text-xs">
+                                            Starts in {hoursUntil}h
+                                          </Badge>
+                                        )}
+                                      </div>
+
+                                      <p className="text-sm text-muted-foreground mb-2">
+                                        {session.description || session.looproom.description || 'No description available'}
+                                      </p>
+
+                                      <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                                        <div className="flex items-center space-x-1">
+                                          <Badge variant="outline" className="text-xs">
+                                            {session.looproom.category.name}
+                                          </Badge>
+                                        </div>
+                                        <div className="flex items-center space-x-1">
+                                          <Users className="w-3 h-3" />
+                                          <span>{session.currentParticipants}/{session.maxParticipants}</span>
+                                        </div>
+                                        <div className="flex items-center space-x-1">
+                                          <Clock className="w-3 h-3" />
+                                          <span>{startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                        </div>
+                                      </div>
+
+                                      {session.creator.profile?.displayName && (
+                                        <p className="text-xs text-muted-foreground mt-2">
+                                          Hosted by {session.creator.profile.displayName}
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    <div className="flex flex-col space-y-2">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleJoinSession(session.id)}
+                                        disabled={session.currentParticipants >= session.maxParticipants}
+                                        className={isActive ?
+                                          "bg-gradient-to-r from-primary to-secondary hover:opacity-90" :
+                                          "bg-muted hover:bg-muted/80"
+                                        }
+                                      >
+                                        <ExternalLink className="w-3 h-3 mr-1" />
+                                        {isActive ? 'Join Now' : 'View'}
+                                      </Button>
+
+                                      {session.looproom.id && (
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => navigate(`/looproom/${session.looproom.id}`)}
+                                        >
+                                          <Eye className="w-3 h-3 mr-1" />
+                                          Looproom
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            );
+                          })}
+
+                          <div className="pt-4 border-t">
+                            <Button onClick={loadLiveSessions} variant="outline" className="w-full">
+                              <RefreshCw className="w-4 h-4 mr-2" />
+                              Refresh Sessions
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
 
@@ -562,7 +815,12 @@ const Dashboard: React.FC = () => {
                         <p className="font-semibold text-sm text-foreground">{session.name}</p>
                         <p className="text-xs text-muted-foreground">{session.time} • by {session.creator.name}</p>
                       </div>
-                      <Button size="sm" variant="ghost" className={`text-primary hover:bg-muted/50 rounded-lg px-3`}>
+                      <Button
+                        onClick={() => console.log(`Join ${session.name} session`)}
+                        size="sm"
+                        variant="ghost"
+                        className={`text-primary hover:bg-muted/50 rounded-lg px-3`}
+                      >
                         Join
                       </Button>
                     </div>
@@ -601,7 +859,12 @@ const Dashboard: React.FC = () => {
                         <p className="font-semibold text-sm text-foreground">{person.name}</p>
                         <p className="text-xs text-muted-foreground">{person.role} • {person.mutual}</p>
                       </div>
-                      <Button size="sm" variant="outline" className="rounded-lg border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200">
+                      <Button
+                        onClick={() => console.log(`Follow ${person.name}`)}
+                        size="sm"
+                        variant="outline"
+                        className="rounded-lg border-2 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200"
+                      >
                         Follow
                       </Button>
                     </div>
