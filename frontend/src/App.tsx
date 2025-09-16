@@ -19,6 +19,7 @@ import CreatorVerification from "./pages/CreatorVerification";
 import AdminDashboard from "./pages/AdminDashboard";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
+import Looproom from "./pages/Looproom";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => {
                 <Route path="/creator-verification" element={<CreatorVerification />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/looproom/:id" element={<Looproom />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

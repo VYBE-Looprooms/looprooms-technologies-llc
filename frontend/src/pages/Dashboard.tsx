@@ -8,6 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SocialFeed from '@/components/SocialFeed';
 import CreatorDashboard from '@/components/CreatorDashboard';
+import JourneyHub from '@/components/JourneyHub';
+import CreatorStudio from '@/components/CreatorStudio';
+import ExploreJourneys from '@/components/ExploreJourneys';
+import MySpaces from '@/components/MySpaces';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import {
   Heart,
@@ -82,7 +86,7 @@ const THEME_ICONS = {
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('feed');
+  const [activeTab, setActiveTab] = useState('journey');
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
   const [userType, setUserType] = useState<string>('member');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -442,9 +446,9 @@ const Dashboard: React.FC = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 space-y-4 sm:space-y-0">
                 <TabsList className="grid grid-cols-4 w-full sm:w-auto sm:max-w-md bg-card/80 backdrop-blur-sm border-border/20 rounded-xl p-1">
-                  <TabsTrigger value="feed" className="rounded-lg font-medium text-xs sm:text-sm">Feed</TabsTrigger>
-                  <TabsTrigger value="looprooms" className="rounded-lg font-medium text-xs sm:text-sm">Rooms</TabsTrigger>
-                  <TabsTrigger value="discover" className="rounded-lg font-medium text-xs sm:text-sm">Discover</TabsTrigger>
+                  <TabsTrigger value="journey" className="rounded-lg font-medium text-xs sm:text-sm">Journey</TabsTrigger>
+                  <TabsTrigger value="looprooms" className="rounded-lg font-medium text-xs sm:text-sm">My Spaces</TabsTrigger>
+                  <TabsTrigger value="discover" className="rounded-lg font-medium text-xs sm:text-sm">Explore</TabsTrigger>
                   <TabsTrigger value="create" className="rounded-lg font-medium text-xs sm:text-sm">Create</TabsTrigger>
                 </TabsList>
 
@@ -455,132 +459,25 @@ const Dashboard: React.FC = () => {
                   </Button>
                   <Button size="sm" className="flex-1 sm:flex-none bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground">
                     <Plus className="w-4 h-4 sm:mr-2" />
-                    <span className="hidden sm:inline">New Post</span>
+                    <span className="hidden sm:inline">Join Live</span>
                   </Button>
                 </div>
               </div>
 
-              <TabsContent value="feed" className="mt-0">
-                {user.role === 'CREATOR' ? (
-                  <CreatorDashboard />
-                ) : (
-                  <SocialFeed />
-                )}
+              <TabsContent value="journey" className="mt-0">
+                <JourneyHub userType={userType} />
               </TabsContent>
 
               <TabsContent value="looprooms" className="mt-0">
-                <div className="space-y-6">
-                  <h2 className="text-3xl font-bold text-foreground mb-6">Your Looprooms</h2>
-                  {selectedThemes.map(themeId => {
-                    const colors = THEME_COLORS[themeId as keyof typeof THEME_COLORS];
-                    const IconComponent = THEME_ICONS[themeId as keyof typeof THEME_ICONS];
-
-                    return (
-                      <Card key={themeId} className="hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group">
-                        <CardContent className="p-6">
-                          <div className="flex items-start space-x-4">
-                            <div className={`w-14 h-14 rounded-2xl ${colors.bg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200`}>
-                              <IconComponent className={`w-7 h-7 ${colors.icon}`} />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-bold text-xl capitalize text-foreground mb-2">{themeId} Looprooms</h3>
-                              <p className="text-muted-foreground mb-4">Join healing sessions focused on {themeId}</p>
-                              <div className="flex items-center space-x-6 text-sm">
-                                <span className="flex items-center px-3 py-1 bg-primary/20 text-primary rounded-full font-medium">🔥 15 active</span>
-                                <span className="flex items-center px-3 py-1 bg-secondary/20 text-secondary rounded-full font-medium">👥 234 members</span>
-                                <span className="flex items-center px-3 py-1 bg-accent/20 text-accent rounded-full font-medium">⏰ Next in 30min</span>
-                              </div>
-                            </div>
-                            <Button variant="outline" className={`${colors.text} border-2 rounded-xl px-6 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200`}>
-                              Join Now
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
+                <MySpaces selectedThemes={selectedThemes} />
               </TabsContent>
 
               <TabsContent value="discover" className="mt-0">
-                <div className="space-y-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">Discover New Themes</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    {Object.entries(THEME_COLORS).map(([themeId, colors]) => {
-                      const IconComponent = THEME_ICONS[themeId as keyof typeof THEME_ICONS];
-                      const isSelected = selectedThemes.includes(themeId);
-
-                      return (
-                        <Card key={themeId} className={`cursor-pointer hover:shadow-xl transition-all duration-300 bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group ${isSelected ? `ring-2 ring-primary shadow-lg` : ''}`}>
-                          <CardContent className="p-6">
-                            <div className="text-center">
-                              <div className={`w-20 h-20 mx-auto mb-4 rounded-2xl ${colors.bg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200`}>
-                                <IconComponent className={`w-10 h-10 ${colors.icon}`} />
-                              </div>
-                              <h3 className="font-bold text-xl capitalize mb-3 text-foreground">{themeId}</h3>
-                              <p className="text-muted-foreground mb-4">Explore healing through {themeId}</p>
-                              <div className="flex justify-center space-x-4 text-sm mb-6">
-                                <span className="px-3 py-1 bg-muted/50 text-muted-foreground rounded-full font-medium">🏠 25 looprooms</span>
-                                <span className="px-3 py-1 bg-muted/50 text-muted-foreground rounded-full font-medium">👥 1.2k members</span>
-                              </div>
-                              {isSelected ? (
-                                <Badge className="bg-primary/20 text-primary border border-primary/30 px-4 py-2 rounded-xl font-semibold">
-                                  ✓ Following
-                                </Badge>
-                              ) : (
-                                <Button variant="outline" size="sm" className={`${colors.text} border-2 rounded-xl px-6 hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-primary-foreground hover:border-transparent transition-all duration-200`}>
-                                  Follow
-                                </Button>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                </div>
+                <ExploreJourneys />
               </TabsContent>
 
               <TabsContent value="create" className="mt-0">
-                <div className="space-y-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">Create Content</h2>
-                  {userType === 'creator' ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                      <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group">
-                        <CardContent className="p-8 text-center">
-                          <div className="w-20 h-20 bg-gradient-to-r from-primary to-secondary rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                            <Plus className="w-10 h-10 text-primary-foreground" />
-                          </div>
-                          <h3 className="font-bold text-xl mb-3 text-foreground">New Looproom</h3>
-                          <p className="text-muted-foreground">Create a guided healing session</p>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="hover:shadow-xl transition-all duration-300 cursor-pointer bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl group">
-                        <CardContent className="p-8 text-center">
-                          <div className="w-20 h-20 bg-gradient-to-r from-secondary to-accent rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                            <Calendar className="w-10 h-10 text-secondary-foreground" />
-                          </div>
-                          <h3 className="font-bold text-xl mb-3 text-foreground">Schedule Session</h3>
-                          <p className="text-muted-foreground">Plan a live healing session</p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ) : (
-                    <Card className="text-center py-16 bg-card/80 backdrop-blur-sm border-border/20 rounded-2xl shadow-xl">
-                      <CardContent>
-                        <div className="w-24 h-24 bg-gradient-to-r from-primary to-secondary rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg">
-                          <Heart className="w-12 h-12 text-primary-foreground" />
-                        </div>
-                        <h3 className="text-2xl font-bold mb-4 text-foreground">Become a Creator</h3>
-                        <p className="text-muted-foreground mb-8 max-w-md mx-auto">Share your healing journey and help others transform their lives</p>
-                        <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 rounded-xl px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-200 text-primary-foreground">
-                          Apply to be Creator
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
+                <CreatorStudio userType={userType} />
               </TabsContent>
             </Tabs>
           </div>
@@ -722,11 +619,11 @@ const Dashboard: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className={`flex-1 flex flex-col items-center py-3 space-y-1 rounded-none ${activeTab === 'feed' ? 'text-primary' : 'text-muted-foreground'}`}
-            onClick={() => setActiveTab('feed')}
+            className={`flex-1 flex flex-col items-center py-3 space-y-1 rounded-none ${activeTab === 'journey' ? 'text-primary' : 'text-muted-foreground'}`}
+            onClick={() => setActiveTab('journey')}
           >
             <Heart className="w-5 h-5" />
-            <span className="text-xs">Feed</span>
+            <span className="text-xs">Journey</span>
           </Button>
 
           <Button
@@ -736,7 +633,7 @@ const Dashboard: React.FC = () => {
             onClick={() => setActiveTab('looprooms')}
           >
             <Users className="w-5 h-5" />
-            <span className="text-xs">Rooms</span>
+            <span className="text-xs">My Spaces</span>
           </Button>
 
           <Button
@@ -746,7 +643,7 @@ const Dashboard: React.FC = () => {
             onClick={() => setActiveTab('discover')}
           >
             <Search className="w-5 h-5" />
-            <span className="text-xs">Discover</span>
+            <span className="text-xs">Explore</span>
           </Button>
 
           <Button

@@ -29,8 +29,8 @@ class CreatorVerificationService {
         where: { userId }
       });
 
-      if (existingApplication && existingApplication.status !== 'REJECTED') {
-        throw new Error('Verification application already exists');
+      if (existingApplication && ['PENDING', 'APPROVED', 'UNDER_REVIEW'].includes(existingApplication.status)) {
+        throw new Error('You already have a pending or approved application. Please wait for review or contact support.');
       }
 
       // Get user details
@@ -126,9 +126,7 @@ class CreatorVerificationService {
         applicationId: application.id,
         status: application.status,
         verificationScore: faceVerificationScore,
-        message: faceVerificationScore >= 0.85
-          ? 'Verification successful! Your creator account has been activated.'
-          : 'Application submitted for manual review. We\'ll notify you within 24-48 hours.'
+        message: 'Application submitted successfully! Our team will review your submission within 24-48 hours and notify you of the result.'
       };
 
     } catch (error) {

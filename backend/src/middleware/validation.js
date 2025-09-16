@@ -46,6 +46,121 @@ const schemas = {
       .min(1, 'Password is required')
   }),
 
+  // Looproom validation schemas
+  createLooproom: z.object({
+    title: z.string()
+      .min(1, 'Title is required')
+      .max(100, 'Title too long'),
+
+    description: z.string()
+      .min(1, 'Description is required')
+      .max(1000, 'Description too long'),
+
+    categoryId: z.string()
+      .min(1, 'Category is required'),
+
+    contentType: z.enum(['VIDEO', 'AUDIO', 'IMAGE', 'TEXT', 'MIXED'], {
+      errorMap: () => ({ message: 'Invalid content type' })
+    }),
+
+    contentUrl: z.string()
+      .url('Invalid content URL')
+      .min(1, 'Content URL is required'),
+
+    thumbnail: z.string()
+      .url('Invalid thumbnail URL')
+      .optional(),
+
+    duration: z.number()
+      .int()
+      .min(1, 'Duration must be at least 1 second')
+      .max(7200, 'Duration cannot exceed 2 hours')
+      .optional(),
+
+    difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced'])
+      .optional()
+      .default('Beginner'),
+
+    keywords: z.array(z.string())
+      .max(10, 'Maximum 10 keywords allowed')
+      .optional()
+      .default([]),
+
+    tags: z.array(z.string())
+      .max(5, 'Maximum 5 tags allowed')
+      .optional()
+      .default([]),
+
+    isPremium: z.boolean()
+      .optional()
+      .default(false),
+
+    previewDuration: z.number()
+      .int()
+      .min(10, 'Preview must be at least 10 seconds')
+      .max(300, 'Preview cannot exceed 5 minutes')
+      .optional()
+  }),
+
+  updateLooproom: z.object({
+    title: z.string()
+      .min(1, 'Title is required')
+      .max(100, 'Title too long')
+      .optional(),
+
+    description: z.string()
+      .min(1, 'Description is required')
+      .max(1000, 'Description too long')
+      .optional(),
+
+    categoryId: z.string()
+      .min(1, 'Category is required')
+      .optional(),
+
+    contentUrl: z.string()
+      .url('Invalid content URL')
+      .optional(),
+
+    thumbnail: z.string()
+      .url('Invalid thumbnail URL')
+      .optional(),
+
+    duration: z.number()
+      .int()
+      .min(1, 'Duration must be at least 1 second')
+      .max(7200, 'Duration cannot exceed 2 hours')
+      .optional(),
+
+    difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced'])
+      .optional(),
+
+    keywords: z.array(z.string())
+      .max(10, 'Maximum 10 keywords allowed')
+      .optional(),
+
+    isPremium: z.boolean()
+      .optional(),
+
+    previewDuration: z.number()
+      .int()
+      .min(10, 'Preview must be at least 10 seconds')
+      .max(300, 'Preview cannot exceed 5 minutes')
+      .optional(),
+
+    status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED', 'RESTRICTED'])
+      .optional()
+  }),
+
+  addReaction: z.object({
+    type: z.enum(['HEART', 'CLAP', 'FIRE', 'PEACE', 'INSPIRE', 'STRENGTH', 'GRATITUDE', 'MINDFUL'], {
+      errorMap: () => ({ message: 'Invalid reaction type' })
+    }),
+
+    isAnonymous: z.boolean()
+      .optional()
+      .default(false)
+  }),
+
   forgotPassword: z.object({
     email: z.string()
       .email('Invalid email format')

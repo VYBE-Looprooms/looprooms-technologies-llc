@@ -10,6 +10,8 @@ const webhookRoutes = require('./routes/webhook');
 const authRoutes = require('./src/routes/auth');
 const verificationRoutes = require('./src/routes/verification');
 const adminRoutes = require('./src/routes/admin');
+const looproomRoutes = require('./src/routes/looprooms');
+const liveSessionRoutes = require('./src/routes/liveSessions');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -107,6 +109,8 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/verification', verificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/looprooms', looproomRoutes);
+app.use('/api/sessions', liveSessionRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 

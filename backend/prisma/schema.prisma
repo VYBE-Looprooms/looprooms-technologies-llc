@@ -78,6 +78,12 @@ model User {
   userProgress UserProgress[]
   looplistItems LooplistItem[]
   reviewedApplications  CreatorApplication[] @relation("ApplicationReviewer")
+
+  // Live Session Relations
+  createdSessions    LiveSession[] @relation("SessionCreator")
+  sessionParticipations SessionParticipant[]
+  sessionComments    SessionComment[]
+  commentReactions   CommentReaction[]
   
   // Indexes
   @@map("users")
@@ -275,6 +281,7 @@ model Looproom {
   loopchainSteps LoopchainStep[]
   sharedVybes    SharedVybe[]
   looplistItems  LooplistItem[]
+  liveSessions   LiveSession[]
   
   @@map("looprooms")
 }
@@ -662,14 +669,157 @@ model ContentAnalytics {
   contentType String  // 'looproom', 'shared_vybe', etc.
   contentId  String
   date       DateTime @default(now())
-  
+
   // Metrics
   views      Int @default(0)
   reactions  Int @default(0)
   comments   Int @default(0)
   shares     Int @default(0)
   completions Int @default(0) // For Looprooms
-  
+
   @@unique([contentType, contentId, date])
   @@map("content_analytics")
+}
+
+// ================================
+// LIVE SESSIONS & PARTICIPANTS
+// ================================
+
+enum SessionStatus {
+  SCHEDULED
+  ACTIVE
+  ENDED
+  CANCELLED
+}
+
+enum ParticipantStatus {
+  JOINED
+  LEFT
+  KICKED
+  BANNED
+}
+
+model LiveSession {
+  id          String        @id @default(cuid())
+  looproomId  String
+  creatorId   String
+  title       String?       // Optional custom title for this specific session
+  description String?       // Optional description for this session
+  status      SessionStatus @default(SCHEDULED)
+
+  // Session Timing
+  scheduledStartTime DateTime
+  actualStartTime    DateTime?
+  endTime           DateTime?
+  duration          Int? // Planned duration in minutes
+  actualDuration    Int? // Actual duration in minutes
+
+  // Capacity Management
+  maxParticipants   Int @default(30)
+  currentParticipants Int @default(0)
+
+  // Session Settings
+  allowAnonymous    Boolean @default(true)
+  requiresApproval  Boolean @default(false)
+  isRecorded       Boolean @default(false)
+  recordingUrl     String?
+
+  // Moderation
+  isMuted          Boolean @default(false) // Creator can mute all participants
+  isLocked         Boolean @default(false) // Prevent new participants from joining
+  moderatorNotes   String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  looproom     Looproom @relation(fields: [looproomId], references: [id], onDelete: Cascade)
+  creator      User     @relation("SessionCreator", fields: [creatorId], references: [id])
+  participants SessionParticipant[]
+  comments     SessionComment[]
+
+  @@map("live_sessions")
+}
+
+model SessionParticipant {
+  id            String            @id @default(cuid())
+  sessionId     String
+  userId        String
+  status        ParticipantStatus @default(JOINED)
+
+  // Participant Settings
+  isAnonymous   Boolean @default(false)
+  displayName   String? // Anonymous display name
+  isMuted       Boolean @default(false)
+  isModerator   Boolean @default(false)
+
+  // Engagement Tracking
+  joinedAt      DateTime @default(now())
+  leftAt        DateTime?
+  totalTimeInSession Int @default(0) // Seconds
+  messagesCount Int @default(0)
+  reactionsCount Int @default(0)
+
+  // Mood Tracking (optional wellness feature)
+  moodBefore    String? // JSON mood data when joining
+  moodAfter     String? // JSON mood data when leaving
+
+  // Relations
+  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+  @@map("session_participants")
+}
+
+model SessionComment {
+  id          String  @id @default(cuid())
+  sessionId   String
+  userId      String
+  content     String
+  isAnonymous Boolean @default(false)
+
+  // Message Threading (optional - for replies)
+  parentId    String?
+  parent      SessionComment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     SessionComment[] @relation("CommentReplies")
+
+  // Reactions to comments
+  reactionCount Int @default(0)
+
+  // Moderation
+  isDeleted     Boolean @default(false)
+  deletedAt     DateTime?
+  deletedBy     String? // User ID of moderator who deleted
+  isReported    Boolean @default(false)
+  reportCount   Int @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  session LiveSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reactions CommentReaction[]
+
+  @@map("session_comments")
+}
+
+model CommentReaction {
+  id        String      @id @default(cuid())
+  commentId String
+  userId    String
+  type      ReactionType
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  // Relations
+  comment SessionComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId, type])
+  @@map("comment_reactions")
 }

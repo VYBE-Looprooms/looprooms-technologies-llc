@@ -147,6 +147,60 @@ const optionalAuth = async (req, res, next) => {
 };
 
 /**
+ * Middleware to check if user has an approved creator application
+ */
+const requireApprovedCreator = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
+        code: 'AUTH_REQUIRED'
+      });
+    }
+
+    // Check if user has CREATOR role AND is verified
+    if (req.user.role !== 'CREATOR' || !req.user.isVerified) {
+      return res.status(403).json({
+        success: false,
+        message: 'Approved creator status required. Please submit your creator application and wait for approval.',
+        code: 'CREATOR_APPROVAL_REQUIRED',
+        userRole: req.user.role,
+        isVerified: req.user.isVerified
+      });
+    }
+
+    // Additional check: verify creator application exists and is approved
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+
+    const application = await prisma.creatorApplication.findUnique({
+      where: { userId: req.user.id }
+    });
+
+    if (!application || application.status !== 'APPROVED') {
+      return res.status(403).json({
+        success: false,
+        message: 'Creator application must be approved before accessing creator features.',
+        code: 'CREATOR_APPLICATION_NOT_APPROVED',
+        applicationStatus: application?.status || 'NOT_SUBMITTED'
+      });
+    }
+
+    next();
+
+  } catch (error) {
+    console.error('❌ Creator approval check error:', error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Error verifying creator status',
+      code: 'CREATOR_CHECK_ERROR'
+    });
+  }
+};
+
+/**
  * Rate limiting for authentication endpoints
  */
 const authRateLimit = require('express-rate-limit')({
@@ -165,6 +219,7 @@ module.exports = {
   authenticateToken,
   requireRole,
   requireSubscription,
+  requireApprovedCreator,
   optionalAuth,
   authRateLimit
 };

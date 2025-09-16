@@ -14,6 +14,12 @@ const emailRoutes = require('./routes/email');
 const webhookRoutes = require('./routes/webhook');
 const authRoutes = require('./src/routes/auth');
 const verificationRoutes = require('./src/routes/verification');
+// const adminRoutes = require('./src/routes/admin'); // Disabled for now
+const looproomRoutes = require('./src/routes/looprooms');
+const liveSessionRoutes = require('./src/routes/liveSessions');
+
+// Import WebSocket service
+const websocketService = require('./src/services/websocketService');
 
 const app = express();
 const HTTP_PORT = process.env.PORT || 3001;
@@ -149,6 +155,9 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/verification', verificationRoutes);
+// app.use('/api/admin', adminRoutes); // Disabled for now
+app.use('/api/looprooms', looproomRoutes);
+app.use('/api/sessions', liveSessionRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/webhook', webhookRoutes);
 
@@ -229,10 +238,13 @@ httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
   console.log(`📡 Also accessible via http://192.168.3.10:${HTTP_PORT}`);
 });
 
+// Initialize WebSocket on HTTP server
+websocketService.initialize(httpServer);
+
 // Start HTTPS server if certificate is available
 if (httpsOptions) {
   const httpsServer = https.createServer(httpsOptions, app);
-  
+
   httpsServer.listen(HTTPS_PORT, '0.0.0.0', () => {
     console.log('🔒 VYBE LOOPROOMS™ HTTPS Backend API Started');
     console.log(`📡 HTTPS Server running on https://localhost:${HTTPS_PORT}`);
@@ -243,6 +255,7 @@ if (httpsOptions) {
     console.log('🔗 Test URLs:');
     console.log(`   HTTP:  http://192.168.3.10:${HTTP_PORT}/health`);
     console.log(`   HTTPS: https://192.168.3.10:${HTTPS_PORT}/health`);
+    console.log(`   WebSocket: ws://192.168.3.10:${HTTP_PORT}/ws`);
     console.log('');
     console.log('⚠️  Browser Security Warning:');
     console.log('   Browsers will show "Your connection is not private" warning');
@@ -253,6 +266,12 @@ if (httpsOptions) {
     console.log(`   Frontend should point to: https://192.168.3.10:${HTTPS_PORT}`);
     console.log('✨ Ready to process secure requests!');
   });
+
+  // Also initialize WebSocket on HTTPS server
+  websocketService.initialize(httpsServer);
+
+  // Email service info
+  console.log('✅ Email service is ready to send messages');
   
   httpsServer.on('error', (err) => {
     console.error('❌ HTTPS Server error:', err.message);
