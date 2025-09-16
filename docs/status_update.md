@@ -11,7 +11,7 @@
 - Documentation refreshed (development_plan.md, progress_log.md) to reflect the new architecture work and auth milestone.
 - Reaction presets table and seeds shipped with engagement endpoints for reactions and motivations.
 - Motivational messages seeded for each MVP looproom and surfaced through the looproom service.
-- Authenticated mood dashboard launched, combining presets, recommendations, seeded engagement data, and full-width layout polish.
+- Authenticated mood dashboard launched with new responsive design—carousel presets, immersive recommendations, and insights column.
 - Auth refresh endpoint plus protected routes with auto-renew timers keep sessions alive through the dashboard.
 - Looproom detail view exposes individual journeys with motivational overlays and CTA routing.
 - Socket.io realtime scaffold added (presence, chat, reaction relays) with shared frontend hook for upcoming overlays.

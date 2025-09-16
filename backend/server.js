@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const http = require('http');
 require('dotenv').config();
 
 const emailRoutes = require('./routes/email');
@@ -10,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const looproomRoutes = require('./routes/looprooms');
 const moodRoutes = require('./routes/moods');
 const engagementRoutes = require('./routes/engagement');
+const { initializeSockets } = require('./realtime/socket');
 const { connectDatabase } = require('./config/database');
 
 const app = express();
